@@ -109,6 +109,11 @@ bool mason_create_wallet(uint8_t *mnemonic, uint16_t mnemonic_len)
     mnemonic_t mnemonic_data;
     bool is_succeed = false;
 
+    if((0 == mnemonic_len) || (mnemonic_len > MAX_MNEMONIC_SIZE))
+    {
+        return false;
+	}
+
     mnemonic_data.size = mnemonic_len;
     memcpy(mnemonic_data.data, mnemonic, mnemonic_len);
 
@@ -186,6 +191,11 @@ bool mason_seed_write(wallet_seed_t *seed)
 bool mason_change_wallet_passphrase(uint8_t *passphrase, uint16_t passphrase_len)
 {
     mnemonic_t mnemonic;
+
+    if(passphrase_len > MAX_PASSPHRASE_SIZE)
+    {
+        return false;
+	}
 
     if (!mason_mnemonic_read(&mnemonic))
     {
@@ -272,7 +282,12 @@ bool mason_parse_wallet_path_from_string(char *string, uint16_t len, wallet_path
     stHDPathType hd_path;
     bool is_succeed = false;
     int i = 0;
-
+	
+	if(len > (MAX_HDPATH_SIZE+1))
+    {
+        return false;
+	}
+	
     is_succeed = bip44_str_to_hdpath((uint8_t *)string, len, &hd_path);
 
     if (!is_succeed)

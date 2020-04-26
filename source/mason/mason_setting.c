@@ -106,12 +106,12 @@ bool mason_usrpwd_verify(uint8_t *passwd , uint16_t passwd_len)
         return false;
     }
 
-    mason_HDW_gen_sha256sha256(passwd, passwd_len, checksum, checksumlen);
-
     if(checksumlen != cur_passwd_len)
     {
         return false;
     }
+	
+    mason_HDW_gen_sha256sha256(passwd, passwd_len, checksum, checksumlen);
 
     if(memcmp(checksum, cur_passwd, cur_passwd_len))
     {

@@ -58,7 +58,7 @@ static void mason_cmd0203_iap_verify(void *pContext);
 static void mason_cmd0301_get_entropy(void *pContext);
 static void mason_cmd0302_create_wallet(void *pContext);
 static void mason_cmd0303_change_wallet_passphrase(void *pContext);
-static void mason_cmd0305_get_wallet(void *pContext);
+static void mason_cmd0305_get_extpubkey(void *pContext);
 static void mason_cmd0306_delete_wallet(void *pContext); 
 static void mason_cmd0307_sign_ECDSA(void * pContext);
 static void mason_cmd0401_generate_public_key_from_private_key(void *pContext);
@@ -163,7 +163,7 @@ MASON_COMMANDS_EXT volatile stCmdHandlerType gstCmdHandlers[CMD_H_MAX][CMD_L_MAX
 		},
 		{
 		USER_WALLET,
-		mason_cmd0305_get_wallet,
+		mason_cmd0305_get_extpubkey,
 		},
 		{
 		USER_WALLET,
@@ -442,7 +442,7 @@ bool stack_search_CMDNo(pstStackType pstStack, stackElementType *pelement, unCMD
 {
 	stackElementType *pstTLV = pelement;
 
-	if (stack_search_by_tag(pstStack, pstTLV, 0x0001))
+	if ((stack_search_by_tag(pstStack, pstTLV, 0x0001))&&(sizeof(unCMDNoType) == (*pstTLV)->L))
 	{
 		memcpy(punCMDNo->buf, (*pstTLV)->pV, (*pstTLV)->L);
 		return true;
@@ -744,7 +744,7 @@ void mason_cmd_end_outputTLVArray(pstStackType pstStack, emEncryptType eEnc)
 {
     pstStackType pstS = pstStack;
 	int index = 0;
-	uint8_t strSend[512];
+	uint8_t *strSend = NULL;
 	uint16_t tlvLen = 0;
 	uint16_t bodyLen = 0;
 	uint16_t strSendLen = 0;
@@ -759,9 +759,9 @@ void mason_cmd_end_outputTLVArray(pstStackType pstStack, emEncryptType eEnc)
 		bodyLen += 8 - (tlvLen & 7);		/* add padding length*/
 	}
 	strSendLen = bodyLen + 6;		/* add protocol head*/
-	if (strSendLen > 512)
+	strSend = (uint8_t*)calloc(strSendLen, sizeof(uint8_t));
+	if (NULL == strSend)
 	{
-		printf("Return to much %d\n", strSendLen);
 		return;
 	}
 
@@ -783,6 +783,11 @@ void mason_cmd_end_outputTLVArray(pstStackType pstStack, emEncryptType eEnc)
 	strSend[bodyLen+5] = get_lrc(strSend, bodyLen+5);
 
 	uart_send_bytes(UARTA, strSend, strSendLen);
+
+	if (NULL != strSend)
+	{
+		free(strSend);
+	}
 }
 /**
  * @functionname: mason_command_manage_error
@@ -1362,12 +1367,12 @@ static void mason_cmd0303_change_wallet_passphrase(void *pContext)
 	stack_destroy(&stStack);
 }
 /**
- * @functionname: mason_cmd0305_get_wallet
+ * @functionname: mason_cmd0305_get_extpubkey
  * @description: command for get specific extended public key by given hdpath and algorithm
  * @para: 
  * @return: 
  */
-static void mason_cmd0305_get_wallet(void *pContext)
+static void mason_cmd0305_get_extpubkey(void *pContext)
 {
 	emRetType emRet = ERT_OK;
 	uint8_t bufRet[2] = {0x00, 0x00};
@@ -1377,7 +1382,7 @@ static void mason_cmd0305_get_wallet(void *pContext)
 	uint8_t *path = NULL;
 	uint16_t path_len = 0;
 	wallet_path_t wallet_path;
-	char path_string[512] = {0};
+	char path_string[MAX_HDPATH_SIZE+1] = {0};
 	private_key_t derived_private_key;
 	chaincode_t derived_chaincode;
 	extended_key_t extended_public_key;
@@ -1399,8 +1404,17 @@ static void mason_cmd0305_get_wallet(void *pContext)
 	{
 		path_len = pstTLV->L;
 		path = (uint8_t *)pstTLV->pV;
-		memcpy((uint8_t *)path_string, path, path_len);
-		path_string[path_len] = 0;
+
+		if((0 == path_len) || (path_len > MAX_HDPATH_SIZE))
+		{
+			emRet = ERT_CommFailParam;
+		}
+		else
+		{
+			memcpy((uint8_t *)path_string, path, path_len);
+			path_string[path_len] = 0;
+		}
+		
 	}
 	else
 	{
@@ -1509,7 +1523,7 @@ static void mason_cmd0307_sign_ECDSA(void *pContext)
 	uint8_t *path = NULL;
 	uint16_t path_len = 0;
 	wallet_path_t wallet_path;
-	char path_string[128] = {0};
+	char path_string[MAX_HDPATH_SIZE+1] = {0};
 	uint8_t hash[SHA512_LEN];
 	uint16_t hash_len = SHA512_LEN;
 	private_key_t derived_private_key;
@@ -1536,14 +1550,22 @@ static void mason_cmd0307_sign_ECDSA(void *pContext)
 	{
 		if(stack_search_by_tag(pstS, &pstTLV, TLV_T_TOKEN))
 		{
-			setting_token_t token ={0};
-			memcpy(token.token, (uint8_t *)pstTLV->pV, pstTLV->L);
-			token.length = pstTLV->L;
-			if(!mason_token_verify(&token))
+			if(SETTING_TOKEN_LEN == pstTLV->L)
 			{
-				mason_token_delete();
+				setting_token_t token ={0};
+				memcpy(token.token, (uint8_t *)pstTLV->pV, pstTLV->L);
+				token.length = pstTLV->L;
+				if(!mason_token_verify(&token))
+				{
+					mason_token_delete();
+					emRet = ERT_TokenVerifyFail;
+				}
+			}
+			else
+			{
 				emRet = ERT_TokenVerifyFail;
 			}
+
 		}
 		else
 		{
@@ -1562,8 +1584,17 @@ static void mason_cmd0307_sign_ECDSA(void *pContext)
 		{
 			path_len = pstTLV->L;
 			path = (uint8_t *)pstTLV->pV;
-			memcpy((uint8_t *)path_string, path, path_len);
-			path_string[path_len] = 0;
+
+			if((0 == path_len) || (path_len > MAX_HDPATH_SIZE))
+			{
+				emRet = ERT_CommFailParam;
+			}
+			else
+			{
+				memcpy((uint8_t *)path_string, path, path_len);
+				path_string[path_len] = 0;
+			}
+			
 		}
 		else
 		{
@@ -1576,7 +1607,14 @@ static void mason_cmd0307_sign_ECDSA(void *pContext)
 		if (stack_search_by_tag(pstS, &pstTLV, TLV_T_HASH))
 		{
 			hash_len = pstTLV->L;
-			memcpy(hash, pstTLV->pV, hash_len);
+			if((0 == hash_len) || (hash_len > SHA512_LEN))
+			{
+				emRet = ERT_CommFailParam;
+			}
+			else
+			{
+				memcpy(hash, pstTLV->pV, hash_len);
+			}
 		}
 		else
 		{
@@ -1801,7 +1839,14 @@ static void mason_cmd0701_web_authentication(void *pContext)
 
 	if (emRet == ERT_OK && stack_search_by_tag(pstS, &pstTLV, TLV_T_SIGNATURE) && signature_len == pstTLV->L)
 	{
-		memcpy(signature, (uint8_t *)pstTLV->pV, pstTLV->L);
+	    if( signature_len > SHA512_LEN)
+	    {
+			emRet = ERT_CommFailParam;
+		}
+		else
+		{
+			memcpy(signature, (uint8_t *)pstTLV->pV, pstTLV->L);
+		}
 	}
 	else
 	{

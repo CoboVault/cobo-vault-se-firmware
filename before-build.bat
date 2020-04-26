@@ -1,0 +1,1 @@
+REM del /Q .\Objects\*.*

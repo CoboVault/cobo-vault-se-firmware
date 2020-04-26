@@ -431,64 +431,64 @@
               <FilePath>.\source\driver\eflash.c</FilePath>
             </File>
             <File>
-              <FileName>hrng_20180905.lib</FileName>
+              <FileName>des_v1.lib</FileName>
               <FileType>4</FileType>
-              <FilePath>.\source\driver\hrng_20180905.lib</FilePath>
+              <FilePath>.\source\driver\des_v1.lib</FilePath>
             </File>
             <File>
-              <FileName>pki_20170327.lib</FileName>
+              <FileName>ecdsa_v1.lib</FileName>
               <FileType>4</FileType>
-              <FilePath>.\source\driver\pki_20170327.lib</FilePath>
+              <FilePath>.\source\driver\ecdsa_v1.lib</FilePath>
             </File>
             <File>
-              <FileName>sha1_20171110.lib</FileName>
+              <FileName>ed25519_v1.lib</FileName>
               <FileType>4</FileType>
-              <FilePath>.\source\driver\sha1_20171110.lib</FilePath>
+              <FilePath>.\source\driver\ed25519_v1.lib</FilePath>
             </File>
             <File>
-              <FileName>sha256_20171110.lib</FileName>
+              <FileName>hrng_v1.lib</FileName>
               <FileType>4</FileType>
-              <FilePath>.\source\driver\sha256_20171110.lib</FilePath>
+              <FilePath>.\source\driver\hrng_v1.lib</FilePath>
             </File>
             <File>
-              <FileName>sha384_512_20180212.lib</FileName>
+              <FileName>pki_v1.lib</FileName>
               <FileType>4</FileType>
-              <FilePath>.\source\driver\sha384_512_20180212.lib</FilePath>
+              <FilePath>.\source\driver\pki_v1.lib</FilePath>
             </File>
             <File>
-              <FileName>des_20180905.lib</FileName>
+              <FileName>rsa_v1.lib</FileName>
               <FileType>4</FileType>
-              <FilePath>.\source\driver\des_20180905.lib</FilePath>
+              <FilePath>.\source\driver\rsa_v1.lib</FilePath>
             </File>
             <File>
-              <FileName>ecdsa_20181023.lib</FileName>
+              <FileName>sha1_v1.lib</FileName>
               <FileType>4</FileType>
-              <FilePath>.\source\driver\ecdsa_20181023.lib</FilePath>
+              <FilePath>.\source\driver\sha1_v1.lib</FilePath>
             </File>
             <File>
-              <FileName>ed25519_20181026.lib</FileName>
+              <FileName>sha256_v1.lib</FileName>
               <FileType>4</FileType>
-              <FilePath>.\source\driver\ed25519_20181026.lib</FilePath>
+              <FilePath>.\source\driver\sha256_v1.lib</FilePath>
             </File>
             <File>
-              <FileName>rsa_20180905.lib</FileName>
+              <FileName>sha384_512_v1.lib</FileName>
               <FileType>4</FileType>
-              <FilePath>.\source\driver\rsa_20180905.lib</FilePath>
+              <FilePath>.\source\driver\sha384_512_v1.lib</FilePath>
             </File>
             <File>
-              <FileName>sm2sm3_20180718.lib</FileName>
+              <FileName>sm1_v1.lib</FileName>
               <FileType>4</FileType>
-              <FilePath>.\source\driver\sm2sm3_20180718.lib</FilePath>
+              <FilePath>.\source\driver\sm1_v1.lib</FilePath>
             </File>
             <File>
-              <FileName>sm1_20171109.lib</FileName>
+              <FileName>sm2sm3_v1.lib</FileName>
               <FileType>4</FileType>
-              <FilePath>.\source\driver\sm1_20171109.lib</FilePath>
+              <FilePath>.\source\driver\sm2sm3_v1.lib</FilePath>
             </File>
             <File>
-              <FileName>sm4_20171109.lib</FileName>
+              <FileName>sm4_v1.lib</FileName>
               <FileType>4</FileType>
-              <FilePath>.\source\driver\sm4_20171109.lib</FilePath>
+              <FilePath>.\source\driver\sm4_v1.lib</FilePath>
             </File>
           </Files>
         </Group>

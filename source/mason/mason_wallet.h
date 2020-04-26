@@ -34,6 +34,8 @@ enum SupportEntropyBits
 };
 
 #define MAX_MNEMONIC_SIZE 240
+#define MAX_HDPATH_SIZE 61
+#define MAX_PASSPHRASE_SIZE (128*4)
 
 typedef struct mnemonic_s
 {

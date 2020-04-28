@@ -1,0 +1,17 @@
+# build directory
+Objects/
+binHistory/
+hexHistory/
+
+# build files
+*.hex
+*.bin
+*.map
+*.lst
+
+# compile project
+.vscode/
+*uvopt*
+*uvproj*
+*uvgui*
+*.dep

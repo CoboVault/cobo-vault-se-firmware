@@ -421,11 +421,6 @@
               <FilePath>.\source\driver\wdt.c</FilePath>
             </File>
             <File>
-              <FileName>crc16.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\source\driver\crc16.c</FilePath>
-            </File>
-            <File>
               <FileName>eflash.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\source\driver\eflash.c</FilePath>
@@ -584,11 +579,6 @@
               <FileName>mason_debug.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\source\mason\mason_debug.c</FilePath>
-            </File>
-            <File>
-              <FileName>mason_api_test.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\source\mason\mason_api_test.c</FilePath>
             </File>
             <File>
               <FileName>mason_comm.c</FileName>

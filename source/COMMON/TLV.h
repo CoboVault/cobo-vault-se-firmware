@@ -22,7 +22,7 @@ in the file COPYING.  If not, see <http://www.gnu.org/licenses/>.
 #ifdef TLV_GLOBAL
 #define TLV_EXT
 #else
-#define TLV_EXT	extern
+#define TLV_EXT extern
 #endif
 
 /** Header file reference */
@@ -30,32 +30,32 @@ in the file COPYING.  If not, see <http://www.gnu.org/licenses/>.
 #include <stdlib.h>
 #include <stdint.h>
 #include <stdbool.h>
-#include <string.h>	//memcpy...
+#include <string.h> //memcpy...
 #include "mason_errno.h"
 
 /** Compatibility with the cplusplus*/
 #ifdef __cplusplus
 extern "C"
 {
-#endif    /* __cplusplus */
+#endif /* __cplusplus */
 
 /** Macro definitions*/
-#define TLV_MAX					10
+#define TLV_MAX 10
 
-/** Variable declarations */
-typedef struct
-{
-	uint16_t T;
-	uint16_t L;
-	const char *pV;
-}stTLVType, *pstTLVType;
-TLV_EXT stTLVType stTLV[TLV_MAX];
-TLV_EXT volatile uint16_t tlvLen;
+	/** Variable declarations */
+	typedef struct
+	{
+		uint16_t T;
+		uint16_t L;
+		const char *pV;
+	} stTLVType, *pstTLVType;
+	TLV_EXT stTLVType stTLV[TLV_MAX];
+	TLV_EXT volatile uint16_t tlvLen;
 
-/** Function declarations */
-uint32_t tlv_get_tag(pstTLVType pstTLV, const char *stream, uint32_t index);
-uint32_t tlv_get_len(pstTLVType pstTLV, const char* stream, uint32_t index);
-uint32_t tlv_get_value(pstTLVType pstTLV, const char* stream, uint32_t index);
+	/** Function declarations */
+	uint32_t tlv_get_tag(pstTLVType pstTLV, const char *stream, uint32_t index);
+	uint32_t tlv_get_len(pstTLVType pstTLV, const char *stream, uint32_t index);
+	uint32_t tlv_get_value(pstTLVType pstTLV, const char *stream, uint32_t index);
 
 /** Compatibility with the cplusplus*/
 #ifdef __cplusplus

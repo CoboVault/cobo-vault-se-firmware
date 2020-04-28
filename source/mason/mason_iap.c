@@ -152,57 +152,56 @@ int mason_iap_write_page_safe(uint32_t addr, uint8_t buf[], uint32_t bufLen)
 emRetType mason_iap_pack_verify_process(emFwPackTypeType emFwPackType, uint8_t *pBin, uint32_t binLen)
 {
     emRetType emRet = ERT_OK;
-	static SHA256_CTX sha256ctx;
-	uint8_t *PckHash = NULL;
-    
+    static SHA256_CTX sha256ctx;
+    uint8_t *PckHash = NULL;
+
     switch (emFwPackType)
     {
-        case E_PACK_FIRST:
-        {
-            SHA256_init(&sha256ctx);
-        }
-        case E_PACK_CONTINUE:
-		case E_PACK_LAST:
-        {
-            SHA256_update(&sha256ctx, pBin, binLen);
-            break;
-        }
-		case E_PACK_HDR:
-		{
-			uint8_t bufSHA256[SHA256_LEN] = {0};
-			SHA256_final(bufSHA256, &sha256ctx);
+    case E_PACK_FIRST:
+    {
+        SHA256_init(&sha256ctx);
+    }
+    case E_PACK_CONTINUE:
+    case E_PACK_LAST:
+    {
+        SHA256_update(&sha256ctx, pBin, binLen);
+        break;
+    }
+    case E_PACK_HDR:
+    {
+        uint8_t bufSHA256[SHA256_LEN] = {0};
+        SHA256_final(bufSHA256, &sha256ctx);
 
-			PckHash = pBin + 32;
-			if ( memcmp(PckHash, bufSHA256, SHA256_LEN) )
+        PckHash = pBin + 32;
+        if (memcmp(PckHash, bufSHA256, SHA256_LEN))
+        {
+            emRet = ERT_IAP_fileDigest;
+        }
+
+        //k1 verify
+        if (ERT_OK == emRet)
+        {
+            uint8_t *Sign = pBin + 64;
+            uint8_t public_key[PUB_KEY_LEN] = {0};
+            if (ERT_OK == mason_storage_read((uint8_t *)public_key, PUB_KEY_LEN, FLASH_ADDR_WEB_AUTH_PUB_KEY_64B))
             {
-                emRet = ERT_IAP_fileDigest;
+                //hash again
+                sha256_api(PckHash, SHA256_LEN, bufSHA256);
+                if (!ecdsa_verify(CRYPTO_CURVE_SECP256K1, bufSHA256, public_key, Sign))
+                {
+                    emRet = ERT_IAP_fileDigest;
+                }
             }
-
-			//k1 verify
-			if(ERT_OK == emRet)
-			{
-				uint8_t *Sign = pBin + 64;                
-				uint8_t public_key[PUB_KEY_LEN] = {0};
-				if(ERT_OK == mason_storage_read((uint8_t *)public_key, PUB_KEY_LEN, FLASH_ADDR_WEB_AUTH_PUB_KEY_64B))
-				{
-					//hash again
-					sha256_api(PckHash,  SHA256_LEN, bufSHA256);				
-					if (!ecdsa_verify(CRYPTO_CURVE_SECP256K1, bufSHA256, public_key, Sign))
-					{	
-						emRet = ERT_IAP_fileDigest;
-					}
-				}
-				else
-				{
-					emRet = ERT_IAP_FAIL;
-				}
-			}
-            break;
-		}
-        default:
-            break;
+            else
+            {
+                emRet = ERT_IAP_FAIL;
+            }
+        }
+        break;
+    }
+    default:
+        break;
     }
 
     return emRet;
 }
-

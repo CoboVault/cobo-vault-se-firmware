@@ -35,21 +35,21 @@ BIP44_EXT bool bip44_str_to_hdpath(uint8_t *pStr, uint32_t strLen, stHDPathType 
 	uint32_t index = 0;
 	uint32_t count = 0;
 	uint8_t *pStrTmp = NULL;
-	
+
 	/*HDPath "m/2147483647'/2147483647'/2147483647'/2147483647'/2147483647'...*/
-	if ((NULL == pStr)|| (('m' != pStr[0]) && ('M' != pStr[0])) || (0 == strLen) || (strLen > 61))
+	if ((NULL == pStr) || (('m' != pStr[0]) && ('M' != pStr[0])) || (0 == strLen) || (strLen > 61))
 	{
 		return false;
 	}
-	
-	pStrTmp = (uint8_t*)calloc(strLen+1, sizeof(uint8_t));
+
+	pStrTmp = (uint8_t *)calloc(strLen + 1, sizeof(uint8_t));
 	if (NULL == pStrTmp)
 	{
 		return false;
 	}
 	memcpy(pStrTmp, pStr, strLen);
-	pStrTmp[strLen]  = '\0';
-	
+	pStrTmp[strLen] = '\0';
+
 	if ('m' == pStrTmp[0])
 	{
 		pstHDPath->verBytes = SF_VB_INT_MNET_PRV;
@@ -60,8 +60,8 @@ BIP44_EXT bool bip44_str_to_hdpath(uint8_t *pStr, uint32_t strLen, stHDPathType 
 	}
 	pstHDPath->depth = 0;
 	index++;
-	
-	while ((index < strLen) && (cSlash == pStrTmp[index++]))	// m/*********
+
+	while ((index < strLen) && (cSlash == pStrTmp[index++])) // m/*********
 	{
 		while (!isdigit(pStrTmp[index]))
 		{
@@ -75,9 +75,9 @@ BIP44_EXT bool bip44_str_to_hdpath(uint8_t *pStr, uint32_t strLen, stHDPathType 
 			}
 			return false;
 		}
-		pstHDPath->value[pstHDPath->depth] = myatoui((const char*)pStrTmp+index);
+		pstHDPath->value[pstHDPath->depth] = myatoui((const char *)pStrTmp + index);
 		count = 0;
-		while (isdigit(pStrTmp[index]))	/* non-digit should be skipped */
+		while (isdigit(pStrTmp[index])) /* non-digit should be skipped */
 		{
 			index++;
 			if (count++ > 10)
@@ -96,12 +96,12 @@ BIP44_EXT bool bip44_str_to_hdpath(uint8_t *pStr, uint32_t strLen, stHDPathType 
 		}
 		pstHDPath->depth++;
 	}
-	
+
 	if (NULL != pStrTmp)
 	{
 		free(pStrTmp);
 	}
-	
+
 	return true;
 }
 
@@ -111,16 +111,16 @@ BIP44_EXT bool bip44_str_to_hdpath(uint8_t *pStr, uint32_t strLen, stHDPathType 
 * @para:
 * @return:
 */
-void bip44_gen_key_fingerprint(uint8_t *pPubKeyC, 
-		uint8_t *pFingerPrint, uint8_t fingerPrintLen)
+void bip44_gen_key_fingerprint(uint8_t *pPubKeyC,
+							   uint8_t *pFingerPrint, uint8_t fingerPrintLen)
 {
 	uint8_t hash256[SHA256_LEN] = {0};
 	uint8_t RPMD160[RPMD160_LEN] = {0};
-	
+
 	sha256_api(pPubKeyC, 33, hash256);
-	
+
 	ripeMD160_api(hash256, SHA256_LEN, RPMD160);
-	
+
 	memcpy(pFingerPrint, RPMD160, fingerPrintLen);
 }
 
@@ -134,4 +134,3 @@ void bip44_gen_child_number(uint8_t *pChildNum, uint32_t u32ChildNum)
 {
 	u32_to_buff(u32ChildNum, pChildNum);
 }
-

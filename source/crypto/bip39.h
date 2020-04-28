@@ -22,7 +22,7 @@ in the file COPYING.  If not, see <http://www.gnu.org/licenses/>.
 #ifdef BIP39_GLOBAL
 #define BIP39_EXT
 #else
-#define BIP39_EXT	extern
+#define BIP39_EXT extern
 #endif
 
 /** Header file reference */
@@ -30,21 +30,21 @@ in the file COPYING.  If not, see <http://www.gnu.org/licenses/>.
 #include <stdlib.h>
 #include <stdint.h>
 #include <stdbool.h>
-#include <string.h>	//memcpy...
+#include <string.h> //memcpy...
 
 /** Compatibility with the cplusplus*/
 #ifdef __cplusplus
 extern "C"
 {
-#endif    /* __cplusplus */
+#endif /* __cplusplus */
 
 /** Macro definitions*/
-#define PASSPHRASE_PREFIX		("mnemonic")					//BIP39
+#define PASSPHRASE_PREFIX ("mnemonic") //BIP39
 
-/** Function declarations */
-void bip39_gen_seed_with_mnomonic(uint8_t *pMnemonic, uint32_t mnemonicLen, 
-		uint8_t *pPassphrase, uint32_t passphraseLen, 
-		uint8_t *pSeed, int32_t seedLen);
+	/** Function declarations */
+	void bip39_gen_seed_with_mnomonic(uint8_t *pMnemonic, uint32_t mnemonicLen,
+									  uint8_t *pPassphrase, uint32_t passphraseLen,
+									  uint8_t *pSeed, int32_t seedLen);
 
 /** Compatibility with the cplusplus*/
 #ifdef __cplusplus

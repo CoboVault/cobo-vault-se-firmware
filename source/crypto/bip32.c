@@ -117,8 +117,8 @@ void bip32_get_compressd_pubkey(uint8_t *pPriKey, uint8_t *pPubKeyC)
 	uint8_t *pPubC = pPubKeyC;
 	uint8_t bufPubKey[PUBKEY_LEN] = {0x00};
 
-	bip32_get_pubkey(pPri, bufPubKey, bufPubKey+32);
-	bip32_pubkey_compress(bufPubKey, bufPubKey+32, pPubC);
+	bip32_get_pubkey(pPri, bufPubKey, bufPubKey + 32);
+	bip32_pubkey_compress(bufPubKey, bufPubKey + 32, pPubC);
 
 	return;
 }
@@ -132,7 +132,7 @@ void bip32_get_compressd_pubkey(uint8_t *pPriKey, uint8_t *pPubKeyC)
 * @notice: BIP39's output is BIP32's input
 */
 void bip32_gen_root_seed(uint8_t *pSeed, uint32_t seedLen,
-						 uint8_t *pKey, uint32_t keyLen, 
+						 uint8_t *pKey, uint32_t keyLen,
 						 uint8_t *pRootSeed)
 {
 	uint8_t *pDefaultKey = (uint8_t *)"Bitcoin seed";
@@ -147,13 +147,13 @@ void bip32_gen_root_seed(uint8_t *pSeed, uint32_t seedLen,
 }
 
 /**
-* @functionname: 
+* @functionname: bip32_gen_master_key
 * @description: 
 * @para:
 * @return:
 */
 bool bip32_gen_master_key(uint8_t *pSeed, uint32_t seedLen,
-						  uint8_t *pKey, uint32_t keyLen, 
+						  uint8_t *pKey, uint32_t keyLen,
 						  uint8_t *pPrvKey, uint8_t *pChainCode)
 {
 	uint8_t bufRootSeed[64] = {0};

@@ -53,12 +53,12 @@ MASON_STORAGE_EXT emRetType mason_storage_read(uint8_t *pBuf, uint32_t bufLen, u
 	emRetType emRet = ERT_OK;
 	uint32_t addrTmp = addr;
 	uint32_t i = 0;
-	
-	for (i=0; i<bufLen; i++,addrTmp++)
+
+	for (i = 0; i < bufLen; i++, addrTmp++)
 	{
 		pBuf[i] = eflash_read_byte(addrTmp);
 	}
-		
+
 	return emRet;
 }
 /**
@@ -96,10 +96,10 @@ mason_storage_write_flag_safe(uint32_t addr, uint32_t u32Flag)
 {
 	eflash_rewrite_word(addr, u32Flag);
 
-    if (u32Flag != eflash_read_word(addr))
-    {
-        return ERT_StorageFail;
-    }
+	if (u32Flag != eflash_read_word(addr))
+	{
+		return ERT_StorageFail;
+	}
 
 	return ERT_OK;
 }

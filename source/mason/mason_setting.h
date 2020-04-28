@@ -24,10 +24,10 @@ in the file COPYING.  If not, see <http://www.gnu.org/licenses/>.
 #include <crypto_api.h>
 
 /** Macro definitions*/
-#define SETTING_STORE_PREFIX  "COBO"
-#define SETTING_STORE_PASS_SUFFIX  "PASS"
-#define SETTING_STORE_CONT_SUFFIX  "CONT"
-#define SETTING_STORE_FING_SUFFIX  "FING"
+#define SETTING_STORE_PREFIX "COBO"
+#define SETTING_STORE_PASS_SUFFIX "PASS"
+#define SETTING_STORE_CONT_SUFFIX "CONT"
+#define SETTING_STORE_FING_SUFFIX "FING"
 
 #define SETTING_COUNT_ERR_MAX 5
 // userpwd store have prefix and suffix
@@ -42,39 +42,39 @@ in the file COPYING.  If not, see <http://www.gnu.org/licenses/>.
 typedef struct usrpwd_s
 {
     uint32_t length;
-    uint8_t pwd[SETTING_USRPWD_LEN+SETTING_PRESUF_LEN];
-}usrpwd_t;
+    uint8_t pwd[SETTING_USRPWD_LEN + SETTING_PRESUF_LEN];
+} usrpwd_t;
 
 typedef struct usrcount_s
 {
-    uint8_t count[SETTING_COUNT_LEN+SETTING_PRESUF_LEN];
-}usrcount_t;
+    uint8_t count[SETTING_COUNT_LEN + SETTING_PRESUF_LEN];
+} usrcount_t;
 
 typedef struct usrfing_s
 {
     uint32_t length;
-    uint8_t fing[SETTING_USRFING_LEN+SETTING_PRESUF_LEN];
-}usrfing_t;
+    uint8_t fing[SETTING_USRFING_LEN + SETTING_PRESUF_LEN];
+} usrfing_t;
 
 typedef struct setting_message_s
 {
     uint32_t length;
     uint8_t message[SETTING_MESSAGE_LEN];
-}setting_message_t;
+} setting_message_t;
 
 typedef struct setting_token_s
 {
     uint32_t length;
     uint8_t token[SETTING_TOKEN_LEN];
-}setting_token_t;
+} setting_token_t;
 
 /** Function declarations */
-bool mason_usrpwd_verify(uint8_t *passwd , uint16_t passwd_len);
+bool mason_usrpwd_verify(uint8_t *passwd, uint16_t passwd_len);
 bool mason_usrpwd_store(uint8_t *passwd, uint16_t passwd_len);
 void mason_usrcount(void);
 bool mason_usrcount_reset(void);
 bool mason_usrfing_verify(uint8_t *sign, uint16_t sign_len);
-bool mason_usrfing_store(uint8_t *fing, uint16_t fing_len); 
+bool mason_usrfing_store(uint8_t *fing, uint16_t fing_len);
 
 bool mason_message_gen(void);
 setting_message_t *mason_message_get(void);
@@ -86,4 +86,3 @@ void mason_token_delete(void);
 void mason_setting_delete(void);
 
 #endif
-

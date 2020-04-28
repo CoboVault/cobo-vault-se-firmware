@@ -46,38 +46,36 @@ void mason_comm_handler(void)
 {
 	switch (gemCmdFSM)
 	{
-		case E_CMD_FSM_WAIT_CMD:
+	case E_CMD_FSM_WAIT_CMD:
+	{
+		gemCmdFSM = mason_command_handler();
+		break;
+	}
+	case E_CMD_FSM_MANAGE_CMD:
+	{
+		gemCmdFSM = mason_command_manager();
+		break;
+	}
+	case E_CMD_FSM_MANAGE_ERR:
+	{
+		gemCmdFSM = mason_command_manage_error();
+		break;
+	}
+	case E_CMD_FSM_IDLE:
+	{
+		if (!bIsOnSleeping)
 		{
-			gemCmdFSM = mason_command_handler();
-			break;
+			bIsOnSleeping = true;
+			timer_stop(TIMER1);
+			timer_set_ms(TIMER1, 100000, enter_sleep);
+			timer_start(TIMER1);
 		}
-		case E_CMD_FSM_MANAGE_CMD:
-		{
-			gemCmdFSM = mason_command_manager();
-			break;
-		}
-		case E_CMD_FSM_MANAGE_ERR:
-		{
-			gemCmdFSM = mason_command_manage_error();
-			break;
-		}
-		case E_CMD_FSM_IDLE:
-		{
-			if (!bIsOnSleeping)
-			{
-				bIsOnSleeping = true;
-				timer_stop(TIMER1);
-				timer_set_ms(TIMER1, 100000, enter_sleep);
-				timer_start(TIMER1);
-			}
-			gemCmdFSM = E_CMD_FSM_WAIT_CMD;
-			break;
-		}
-		default:
-		{
-			break;
-		}
+		gemCmdFSM = E_CMD_FSM_WAIT_CMD;
+		break;
+	}
+	default:
+	{
+		break;
+	}
 	}
 }
-
-

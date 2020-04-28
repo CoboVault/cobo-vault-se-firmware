@@ -22,7 +22,7 @@ in the file COPYING.  If not, see <http://www.gnu.org/licenses/>.
 #ifdef BIP32_GLOBAL
 #define BIP32_EXT
 #else
-#define BIP32_EXT	extern
+#define BIP32_EXT extern
 #endif
 
 /** Header file reference */
@@ -30,17 +30,17 @@ in the file COPYING.  If not, see <http://www.gnu.org/licenses/>.
 #include <stdlib.h>
 #include <stdint.h>
 #include <stdbool.h>
-#include <string.h>	//memcpy...
+#include <string.h> //memcpy...
 
 /** Compatibility with the cplusplus*/
 #ifdef __cplusplus
 extern "C"
 {
-#endif    /* __cplusplus */
+#endif /* __cplusplus */
 
 /** Macro definitions*/
-#define PRIKEY_LEN      32U
-#define PUBKEY_LEN      64U
+#define PRIKEY_LEN 32U
+#define PUBKEY_LEN 64U
 
 /** Compatibility with the cplusplus*/
 #ifdef __cplusplus

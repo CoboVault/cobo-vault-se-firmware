@@ -6,30 +6,30 @@
 #include <mason_util.h>
 
 const UINT32 SECP256K1_CURVE_LENGTH = 8;
-UINT32 SECP256K1_P[8] = { 0xFFFFFC2F, 0xFFFFFFFE, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF };
-UINT32 SECP256K1_a[8] = { 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000 };
-UINT32 SECP256K1_b[8] = { 0x00000007, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000 };
-UINT32 SECP256K1_N[8] = { 0xD0364141, 0xBFD25E8C, 0xAF48A03B, 0xBAAEDCE6, 0xFFFFFFFE, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF };
-UINT32 SECP256K1_G_BaseX[8] = { 0x16F81798, 0x59F2815B, 0x2DCE28D9, 0x029BFCDB, 0xCE870B07, 0x55A06295, 0xF9DCBBAC, 0x79BE667E };
-UINT32 SECP256K1_G_BaseY[8] = { 0xFB10D4B8, 0x9C47D08F, 0xA6855419, 0xFD17B448, 0x0E1108A8, 0x5DA4FBFC, 0x26A3C465, 0x483ADA77 };
+UINT32 SECP256K1_P[8] = {0xFFFFFC2F, 0xFFFFFFFE, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF};
+UINT32 SECP256K1_a[8] = {0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000};
+UINT32 SECP256K1_b[8] = {0x00000007, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000};
+UINT32 SECP256K1_N[8] = {0xD0364141, 0xBFD25E8C, 0xAF48A03B, 0xBAAEDCE6, 0xFFFFFFFE, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF};
+UINT32 SECP256K1_G_BaseX[8] = {0x16F81798, 0x59F2815B, 0x2DCE28D9, 0x029BFCDB, 0xCE870B07, 0x55A06295, 0xF9DCBBAC, 0x79BE667E};
+UINT32 SECP256K1_G_BaseY[8] = {0xFB10D4B8, 0x9C47D08F, 0xA6855419, 0xFD17B448, 0x0E1108A8, 0x5DA4FBFC, 0x26A3C465, 0x483ADA77};
 
 const UINT32 SECP256R1_CURVE_LENGTH = 8;
-UINT32 SECP256R1_P[8] = { 0xffffffff, 0xffffffff, 0xffffffff, 0x00000000, 0x00000000, 0x00000000, 0x00000001, 0xffffffff };
-UINT32 SECP256R1_a[8] = { 0xfffffffc, 0xffffffff, 0xffffffff, 0x00000000, 0x00000000, 0x00000000, 0x00000001, 0xffffffff };
-UINT32 SECP256R1_b[8] = { 0x27d2604b, 0x3bce3c3e, 0xcc53b0f6, 0x651d06b0, 0x769886bc, 0xb3ebbd55, 0xaa3a93e7, 0x5ac635d8 };
-UINT32 SECP256R1_N[8] = { 0xfc632551, 0xf3b9cac2, 0xa7179e84, 0xbce6faad, 0xffffffff, 0xffffffff, 0x00000000, 0xffffffff };
-UINT32 SECP256R1_G_BaseX[8] = { 0xd898c296, 0xf4a13945, 0x2deb33a0, 0x77037d81, 0x63a440f2, 0xf8bce6e5, 0xe12c4247, 0x6b17d1f2 };
-UINT32 SECP256R1_G_BaseY[8] = { 0x37bf51f5, 0xcbb64068, 0x6b315ece, 0x2bce3357, 0x7c0f9e16, 0x8ee7eb4a, 0xfe1a7f9b, 0x4fe342e2 };
+UINT32 SECP256R1_P[8] = {0xffffffff, 0xffffffff, 0xffffffff, 0x00000000, 0x00000000, 0x00000000, 0x00000001, 0xffffffff};
+UINT32 SECP256R1_a[8] = {0xfffffffc, 0xffffffff, 0xffffffff, 0x00000000, 0x00000000, 0x00000000, 0x00000001, 0xffffffff};
+UINT32 SECP256R1_b[8] = {0x27d2604b, 0x3bce3c3e, 0xcc53b0f6, 0x651d06b0, 0x769886bc, 0xb3ebbd55, 0xaa3a93e7, 0x5ac635d8};
+UINT32 SECP256R1_N[8] = {0xfc632551, 0xf3b9cac2, 0xa7179e84, 0xbce6faad, 0xffffffff, 0xffffffff, 0x00000000, 0xffffffff};
+UINT32 SECP256R1_G_BaseX[8] = {0xd898c296, 0xf4a13945, 0x2deb33a0, 0x77037d81, 0x63a440f2, 0xf8bce6e5, 0xe12c4247, 0x6b17d1f2};
+UINT32 SECP256R1_G_BaseY[8] = {0x37bf51f5, 0xcbb64068, 0x6b315ece, 0x2bce3357, 0x7c0f9e16, 0x8ee7eb4a, 0xfe1a7f9b, 0x4fe342e2};
 
 const UINT32 ED25519_CURVE_LENGTH = 8;
-UINT32 ED25519_P[8] = { 0xFFFFFFED, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0x7FFFFFFF };
-UINT32 ED25519_a[8] = { 0x4914A144, 0xAAAAAA98, 0xAAAAAAAA, 0xAAAAAAAA, 0xAAAAAAAA, 0xAAAAAAAA, 0xAAAAAAAA, 0x2AAAAAAA };
-UINT32 ED25519_b[8] = { 0x7710C864, 0x260B5E9C, 0x5ED097B4, 0xED097B42, 0xD097B425, 0x097B425E, 0x97B425ED, 0x7B425ED0 };
-UINT32 ED25519_N[8] = { 0x5CF5D3ED, 0x5812631A, 0xA2F79CD6, 0x14DEF9DE, 0x00000000, 0x00000000, 0x00000000, 0x10000000 };
+UINT32 ED25519_P[8] = {0xFFFFFFED, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0x7FFFFFFF};
+UINT32 ED25519_a[8] = {0x4914A144, 0xAAAAAA98, 0xAAAAAAAA, 0xAAAAAAAA, 0xAAAAAAAA, 0xAAAAAAAA, 0xAAAAAAAA, 0x2AAAAAAA};
+UINT32 ED25519_b[8] = {0x7710C864, 0x260B5E9C, 0x5ED097B4, 0xED097B42, 0xD097B425, 0x097B425E, 0x97B425ED, 0x7B425ED0};
+UINT32 ED25519_N[8] = {0x5CF5D3ED, 0x5812631A, 0xA2F79CD6, 0x14DEF9DE, 0x00000000, 0x00000000, 0x00000000, 0x10000000};
 // UINT32 ED25519_N[8] = { 0x10000000, 0x00000000, 0x00000000, 0x00000000, 0x14def9de, 0xa2f79cd6, 0x5812631a, 0x5cf5d3ed };
 //UINT32 ED25519_G_BaseX[8] = { 0xAAAD245A, 0xAAAAAAAA, 0xAAAAAAAA, 0xAAAAAAAA, 0xAAAAAAAA, 0xAAAAAAAA, 0xAAAAAAAA, 0x2AAAAAAA };
-UINT32 ED25519_G_BaseX[8] = { 0x00000008, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000 };
-UINT32 ED25519_G_BaseY[8] = { 0x7ECED3D9, 0x29E9C5A2, 0x6D7C61B2, 0x923D4D7E, 0x7748D14C, 0xE01EDD2C, 0xB8A086B4, 0x20AE19A1 };
+UINT32 ED25519_G_BaseX[8] = {0x00000008, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000};
+UINT32 ED25519_G_BaseY[8] = {0x7ECED3D9, 0x29E9C5A2, 0x6D7C61B2, 0x923D4D7E, 0x7748D14C, 0xE01EDD2C, 0xB8A086B4, 0x20AE19A1};
 
 static ECC_G_STR secp256k1_ecc_g_str;
 static MATH_G_STR secp256k1_math_g_str;
@@ -137,16 +137,16 @@ bool secp256k1_private_key_to_public_key(uint8_t *private_key, uint8_t *public_k
     uint32_t ecc_public_key_y[8] = {0};
 
     ecc_utils_buffer_to_ecc_array(private_key, ecc_private_key, 8);
-   
+
     enable_module(BIT_PKI);
     is_succeed = (0 == ECC_PM(
-        &secp256k1_ecc_g_str, 
-        // private_key,
-        ecc_private_key,
-        SECP256K1_G_BaseX,
-        SECP256K1_G_BaseY,
-        ecc_public_key_x,
-        ecc_public_key_y));
+                           &secp256k1_ecc_g_str,
+                           // private_key,
+                           ecc_private_key,
+                           SECP256K1_G_BaseX,
+                           SECP256K1_G_BaseY,
+                           ecc_public_key_x,
+                           ecc_public_key_y));
 
     ecc_utils_ecc_array_to_buffer(ecc_public_key_x, 8, public_key_x);
     ecc_utils_ecc_array_to_buffer(ecc_public_key_y, 8, public_key_y);
@@ -166,15 +166,15 @@ bool secp256r1_private_key_to_public_key(uint8_t *private_key, uint8_t *public_k
     uint32_t ecc_public_key_y[8] = {0};
 
     ecc_utils_buffer_to_ecc_array(private_key, ecc_private_key, 8);
-   
+
     enable_module(BIT_PKI);
     is_succeed = (0 == ECC_PM(
-        &secp256r1_ecc_g_str, 
-        ecc_private_key,
-        SECP256R1_G_BaseX,
-        SECP256R1_G_BaseY,
-        ecc_public_key_x,
-        ecc_public_key_y));
+                           &secp256r1_ecc_g_str,
+                           ecc_private_key,
+                           SECP256R1_G_BaseX,
+                           SECP256R1_G_BaseY,
+                           ecc_public_key_x,
+                           ecc_public_key_y));
 
     ecc_utils_ecc_array_to_buffer(ecc_public_key_x, 8, public_key_x);
     ecc_utils_ecc_array_to_buffer(ecc_public_key_y, 8, public_key_y);
@@ -194,16 +194,16 @@ bool ed25519_private_key_to_public_key(uint8_t *private_key, uint8_t *public_key
     uint32_t ecc_public_key_y[8] = {0};
 
     ecc_utils_buffer_to_ecc_array(private_key, ecc_private_key, 8);
-   
+
     enable_module(BIT_PKI);
     is_succeed = (0 == ECC_PM(
-        &ed25519_ecc_g_str, 
-        // private_key,
-        ecc_private_key,
-        ED25519_G_BaseX,
-        ED25519_G_BaseY,
-        ecc_public_key_x,
-        ecc_public_key_y));
+                           &ed25519_ecc_g_str,
+                           // private_key,
+                           ecc_private_key,
+                           ED25519_G_BaseX,
+                           ED25519_G_BaseY,
+                           ecc_public_key_x,
+                           ecc_public_key_y));
 
     ecc_utils_ecc_array_to_buffer(ecc_public_key_x, 8, public_key_x);
     ecc_utils_ecc_array_to_buffer(ecc_public_key_y, 8, public_key_y);
@@ -344,13 +344,13 @@ bool secp256k1_ecdsa_sign(
 
     enable_module(BIT_PKI);
     if (ECDSA_sign(
-        &secp256k1_ecc_g_str,
-        &secp256k1_math_g_str, 
-        ecc_hash,
-        ecc_key,
-        ecc_signature_r,
-        ecc_signature_s))
-	{
+            &secp256k1_ecc_g_str,
+            &secp256k1_math_g_str,
+            ecc_hash,
+            ecc_key,
+            ecc_signature_r,
+            ecc_signature_s))
+    {
         printf("SIGNED FAILED\n");
         return false;
     }
@@ -385,13 +385,13 @@ bool secp256k1_ecdsa_verify(
 
     enable_module(BIT_PKI);
     return 0 == ECDSA_verify(
-        &secp256k1_ecc_g_str,
-        &secp256k1_math_g_str, 
-        ecc_hash,
-        ecc_public_key_x,
-        ecc_public_key_y,
-        ecc_signature_r,
-        ecc_signature_s);
+                    &secp256k1_ecc_g_str,
+                    &secp256k1_math_g_str,
+                    ecc_hash,
+                    ecc_public_key_x,
+                    ecc_public_key_y,
+                    ecc_signature_r,
+                    ecc_signature_s);
 }
 /**
  * @functionname: secp256r1_ecdsa_sign
@@ -418,13 +418,13 @@ bool secp256r1_ecdsa_sign(
 
     enable_module(BIT_PKI);
     if (ECDSA_sign(
-        &secp256r1_ecc_g_str,
-        &secp256r1_math_g_str, 
-        ecc_hash,
-        ecc_key,
-        ecc_signature_r,
-        ecc_signature_s))
-	{
+            &secp256r1_ecc_g_str,
+            &secp256r1_math_g_str,
+            ecc_hash,
+            ecc_key,
+            ecc_signature_r,
+            ecc_signature_s))
+    {
         printf("SIGNED FAILED\n");
         return false;
     }
@@ -459,11 +459,11 @@ bool secp256r1_ecdsa_verify(
 
     enable_module(BIT_PKI);
     return 0 == ECDSA_verify(
-        &secp256r1_ecc_g_str,
-        &secp256r1_math_g_str, 
-        ecc_hash,
-        ecc_public_key_x,
-        ecc_public_key_y,
-        ecc_signature_r,
-        ecc_signature_s);
+                    &secp256r1_ecc_g_str,
+                    &secp256r1_math_g_str,
+                    ecc_hash,
+                    ecc_public_key_x,
+                    ecc_public_key_y,
+                    ecc_signature_r,
+                    ecc_signature_s);
 }

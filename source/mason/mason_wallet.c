@@ -109,10 +109,10 @@ bool mason_create_wallet(uint8_t *mnemonic, uint16_t mnemonic_len)
     mnemonic_t mnemonic_data;
     bool is_succeed = false;
 
-    if((0 == mnemonic_len) || (mnemonic_len > MAX_MNEMONIC_SIZE))
+    if ((0 == mnemonic_len) || (mnemonic_len > MAX_MNEMONIC_SIZE))
     {
         return false;
-	}
+    }
 
     mnemonic_data.size = mnemonic_len;
     memcpy(mnemonic_data.data, mnemonic, mnemonic_len);
@@ -192,10 +192,10 @@ bool mason_change_wallet_passphrase(uint8_t *passphrase, uint16_t passphrase_len
 {
     mnemonic_t mnemonic;
 
-    if(passphrase_len > MAX_PASSPHRASE_SIZE)
+    if (passphrase_len > MAX_PASSPHRASE_SIZE)
     {
         return false;
-	}
+    }
 
     if (!mason_mnemonic_read(&mnemonic))
     {
@@ -312,12 +312,12 @@ bool mason_parse_wallet_path_from_string(char *string, uint16_t len, wallet_path
     stHDPathType hd_path;
     bool is_succeed = false;
     int i = 0;
-	
-	if(len > (MAX_HDPATH_SIZE+1))
+
+    if (len > (MAX_HDPATH_SIZE + 1))
     {
         return false;
-	}
-	
+    }
+
     is_succeed = bip44_str_to_hdpath((uint8_t *)string, len, &hd_path);
 
     if (!is_succeed)
@@ -496,10 +496,10 @@ bool mason_bip32_derive_keys(
     {
         return false;
     }
-/*
+    /*
     debug_key("MASTER_PRIVATE_KEY", parent_private_key.data, PRIVATE_KEY_LEN);
     debug_key("MASTER_CHAINCODE", parent_chaincode.data, CHAINCODE_LEN);
-*/
+    */
 
     for (i = 0; i < wallet_path->num_of_segments; i++)
     {
@@ -512,16 +512,16 @@ bool mason_bip32_derive_keys(
             &child_private_key,
             &child_chaincode);
 
-		private_key_to_public_key(curve, &child_private_key, &child_public_key);
+        private_key_to_public_key(curve, &child_private_key, &child_public_key);
         parent_private_key = child_private_key;
         parent_chaincode = child_chaincode;
-    /*
+        /*
         printf("Derived %d ------\n", i);
         debug_key("PRIVATE_KEY", child_private_key.data, PRIVATE_KEY_LEN);
         debug_key("CHAINCODE", child_chaincode.data, CHAINCODE_LEN);
         debug_key("DERIVED_PUBLIC_KEY", child_public_key.data, PUBLIC_KEY_LEN);
         debug_key("Fingerprint", fingerprint, 4);
-    */
+        */
     }
 
     *private_key = child_private_key;
@@ -534,7 +534,7 @@ bool mason_bip32_derive_keys(
     memcpy(extended_key->chaincode, chaincode, CHAINCODE_LEN);
     if (wallet_path->version == KEY_VERSION_MAINNET_PUBLIC 
      || wallet_path->version == KEY_VERSION_TESTNET_PUBLIC)
-	{
+    {
         private_key_to_compressed_public_key(curve, &child_private_key, &child_compressed_public_key);
         memcpy(extended_key->key, child_compressed_public_key.data, COMPRESSED_PUBLIC_KEY_LEN);
     }

@@ -30,9 +30,9 @@ in the file COPYING.  If not, see <http://www.gnu.org/licenses/>.
 void dump_data(char *pTitle, uint8_t *pBuf, uint32_t bufLen)
 {
 	uint32_t i = 0;
-	
+
 	printf("[%d]%s", bufLen, pTitle);
-	for (i=0; i<bufLen; i++)
+	for (i = 0; i < bufLen; i++)
 	{
 		printf("%02X", pBuf[i]);
 	}
@@ -47,12 +47,11 @@ void dump_data(char *pTitle, uint8_t *pBuf, uint32_t bufLen)
 void dump_data_printable(char *pTitle, uint8_t *pBuf, uint32_t bufLen)
 {
 	uint32_t i = 0;
-	
+
 	printf("[%d]%s", bufLen, pTitle);
-	for (i=0; i<bufLen; i++)
+	for (i = 0; i < bufLen; i++)
 	{
 		printf("%c", pBuf[i]);
 	}
 	printf("\r\n");
 }
-

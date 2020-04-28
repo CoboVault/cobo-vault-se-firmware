@@ -76,7 +76,6 @@ typedef struct extended_key_s
     uint8_t checksum[4];
 } __attribute__((packed)) extended_key_t;
 
-
 /** Function declarations */
 bool ckd_private_to_public(
     private_key_t *parent_private_key,

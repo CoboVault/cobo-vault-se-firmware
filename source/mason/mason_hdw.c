@@ -26,12 +26,12 @@ in the file COPYING.  If not, see <http://www.gnu.org/licenses/>.
 STONE_HDW_EXT volatile emHDWStatusType gemHDWStatus = E_HDWS_CHIP;
 
 STONE_HDW_EXT const volatile stHDWStatusType gstHDWStatus[] =
-{
-	{E_HDWS_CHIP, "\xFF\xFF\xFF\xFF"},
-	{E_HDWS_FACTORY, "FATY"},
-	{E_HDWS_ATTACK, "ATAK"},
-	{E_HDWS_EMPTY, "COBO"},
-	{E_HDWS_WALLET, "WLET"},
+	{
+		{E_HDWS_CHIP, "\xFF\xFF\xFF\xFF"},
+		{E_HDWS_FACTORY, "FATY"},
+		{E_HDWS_ATTACK, "ATAK"},
+		{E_HDWS_EMPTY, "COBO"},
+		{E_HDWS_WALLET, "WLET"},
 };
 STONE_HDW_EXT volatile uint8_t gDebugSwitchOn = 0;
 
@@ -46,7 +46,6 @@ STONE_HDW_EXT emRetType mason_HDW_set_status(const volatile stHDWStatusType stHD
 {
 	emRetType emRet = ERT_OK;
 
-	
 	return emRet;
 }
 /**
@@ -57,7 +56,7 @@ STONE_HDW_EXT emRetType mason_HDW_set_status(const volatile stHDWStatusType stHD
  */
 bool mason_get_mode(volatile stHDWStatusType *status)
 {
-	mason_storage_read((uint8_t *) status, sizeof(stHDWStatusType), FLASH_ADDR_CHIP_MODE_WITH_CHECKSUM_12B);
+	mason_storage_read((uint8_t *)status, sizeof(stHDWStatusType), FLASH_ADDR_CHIP_MODE_WITH_CHECKSUM_12B);
 
 	if (status->emHDWStatus != E_HDWS_ATTACK
 		&& status->emHDWStatus != E_HDWS_BOOT
@@ -93,7 +92,7 @@ void mason_HDW_gen_sha256(uint8_t *pText, uint32_t textLen, uint8_t *pCheckSum, 
 	UINT8 bufSHA256[SHA256_LEN] = {0};
 
 	SHA256_hash(pText, textLen, bufSHA256);
-	
+
 	if (checkSumLen > SHA256_LEN)
 	{
 		checkSumLen = SHA256_LEN;
@@ -110,15 +109,15 @@ void mason_HDW_gen_sha256(uint8_t *pText, uint32_t textLen, uint8_t *pCheckSum, 
 bool mason_HDW_check_sha256(uint8_t *pText, uint32_t textLen, uint8_t *pCheckSum)
 {
 	uint8_t bufCheckSum[CHECKSUM_LEN];
-	
+
 	mason_HDW_gen_sha256(pText, textLen, bufCheckSum, CHECKSUM_LEN);
-	
+
 	if (0 != memcmp(pCheckSum, bufCheckSum, CHECKSUM_LEN))
 	{
 		memcpy(pCheckSum, bufCheckSum, CHECKSUM_LEN);
 		return false;
 	}
-	
+
 	return true;
 }
 
@@ -128,14 +127,14 @@ bool mason_HDW_check_sha256(uint8_t *pText, uint32_t textLen, uint8_t *pCheckSum
 * @para:
 * @return:
 */
-void mason_HDW_gen_sha256sha256(uint8_t *pText, uint32_t textLen, 
-		uint8_t *pCheckSum, uint8_t checkSumLen)
+void mason_HDW_gen_sha256sha256(uint8_t *pText, uint32_t textLen,
+								uint8_t *pCheckSum, uint8_t checkSumLen)
 {
 	UINT8 bufSHA256[SHA256_LEN] = {0};
 
 	SHA256_hash(pText, textLen, bufSHA256);
 	SHA256_hash(bufSHA256, SHA256_LEN, bufSHA256);
-	
+
 	if (checkSumLen > SHA256_LEN)
 	{
 		checkSumLen = SHA256_LEN;
@@ -152,15 +151,14 @@ void mason_HDW_gen_sha256sha256(uint8_t *pText, uint32_t textLen,
 bool mason_HDW_check_sha256sha256(uint8_t *pText, uint32_t textLen, uint8_t *pCheckSum)
 {
 	uint8_t bufCheckSum[CHECKSUM_LEN];
-	
+
 	mason_HDW_gen_sha256sha256(pText, textLen, bufCheckSum, CHECKSUM_LEN);
-	
+
 	if (0 != memcmp(pCheckSum, bufCheckSum, CHECKSUM_LEN))
 	{
 		memcpy(pCheckSum, bufCheckSum, CHECKSUM_LEN);
 		return false;
 	}
-	
+
 	return true;
 }
-

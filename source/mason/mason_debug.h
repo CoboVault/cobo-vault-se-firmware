@@ -19,10 +19,10 @@ in the file COPYING.  If not, see <http://www.gnu.org/licenses/>.
 #define STONE_DEBUG_H
 
 /** Avoid duplicate definitions */
-#ifdef  STONE_DEBUG_GLOBAL
+#ifdef STONE_DEBUG_GLOBAL
 #define STONE_DEBUG_EXT
 #else
-#define STONE_DEBUG_EXT	extern
+#define STONE_DEBUG_EXT extern
 #endif
 
 /** Header file reference */
@@ -30,18 +30,18 @@ in the file COPYING.  If not, see <http://www.gnu.org/licenses/>.
 #include <stdlib.h>
 #include <stdint.h>
 #include <stdbool.h>
-#include <string.h>	//memcpy...
+#include <string.h> //memcpy...
 #include "mason_errno.h"
 
 /** Compatibility with the cplusplus*/
 #ifdef __cplusplus
 extern "C"
 {
-#endif    /* __cplusplus */
+#endif /* __cplusplus */
 
-/** Function declarations */
-void dump_data(char *pTitle, uint8_t *pBuf, uint32_t bufLen);
-void dump_data_printable(char *pTitle, uint8_t *pBuf, uint32_t bufLen);
+    /** Function declarations */
+    void dump_data(char *pTitle, uint8_t *pBuf, uint32_t bufLen);
+    void dump_data_printable(char *pTitle, uint8_t *pBuf, uint32_t bufLen);
 
 /** Compatibility with the cplusplus*/
 #ifdef __cplusplus

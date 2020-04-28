@@ -40,41 +40,41 @@ extern "C"
 #endif /* __cplusplus */
 
 /** Macro definitions*/
-#define QUEUE_SIZE      10
+#define QUEUE_SIZE 10
 
-// #define QUEUE_LOG_ENABLE
+	// #define QUEUE_LOG_ENABLE
 
 #ifdef QUEUE_LOG_ENABLE
 #define QUEUE_LOG(...) \
-printf(__VA_ARGS__)
+	printf(__VA_ARGS__)
 #else
 #define QUEUE_LOG(...)
 #endif
 
-/** Variable declarations */
-typedef pstCMDType queueElementType;
+	/** Variable declarations */
+	typedef pstCMDType queueElementType;
 
-typedef struct
-{
-	volatile queueElementType queue[QUEUE_SIZE];
-	volatile uint32_t head, tail, size;
-}stQueueType, *pstQueueType;
-QUEUE_EXT stQueueType stQueue;
+	typedef struct
+	{
+		volatile queueElementType queue[QUEUE_SIZE];
+		volatile uint32_t head, tail, size;
+	} stQueueType, *pstQueueType;
+	QUEUE_EXT stQueueType stQueue;
 
-/** Function declarations */
-typedef void (*display_element_callback)(void*);
-QUEUE_EXT void queue_init(volatile stQueueType* pstQueue);
-QUEUE_EXT uint32_t queue_size(volatile stQueueType* pstQueue);
-QUEUE_EXT int queue_is_empty(volatile stQueueType* pstQueue);
-QUEUE_EXT int queue_is_full(volatile stQueueType* pstQueue);
-QUEUE_EXT void enqueue_overwrite(volatile stQueueType* pstQueue, queueElementType element);
-QUEUE_EXT void enqueue_safe(volatile stQueueType* pstQueue, queueElementType element);
-QUEUE_EXT queueElementType dequeue(volatile stQueueType* pstQueue);
-QUEUE_EXT void queue_display(volatile stQueueType* pstQueue, display_element_callback cb);
-QUEUE_EXT void queue_display_detail(volatile stQueueType* pstQueue, display_element_callback cb);
-QUEUE_EXT void queue_display_detail_by_order(volatile stQueueType* pstQueue, display_element_callback cb);
+	/** Function declarations */
+	typedef void (*display_element_callback)(void *);
+	QUEUE_EXT void queue_init(volatile stQueueType *pstQueue);
+	QUEUE_EXT uint32_t queue_size(volatile stQueueType *pstQueue);
+	QUEUE_EXT int queue_is_empty(volatile stQueueType *pstQueue);
+	QUEUE_EXT int queue_is_full(volatile stQueueType *pstQueue);
+	QUEUE_EXT void enqueue_overwrite(volatile stQueueType *pstQueue, queueElementType element);
+	QUEUE_EXT void enqueue_safe(volatile stQueueType *pstQueue, queueElementType element);
+	QUEUE_EXT queueElementType dequeue(volatile stQueueType *pstQueue);
+	QUEUE_EXT void queue_display(volatile stQueueType *pstQueue, display_element_callback cb);
+	QUEUE_EXT void queue_display_detail(volatile stQueueType *pstQueue, display_element_callback cb);
+	QUEUE_EXT void queue_display_detail_by_order(volatile stQueueType *pstQueue, display_element_callback cb);
 
-QUEUE_EXT void display_element(queueElementType* pElement);
+	QUEUE_EXT void display_element(queueElementType *pElement);
 
 /** Compatibility with the cplusplus*/
 #ifdef __cplusplus

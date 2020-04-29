@@ -47,7 +47,7 @@ QUEUE_EXT void queue_init(volatile stQueueType *pstQueue)
  */
 QUEUE_EXT uint32_t queue_size(volatile stQueueType *pstQueue)
 {
-	QUEUE_LOG("Queue size = %d\r\n", pstQueue->size);
+	QUEUE_LOG("Queue size = %u\r\n", pstQueue->size);
 	return (pstQueue->size);
 }
 /**
@@ -162,7 +162,7 @@ QUEUE_EXT void queue_display(volatile stQueueType *pstQueue, display_element_cal
 	uint32_t count = 0;
 
 	QUEUE_LOG("Queue display:\r\n");
-	printf("[%5d] ", pstQueue->size);
+	printf("[%5u] ", pstQueue->size);
 	while (count++ < pstQueue->size)
 	{
 		cb((void *)&(pstQueue->queue[index++ % QUEUE_SIZE]));
@@ -182,8 +182,8 @@ QUEUE_EXT void queue_display_detail(volatile stQueueType *pstQueue, display_elem
 	uint32_t count = 0;
 
 	QUEUE_LOG("Queue display detail:\r\n");
-	printf("head = %d, tail = %d\r\n", pstQueue->head, pstQueue->tail);
-	printf("[%6d]", pstQueue->size);
+	printf("head = %u, tail = %u\r\n", pstQueue->head, pstQueue->tail);
+	printf("[%6u]", pstQueue->size);
 	while (count++ < pstQueue->size)
 	{
 		cb((void *)&(pstQueue->queue[index++ % QUEUE_SIZE]));

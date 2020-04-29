@@ -31,15 +31,6 @@ in the file COPYING.  If not, see <http://www.gnu.org/licenses/>.
  */
 MASON_STORAGE_EXT emRetType mason_storage_encryption(uint8_t nType, uint8_t *pIn, uint16_t len, uint8_t *pOut)
 {
-	uint8_t bufTransKey[24] = {0};
-	uint8_t bufTransIV[8] = {0};
-
-	des_set_key_u8(DES_TRIPLE_KEY, bufTransKey, DES_SWAP_ENABLE);
-	if (DES_FAIL == des_crypt_u8(pIn, pOut, len >> 3, nType, DES_MODE_CBC, bufTransIV, DES_NORMAL_MODE))
-	{
-		return ERT_3DESFail;
-	}
-
 	return ERT_OK;
 }
 /**

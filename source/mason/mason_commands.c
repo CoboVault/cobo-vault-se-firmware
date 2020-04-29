@@ -157,7 +157,7 @@ MASON_COMMANDS_EXT volatile stCmdHandlerType gstCmdHandlers[CMD_H_MAX][CMD_L_MAX
 		 },
 		 {
 		     USER_ALL,
-		     mason_cmd_invalid
+		     mason_cmd_invalid,
 		 },
 		 {
 			 USER_WALLET,

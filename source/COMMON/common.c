@@ -81,12 +81,12 @@ void reverse_DWORD(UINT32 *var)
 
 void reverse_memory(UINT8 *buff, UINT32 length)
 {
-    UINT8 temp;
     UINT8 *buff_start = buff;
     UINT8 *buff_end = buff + length - 1;
 
     while(buff_end > buff_start)
     {
+        UINT8 temp;
         temp = *buff_start;
         *buff_start++ = *buff_end;
         *buff_end-- = temp;

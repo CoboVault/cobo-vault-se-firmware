@@ -64,13 +64,13 @@ void u32_to_buff(uint32_t u32, uint8_t *buf)
 unsigned int myatoui(const char *str)
 {
 	unsigned int n = 0;
-	int c;
 
 	while (!isdigit(*str))
 		++str;
 
 	while (isdigit(*str))
 	{
+		int c;
 		c = *str - '0';
 		/* compare with n and MAX/10 , if n>MAX/10 (also consider of n=MAX/10) , data will overflow */
 		if ((n > UINT_MAX / 10) || ((n == UINT_MAX / 10) && (c >= UINT_MAX % 10)))
@@ -188,8 +188,6 @@ bool is_canonical(uint8_t signature[64])
  */
 bool ecdsa_sign_once(crypto_curve_t curve, uint8_t *hash, uint16_t hash_len, uint8_t *private_key, uint8_t *signature, uint16_t *signature_len)
 {
-	uint8_t fake_private_key[64];
-	uint8_t public_key[32];
 	switch (curve)
 	{
 	case CRYPTO_CURVE_SECP256K1:
@@ -212,6 +210,8 @@ bool ecdsa_sign_once(crypto_curve_t curve, uint8_t *hash, uint16_t hash_len, uin
 	}
 	case CRYPTO_CURVE_ED25519:
 	{
+		uint8_t fake_private_key[64];
+		uint8_t public_key[32];
 		*signature_len = 64;
 		enable_module(BIT_PKI);
 		ed25519_create_keypair(public_key, fake_private_key, private_key);

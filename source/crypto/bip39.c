@@ -41,7 +41,7 @@ void PBKDF2_HMAC_SHA512(uint8_t *pPassword, uint32_t passwordLen,
 						uint8_t *pSalt, uint32_t saltLen,
 						uint32_t iterC, uint8_t *pOut, int32_t outLen)
 {
-	uint32_t i = 0, j = 0;
+	uint32_t i, j;
 	uint8_t *pKey = pPassword;
 	uint32_t keyLen = passwordLen;
 	char *pPassphrase_prefix = PASSPHRASE_PREFIX;

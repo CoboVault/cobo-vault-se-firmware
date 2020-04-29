@@ -626,7 +626,7 @@ emRetType mason_cmd_preprocess(pstCMDType pstCMD)
 
 	if (pstC->unFlag.stFlag.enc)
 	{
-		emRet = mason_storage_encryption(DES_DECRYPTION, pstC->pV, pstC->len, pstC->pV);
+		emRet = mason_storage_encryption(0, pstC->pV, pstC->len, pstC->pV);
 		pstC->len -= pstC->pV[pstC->len - 1];
 	}
 
@@ -767,7 +767,7 @@ void mason_cmd_end_outputTLVArray(pstStackType pstStack, emEncryptType eEnc)
 	{
 		strSend[1] |= 0x01;
 		data_padding(strSend + 4, &tlvLen, PKCS5);
-		mason_storage_encryption(DES_ENCRYPTION, strSend + 4, bodyLen, strSend + 4);
+		mason_storage_encryption(0, strSend + 4, bodyLen, strSend + 4);
 	}
 
 	strSend[bodyLen + 4] = PROT_ETX;

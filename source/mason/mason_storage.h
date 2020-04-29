@@ -30,8 +30,7 @@ in the file COPYING.  If not, see <http://www.gnu.org/licenses/>.
 #include <stdlib.h>
 #include <stdint.h>
 #include <stdbool.h>
-#include <string.h> //memcpy...
-#include "des.h"
+#include <string.h>
 #include "mason_errno.h"
 #include "mason_flash_partition.h"
 

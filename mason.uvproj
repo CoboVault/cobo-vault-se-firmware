@@ -426,11 +426,6 @@
               <FilePath>.\source\driver\eflash.c</FilePath>
             </File>
             <File>
-              <FileName>des_v1.lib</FileName>
-              <FileType>4</FileType>
-              <FilePath>.\source\driver\des_v1.lib</FilePath>
-            </File>
-            <File>
               <FileName>ecdsa_v1.lib</FileName>
               <FileType>4</FileType>
               <FilePath>.\source\driver\ecdsa_v1.lib</FilePath>
@@ -446,34 +441,9 @@
               <FilePath>.\source\driver\hrng_v1.lib</FilePath>
             </File>
             <File>
-              <FileName>pki_v1.lib</FileName>
-              <FileType>4</FileType>
-              <FilePath>.\source\driver\pki_v1.lib</FilePath>
-            </File>
-            <File>
-              <FileName>rsa_v1.lib</FileName>
-              <FileType>4</FileType>
-              <FilePath>.\source\driver\rsa_v1.lib</FilePath>
-            </File>
-            <File>
-              <FileName>sha1_v1.lib</FileName>
-              <FileType>4</FileType>
-              <FilePath>.\source\driver\sha1_v1.lib</FilePath>
-            </File>
-            <File>
               <FileName>sha256_v1.lib</FileName>
               <FileType>4</FileType>
               <FilePath>.\source\driver\sha256_v1.lib</FilePath>
-            </File>
-            <File>
-              <FileName>sha384_512_v1.lib</FileName>
-              <FileType>4</FileType>
-              <FilePath>.\source\driver\sha384_512_v1.lib</FilePath>
-            </File>
-            <File>
-              <FileName>sm1_v1.lib</FileName>
-              <FileType>4</FileType>
-              <FilePath>.\source\driver\sm1_v1.lib</FilePath>
             </File>
             <File>
               <FileName>sm2sm3_v1.lib</FileName>
@@ -481,9 +451,24 @@
               <FilePath>.\source\driver\sm2sm3_v1.lib</FilePath>
             </File>
             <File>
-              <FileName>sm4_v1.lib</FileName>
+              <FileName>sha384_512_v1.lib</FileName>
               <FileType>4</FileType>
-              <FilePath>.\source\driver\sm4_v1.lib</FilePath>
+              <FilePath>.\source\driver\sha384_512_v1.lib</FilePath>
+            </File>
+            <File>
+              <FileName>sha1_v1.lib</FileName>
+              <FileType>4</FileType>
+              <FilePath>.\source\driver\sha1_v1.lib</FilePath>
+            </File>
+            <File>
+              <FileName>rsa_v1.lib</FileName>
+              <FileType>4</FileType>
+              <FilePath>.\source\driver\rsa_v1.lib</FilePath>
+            </File>
+            <File>
+              <FileName>pki_v1.lib</FileName>
+              <FileType>4</FileType>
+              <FilePath>.\source\driver\pki_v1.lib</FilePath>
             </File>
           </Files>
         </Group>

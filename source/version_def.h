@@ -39,11 +39,11 @@ extern "C"
 #endif /* __cplusplus */
 
 /** Macro definitions*/
-#define VER_Major 0
-#define VER_Minor 3
-#define VER_Release 5
-#define VER_Build 00001
-#if VER_Major > 0x9 || VER_Minor > 0x9 || VER_Release > 0x9 || VER_Build > 0x0FFFFF
+#define VER_Major			0
+#define VER_Minor			3
+#define VER_Release			5
+#define VER_Build			00001
+#if VER_Major>0x9 || VER_Minor>0x9 || VER_Release>0x9 || VER_Build>0x0FFFFF
 #if defined _WIN32 || _WIN64
 #pragma message("VERSION define error, please check!")
 #else

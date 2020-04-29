@@ -52,7 +52,7 @@ in the file COPYING.  If not, see <http://www.gnu.org/licenses/>.
 #define _MIN(a, b) ((a) < (b) ? (a) : (b))
 #define _MAX(a, b) ((a) > (b) ? (a) : (b))
 #define _EXCHANGE(a,b) { int t; t=(a); (a)=(b); (b)=t; }
-#define _SWAP(a,b)  { if((a)==(b))return;(a)^=(b);(b)^=(a);(a)^=(b); }
+#define _SWAP(a,b) { if((a)==(b))return;(a)^=(b);(b)^=(a);(a)^=(b); }
 #define _ToLower(c) ((c) + 32)
 #define _ToUpper(c) ((c)-32)
 

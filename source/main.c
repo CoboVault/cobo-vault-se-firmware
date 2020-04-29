@@ -324,7 +324,6 @@ int main(void)
 
 	crypto_init();
 
-	//mason_api_test();
 	printfS("App startup.\r\n");
 
 	while (1)

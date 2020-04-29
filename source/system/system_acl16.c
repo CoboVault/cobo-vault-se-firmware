@@ -44,7 +44,7 @@ void clock_init(uint32_t system_clk_mhz)
 
     SystemCoreClock = SRCClock / div;
     PClock = SystemCoreClock;
-    //set EFC RD_WAIT (ÖÁÉÙ50ns)
+    //set EFC RD_WAIT (at least 50ns)
     if (SystemCoreClock >= 30000000) wait_value = 1;
     else                             wait_value = 0;
 

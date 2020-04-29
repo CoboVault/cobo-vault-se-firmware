@@ -41,31 +41,31 @@ extern "C"
 #endif /* __cplusplus */
 
 /** Macro definitions*/
-#define PRV_KEY_LEN									32
-#define PUB_KEY_LEN									64
-#define SHA256_LEN									32
-#define SHA512_LEN									64
-#define RPMD160_LEN									20
-#define HASH_LEN									SHA256_LEN
-#define MD5_LEN										16
-#define SIG_LEN										64
-#define CHECKSUM_LEN								4
-#define SEED_LEN									SHA512_LEN
-#define DES3_KEY_LEN								24
-#define DES3_IV_LEN									8
+#define PRV_KEY_LEN 32
+#define PUB_KEY_LEN 64
+#define SHA256_LEN 32
+#define SHA512_LEN 64
+#define RPMD160_LEN 20
+#define HASH_LEN SHA256_LEN
+#define MD5_LEN 16
+#define SIG_LEN 64
+#define CHECKSUM_LEN 4
+#define SEED_LEN SHA512_LEN
+#define DES3_KEY_LEN 24
+#define DES3_IV_LEN 8
 
 /* macro below mapped to gstHDWStatus value*/
-#define HDW_STATUS_CHIP					0
-#define HDW_STATUS_FACTORY				1
-#define HDW_STATUS_ATTACK				2
-#define HDW_STATUS_EMPTY				3
-#define HDW_STATUS_WALLET				4
-#define HDW_STATUS_MAX				    5
-#define HDW_STATUS_SYMBOL_CHIP			(uint8_t*)("\xFF\xFF\xFF\xFF")
-#define HDW_STATUS_SYMBOL_FACTORY		(uint8_t*)("FATY")
-#define HDW_STATUS_SYMBOL_ATTACK		(uint8_t*)("ATAK")
-#define HDW_STATUS_SYMBOL_EMPTY			(uint8_t*)("COBO")
-#define HDW_STATUS_SYMBOL_WALLET		(uint8_t*)("WLET")
+#define HDW_STATUS_CHIP 0
+#define HDW_STATUS_FACTORY 1
+#define HDW_STATUS_ATTACK 2
+#define HDW_STATUS_EMPTY 3
+#define HDW_STATUS_WALLET 4
+#define HDW_STATUS_MAX 5
+#define HDW_STATUS_SYMBOL_CHIP (uint8_t *)("\xFF\xFF\xFF\xFF")
+#define HDW_STATUS_SYMBOL_FACTORY (uint8_t *)("FATY")
+#define HDW_STATUS_SYMBOL_ATTACK (uint8_t *)("ATAK")
+#define HDW_STATUS_SYMBOL_EMPTY (uint8_t *)("COBO")
+#define HDW_STATUS_SYMBOL_WALLET (uint8_t *)("WLET")
 #define HDW_STATUS_SYMBOL_
 
 	/** Variable definitions */

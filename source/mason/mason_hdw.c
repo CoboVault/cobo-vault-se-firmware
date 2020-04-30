@@ -59,10 +59,10 @@ bool mason_get_mode(volatile stHDWStatusType *status)
 	mason_storage_read((uint8_t *)status, sizeof(stHDWStatusType), FLASH_ADDR_CHIP_MODE_WITH_CHECKSUM_12B);
 
 	if (status->emHDWStatus != E_HDWS_ATTACK
-		&& status->emHDWStatus != E_HDWS_BOOT
 		&& status->emHDWStatus != E_HDWS_EMPTY
 		&& status->emHDWStatus != E_HDWS_WALLET
-		&& status->emHDWStatus != E_HDWS_CHIP)
+		&& status->emHDWStatus != E_HDWS_CHIP
+		&& status->emHDWStatus != E_HDWS_FACTORY)
 	{
 		*status = gstHDWStatus[HDW_STATUS_CHIP];
 	}

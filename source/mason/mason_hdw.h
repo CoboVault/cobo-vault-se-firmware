@@ -77,8 +77,6 @@ extern "C"
 		E_HDWS_ATTACK = 0xA0,
 		E_HDWS_EMPTY = 0xCB,
 		E_HDWS_WALLET = 0x88,
-		E_HDWS_BOOT = 0xB0,
-		E_HDWS_UNKNOWN = 0xFF,
 		E_HDWS_MAX = 0x7FFFFFFF
 	} emHDWStatusType;
 	STONE_HDW_EXT volatile emHDWStatusType gemHDWStatus;

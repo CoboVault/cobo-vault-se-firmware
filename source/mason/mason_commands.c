@@ -102,16 +102,16 @@ MASON_COMMANDS_EXT volatile stCmdHandlerType gstCmdHandlers[CMD_H_MAX][CMD_L_MAX
 			 mason_cmd_invalid,
 		 },
 		 {
-			 USER_ATTACK | USER_FACTORY,
+			 USER_CHIP | USER_FACTORY,
 			 mason_cmd0107_factory_activate,
 		 },
 		 {
-			 USER_EMPTY | USER_WALLET | USER_UNKNOWN,
+			 USER_ALL,
 			 mason_cmd_invalid,
 		 }},
 		{//02 XX
 		 {
-			 USER_ALL,
+			 USER_CHIP | USER_FACTORY | USER_EMPTY | USER_WALLET,
 			 mason_cmd0201_iap_request,
 		 },
 		 {
@@ -119,7 +119,7 @@ MASON_COMMANDS_EXT volatile stCmdHandlerType gstCmdHandlers[CMD_H_MAX][CMD_L_MAX
 			 mason_cmd_invalid,
 		 },
 		 {
-			 USER_ALL,
+			 USER_CHIP | USER_FACTORY | USER_EMPTY | USER_WALLET,
 			 mason_cmd0203_iap_verify,
 		 },
 		 {
@@ -144,11 +144,11 @@ MASON_COMMANDS_EXT volatile stCmdHandlerType gstCmdHandlers[CMD_H_MAX][CMD_L_MAX
 		 }},
 		{//03 XX
 		 {
-			 USER_ALL,
+			 USER_CHIP | USER_FACTORY | USER_EMPTY | USER_WALLET,
 			 mason_cmd0301_get_entropy,
 		 },
 		 {
-			 USER_ALL,
+			 USER_CHIP | USER_FACTORY | USER_EMPTY | USER_WALLET,
 			 mason_cmd0302_create_wallet,
 		 },
 		 {
@@ -156,8 +156,8 @@ MASON_COMMANDS_EXT volatile stCmdHandlerType gstCmdHandlers[CMD_H_MAX][CMD_L_MAX
 			 mason_cmd0303_change_wallet_passphrase,
 		 },
 		 {
-		     USER_ALL,
-		     mason_cmd_invalid,
+			 USER_ALL,
+			 mason_cmd_invalid,
 		 },
 		 {
 			 USER_WALLET,
@@ -172,7 +172,7 @@ MASON_COMMANDS_EXT volatile stCmdHandlerType gstCmdHandlers[CMD_H_MAX][CMD_L_MAX
 			 mason_cmd0307_sign_ECDSA,
 		 },
 		 {
-			 USER_WALLET,
+			 USER_ALL,
 			 mason_cmd_invalid,
 		 }},
 		{//04 XX
@@ -181,15 +181,11 @@ MASON_COMMANDS_EXT volatile stCmdHandlerType gstCmdHandlers[CMD_H_MAX][CMD_L_MAX
 			 mason_cmd0401_generate_public_key_from_private_key
 		 },
 		 {
-			 USER_EMPTY | USER_WALLET,
+			 USER_ALL,
 			 mason_cmd_invalid,
 		 },
 		 {
-			 USER_EMPTY | USER_WALLET,
-			 mason_cmd_invalid,
-		 },
-		 {
-			 USER_EMPTY | USER_WALLET,
+			 USER_ALL,
 			 mason_cmd_invalid,
 		 },
 		 {
@@ -201,16 +197,20 @@ MASON_COMMANDS_EXT volatile stCmdHandlerType gstCmdHandlers[CMD_H_MAX][CMD_L_MAX
 			 mason_cmd_invalid,
 		 },
 		 {
-			 USER_WALLET,
+			 USER_ALL,
 			 mason_cmd_invalid,
 		 },
 		 {
-			 USER_WALLET,
+			 USER_ALL,
+			 mason_cmd_invalid,
+		 },
+		 {
+			 USER_ALL,
 			 mason_cmd_invalid,
 		 }},
 		{//05 XX
 		 {
-			 USER_EMPTY | USER_WALLET,
+			 USER_ALL,
 			 mason_cmd_invalid,
 		 },
 		 {
@@ -243,7 +243,7 @@ MASON_COMMANDS_EXT volatile stCmdHandlerType gstCmdHandlers[CMD_H_MAX][CMD_L_MAX
 		 }},
 		{//06 XX
 		 {
-			 USER_ATTACK,
+			 USER_ALL,
 			 mason_cmd_invalid,
 		 },
 		 {
@@ -280,7 +280,7 @@ MASON_COMMANDS_EXT volatile stCmdHandlerType gstCmdHandlers[CMD_H_MAX][CMD_L_MAX
 			 mason_cmd0701_web_authentication,
 		 },
 		 {
-			 USER_ALL,
+			 USER_CHIP | USER_FACTORY | USER_EMPTY | USER_WALLET,
 			 mason_cmd0702_update_key,
 		 },
 		 {
@@ -342,15 +342,15 @@ MASON_COMMANDS_EXT volatile stCmdHandlerType gstCmdHandlers[CMD_H_MAX][CMD_L_MAX
 		 }},
 		{//09 XX
 		 {
-			 USER_ALL,
+			 USER_CHIP | USER_FACTORY | USER_EMPTY | USER_WALLET,
 			 mason_cmd0901_usrpwd_modify,
 		 },
 		 {
-			 USER_ALL,
+			 USER_CHIP | USER_FACTORY | USER_EMPTY | USER_WALLET,
 			 mason_cmd0902_usrpwd_reset,
 		 },
 		 {
-			 USER_ALL,
+			 USER_CHIP | USER_FACTORY | USER_EMPTY | USER_WALLET,
 			 mason_cmd0903_usrpwd_verify,
 		 },
 		 {
@@ -358,19 +358,19 @@ MASON_COMMANDS_EXT volatile stCmdHandlerType gstCmdHandlers[CMD_H_MAX][CMD_L_MAX
 			 mason_cmd_invalid,
 		 },
 		 {
-			 USER_ALL,
+			 USER_CHIP | USER_FACTORY | USER_EMPTY | USER_WALLET,
 			 mason_cmd0905_message_gen,
 		 },
 		 {
-			 USER_ALL,
+			 USER_CHIP | USER_FACTORY | USER_EMPTY | USER_WALLET,
 			 mason_cmd0906_usrfing_create,
 		 },
 		 {
-			 USER_ALL,
+			 USER_CHIP | USER_FACTORY | USER_EMPTY | USER_WALLET,
 			 mason_cmd0907_usrfing_verify,
 		 },
 		 {
-			 USER_ALL,
+			 USER_CHIP | USER_FACTORY | USER_EMPTY | USER_WALLET,
 			 mason_cmd0908_token_delete,
 		 }}
 };
@@ -438,7 +438,6 @@ bool stack_search_CMDNo(pstStackType pstStack, stackElementType *pelement, unCMD
 		memcpy(punCMDNo->buf, (*pstTLV)->pV, (*pstTLV)->L);
 		return true;
 	}
-
 	return false;
 }
 /**
@@ -592,6 +591,41 @@ emCmdFSMType mason_command_manager(void)
 	return E_CMD_FSM_WAIT_CMD;
 }
 /**
+ * @functionname: mason_command_usr
+ * @description: 
+ * @para: 
+ * @return: 
+ */
+bool mason_command_usr(emHDWStatusType status, uint8_t usr)
+{
+	switch (status)
+	{
+	case E_HDWS_CHIP:
+	{
+		return ((usr & USER_CHIP) ? true : false);
+	}
+	case E_HDWS_FACTORY:
+	{
+		return ((usr & USER_FACTORY) ? true : false);
+	}
+	case E_HDWS_ATTACK:
+	{
+		return ((usr & USER_ATTACK) ? true : false);
+	}
+	case E_HDWS_EMPTY:
+	{
+		return ((usr & USER_EMPTY) ? true : false);
+	}
+	case E_HDWS_WALLET:
+	{
+		return ((usr & USER_WALLET) ? true : false);
+	}
+	default:
+		break;
+	}
+	return false;
+}
+/**
  * @functionname: mason_execute_cmd
  * @description: 
  * @para: 
@@ -602,16 +636,29 @@ void mason_execute_cmd(pstStackType pstStack)
 	bool is_succeed = false;
 	stackElementType pstTLV = NULL;
 	unCMDNoType unCMDNo = {0};
+	stCmdHandlerType cmdHandle = {0};
+	stHDWStatusType status;
 
 	is_succeed = stack_search_CMDNo(pstStack, &pstTLV, &unCMDNo);
 
-	if ((false == is_succeed) || unCMDNo.buf[0] > CMD_H_MAX || unCMDNo.buf[1] > CMD_H_MAX)
+	if ((false == is_succeed) || unCMDNo.buf[0] > CMD_H_MAX || unCMDNo.buf[1] > CMD_H_MAX
+		|| 0 == unCMDNo.buf[0] || 0 == unCMDNo.buf[1])
 	{
 		mason_cmd_invalid((void *)pstStack);
 		return;
 	}
 
-	gstCmdHandlers[unCMDNo.buf[0] - 1][unCMDNo.buf[1] - 1].pFunc((void *)pstStack);
+	cmdHandle = gstCmdHandlers[unCMDNo.buf[0] - 1][unCMDNo.buf[1] - 1];
+	mason_get_mode(&status);
+
+	if (mason_command_usr(status.emHDWStatus, cmdHandle.users))
+	{
+		cmdHandle.pFunc((void *)pstStack);
+	}
+	else
+	{
+		mason_cmd_invalid((void *)pstStack);
+	}
 }
 /**
  * @functionname: mason_cmd_preprocess

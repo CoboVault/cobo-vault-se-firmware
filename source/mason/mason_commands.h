@@ -40,18 +40,18 @@ extern "C"
 #endif /* __cplusplus */
 
 /** Macro definitions*/
-#define PROT_STX				0x02
-#define PROT_ETX				0x03
+#define PROT_STX                0x02
+#define PROT_ETX                0x03
 
-#define CMD_H_MAX				9
-#define CMD_L_MAX				8
+#define CMD_H_MAX               9
+#define CMD_L_MAX               8
 
-#define USER_FACTORY			0x01
-#define USER_ATTACK				0x02
-#define USER_EMPTY				0x04
-#define USER_WALLET				0x08
-#define USER_UNKNOWN			0x80
-#define USER_ALL				0xFF
+#define USER_CHIP               0x01
+#define USER_FACTORY            0x02
+#define USER_ATTACK             0x04
+#define USER_EMPTY              0x08
+#define USER_WALLET             0x80
+#define USER_ALL                0xFF
 
 	/** Variable declarations */
 	typedef enum

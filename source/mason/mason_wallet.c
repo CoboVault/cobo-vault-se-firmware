@@ -385,7 +385,7 @@ bool mason_verify_menonic(char *menonic_str, uint16_t len)
         return false;
     }
 
-    if (memcmp(menonic_str, menonic.data, len))
+    if (memcmp_ATA((uint8_t *)menonic_str, menonic.data, len))
     {
         return false;
     }

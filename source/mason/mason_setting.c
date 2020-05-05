@@ -113,7 +113,7 @@ bool mason_usrpwd_verify(uint8_t *passwd, uint16_t passwd_len)
 
     mason_HDW_gen_sha256sha256(passwd, passwd_len, checksum, checksumlen);
 
-    if (memcmp(checksum, cur_passwd, cur_passwd_len))
+    if (memcmp_ATA(checksum, cur_passwd, cur_passwd_len))
     {
         return false;
     }
@@ -465,7 +465,7 @@ bool mason_token_verify(setting_token_t *token)
 
     if ((SETTING_TOKEN_LEN == token->length) && (token->length == cur_token->length))
     {
-        if (!memcmp(token->token, cur_token->token, token->length))
+        if (!memcmp_ATA(token->token, cur_token->token, token->length))
         {
             return true;
         }

@@ -1001,7 +1001,7 @@ static void mason_cmd0201_iap_request(void *pContext)
 				buf_to_u32(&appVerCode, pckhdr_meta);
 
 				sha256_api(pckhdr_meta, 4, sha256_buf);
-				if (memcmp(sha256_buf, (pckhdr_meta + 4), 4) || (appVerCode <= VERSION_BCD))
+				if (memcmp_ATA(sha256_buf, (pckhdr_meta + 4), 4) || (appVerCode <= VERSION_BCD))
 				{
 					emRet = ERT_VerConflict;
 				}

@@ -21,6 +21,7 @@ in the file COPYING.  If not, see <http://www.gnu.org/licenses/>.
 #include "mason_hdw.h"
 #include "version_def.h"
 #include "sha256.h"
+#include "mason_util.h"
 
 /** Variable definitions */
 STONE_HDW_EXT volatile emHDWStatusType gemHDWStatus = E_HDWS_CHIP;
@@ -112,7 +113,7 @@ bool mason_HDW_check_sha256(uint8_t *pText, uint32_t textLen, uint8_t *pCheckSum
 
 	mason_HDW_gen_sha256(pText, textLen, bufCheckSum, CHECKSUM_LEN);
 
-	if (0 != memcmp(pCheckSum, bufCheckSum, CHECKSUM_LEN))
+	if (0 != memcmp_ATA(pCheckSum, bufCheckSum, CHECKSUM_LEN))
 	{
 		memcpy(pCheckSum, bufCheckSum, CHECKSUM_LEN);
 		return false;
@@ -154,7 +155,7 @@ bool mason_HDW_check_sha256sha256(uint8_t *pText, uint32_t textLen, uint8_t *pCh
 
 	mason_HDW_gen_sha256sha256(pText, textLen, bufCheckSum, CHECKSUM_LEN);
 
-	if (0 != memcmp(pCheckSum, bufCheckSum, CHECKSUM_LEN))
+	if (0 != memcmp_ATA(pCheckSum, bufCheckSum, CHECKSUM_LEN))
 	{
 		memcpy(pCheckSum, bufCheckSum, CHECKSUM_LEN);
 		return false;

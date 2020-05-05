@@ -173,7 +173,7 @@ emRetType mason_iap_pack_verify_process(emFwPackTypeType emFwPackType, uint8_t *
 		SHA256_final(bufSHA256, &sha256ctx);
 
 		PckHash = pBin + 32;
-		if (memcmp(PckHash, bufSHA256, SHA256_LEN))
+		if (memcmp_ATA(PckHash, bufSHA256, SHA256_LEN))
 		{
 			emRet = ERT_IAP_fileDigest;
 		}

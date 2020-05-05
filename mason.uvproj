@@ -531,11 +531,6 @@
               <FilePath>.\source\crypto\bip39.c</FilePath>
             </File>
             <File>
-              <FileName>bip32.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\source\crypto\bip32.c</FilePath>
-            </File>
-            <File>
               <FileName>bip44.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\source\crypto\bip44.c</FilePath>

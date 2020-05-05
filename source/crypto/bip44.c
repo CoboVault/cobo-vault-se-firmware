@@ -103,33 +103,3 @@ BIP44_EXT bool bip44_str_to_hdpath(uint8_t *pStr, uint32_t strLen, stHDPathType 
 
 	return true;
 }
-
-/**
-* @functionname: bip44_gen_key_fingerprint
-* @description: 
-* @para:
-* @return:
-*/
-void bip44_gen_key_fingerprint(uint8_t *pPubKeyC,
-							   uint8_t *pFingerPrint, uint8_t fingerPrintLen)
-{
-	uint8_t hash256[SHA256_LEN] = {0};
-	uint8_t RPMD160[RPMD160_LEN] = {0};
-
-	sha256_api(pPubKeyC, 33, hash256);
-
-	ripeMD160_api(hash256, SHA256_LEN, RPMD160);
-
-	memcpy(pFingerPrint, RPMD160, fingerPrintLen);
-}
-
-/**
-* @functionname: bip44_gen_child_number
-* @description: 
-* @para:
-* @return:
-*/
-void bip44_gen_child_number(uint8_t *pChildNum, uint32_t u32ChildNum)
-{
-	u32_to_buff(u32ChildNum, pChildNum);
-}

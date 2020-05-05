@@ -84,7 +84,8 @@ bool mason_parse_wallet_path_from_string(char *string, uint16_t len, wallet_path
 
 bool mason_valid_wallet_path(wallet_path_t *wallet_path);
 
-bool mason_verify_menonic(char *menonic, uint16_t len);
+bool mason_verify_menonic(char *menonic_str, uint16_t len);
+
 bool mason_mnemonic_read(mnemonic_t *mnemonic);
 bool mason_mnemonic_write(mnemonic_t *mnemonic);
 bool mason_seed_read(wallet_seed_t *seed);

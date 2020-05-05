@@ -52,6 +52,10 @@ void hmac_sha256(const unsigned char *data, size_t len, const unsigned char *key
     }
     hash_buf_size = key_size + (len < hash_size ? hash_size : len);
     hash_buf = (unsigned char *)calloc(hash_buf_size, sizeof(unsigned char));
+    if (hash_buf == NULL)
+    {
+        return;
+    }
 
     memcpy(hash_buf, buf2, key_size);
     memcpy(hash_buf + key_size, data, len);
@@ -60,10 +64,8 @@ void hmac_sha256(const unsigned char *data, size_t len, const unsigned char *key
     memcpy(hash_buf, buf, key_size);
     memcpy(hash_buf + key_size, hash_out, hash_size);
     SHA256_hash(hash_buf, key_size + hash_size, out);
-    if (NULL != hash_buf)
-    {
-        free(hash_buf);
-    }
+
+    free(hash_buf);
 }
 
 void hmac_sha512(const unsigned char *data, size_t len, const unsigned char *key, int len_key, unsigned char *out)
@@ -113,8 +115,5 @@ void hmac_sha512(const unsigned char *data, size_t len, const unsigned char *key
     memcpy(hash_buf + key_size, hash_out, hash_size);
     SHA512_hash(hash_buf, key_size + hash_size, out);
 
-    if (NULL != hash_buf)
-    {
-        free(hash_buf);
-    }
+    free(hash_buf);
 }

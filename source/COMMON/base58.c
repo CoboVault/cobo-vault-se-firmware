@@ -59,7 +59,6 @@ bool b58tobin(void *bin, size_t *binszp, const char *b58, size_t b58sz)
 	size_t outisz = (binsz + sizeof(b58_almostmaxint_t) - 1) / sizeof(b58_almostmaxint_t);
 	b58_almostmaxint_t *outi = NULL;
 	b58_maxint_t t;
-	b58_almostmaxint_t c;
 	size_t i, j;
 	uint8_t bytesleft = binsz % sizeof(b58_almostmaxint_t);
 	b58_almostmaxint_t zeromask = bytesleft ? (b58_almostmaxint_mask << (bytesleft * 8)) : 0;
@@ -86,6 +85,7 @@ bool b58tobin(void *bin, size_t *binszp, const char *b58, size_t b58sz)
 
 	for (; i < b58sz; ++i)
 	{
+		b58_almostmaxint_t c;
 		if (b58u[i] & 0x80)
 		{
 			// High-bit set on invalid digit

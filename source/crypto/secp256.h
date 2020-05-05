@@ -40,7 +40,7 @@ bool secp256k1_generate_valid_key(
 bool secp256k1_ecdsa_sign(
     uint8_t *hash,
     uint16_t hash_len,
-    uint8_t *private_key,
+    uint8_t *key,
     uint8_t *signature);
 bool secp256k1_ecdsa_verify(
     uint8_t *hash,
@@ -58,7 +58,7 @@ bool secp256r1_generate_valid_key(
 bool secp256r1_ecdsa_sign(
     uint8_t *hash,
     uint16_t hash_len,
-    uint8_t *private_key,
+    uint8_t *key,
     uint8_t *signature);
 bool secp256r1_ecdsa_verify(
     uint8_t *hash,

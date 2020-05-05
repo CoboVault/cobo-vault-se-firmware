@@ -69,10 +69,7 @@ BIP44_EXT bool bip44_str_to_hdpath(uint8_t *pStr, uint32_t strLen, stHDPathType 
 		} /* non-digit should be skipped */
 		if (index >= strLen)
 		{
-			if (NULL != pStrTmp)
-			{
-				free(pStrTmp);
-			}
+			free(pStrTmp);
 			return false;
 		}
 		pstHDPath->value[pstHDPath->depth] = myatoui((const char *)pStrTmp + index);
@@ -81,10 +78,7 @@ BIP44_EXT bool bip44_str_to_hdpath(uint8_t *pStr, uint32_t strLen, stHDPathType 
 			index++;
 			if (count++ > 10)
 			{
-				if (NULL != pStrTmp)
-				{
-					free(pStrTmp);
-				}
+				free(pStrTmp);
 				return false;
 			}
 		}
@@ -96,10 +90,6 @@ BIP44_EXT bool bip44_str_to_hdpath(uint8_t *pStr, uint32_t strLen, stHDPathType 
 		pstHDPath->depth++;
 	}
 
-	if (NULL != pStrTmp)
-	{
-		free(pStrTmp);
-	}
-
+	free(pStrTmp);
 	return true;
 }

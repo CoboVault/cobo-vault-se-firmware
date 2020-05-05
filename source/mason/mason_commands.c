@@ -391,7 +391,10 @@ uint32_t stream_to_tlv(pstStackType pstStack, const char *stream, uint32_t strea
 	while (index < streamLen)
 	{
 		pstTLV = (pstTLVType)calloc(1, sizeof(stTLVType));
-
+		if(NULL == pstTLV)
+		{
+			return index;
+		}
 		index = tlv_get_tag(pstTLV, stream, index);
 		index = tlv_get_len(pstTLV, stream, index);
 		index = tlv_get_value(pstTLV, stream, index);

@@ -37,6 +37,10 @@ cbuf_handle_t circular_buf_init(uint8_t *buffer, size_t size)
 
     cbuf = calloc(1, sizeof(circular_buf_t));
     // assert(cbuf);
+    if(NULL == cbuf)
+    {
+        return NULL;
+    }
 
     cbuf->buffer = buffer;
     cbuf->max = size;

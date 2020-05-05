@@ -130,7 +130,7 @@ void capture_stop(UINT8  num);
  *         UINT32 pwm_freq: pwm frequence
  * return: none
  ************************************************************************/
-void pwm_set(UINT8 num, UINT32 timer_frep, UINT32 pwm_freq);
+void pwm_set(UINT8 num, UINT32 timer_arr, UINT32 pwm_pr);
 
 /************************************************************************
  * function   : pwm_start

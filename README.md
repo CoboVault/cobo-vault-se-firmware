@@ -29,6 +29,8 @@ Modules:
 
 `source` : Source files for Secure Element firmware
 
+`upgrade` : Python script for verifying update package
+
 `*.bat`: Script file for compiling
 
 `uvproj and uvopt`: Project files for MDK IDE

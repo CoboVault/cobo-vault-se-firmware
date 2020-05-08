@@ -22,6 +22,7 @@ in the file COPYING.  If not, see <http://www.gnu.org/licenses/>.
 #include <mason_hdw.h>
 #include <mason_setting.h>
 #include <mason_wallet.h>
+#include <mason_util.h>
 #include <hrng.h>
 
 /** Variable declarations */

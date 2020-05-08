@@ -164,6 +164,15 @@ emRetType mason_iap_pack_verify_process(emFwPackTypeType emFwPackType, uint8_t *
 	case E_PACK_CONTINUE:
 	case E_PACK_LAST:
 	{
+		uint8_t blk_sha256_buf[SHA256_LEN] = {0};
+		uint8_t *blkHash = NULL;
+		sha256_api(pBin, (binLen-8), blk_sha256_buf);
+		blkHash = pBin + binLen - 8;
+		if (memcmp_ATA(blkHash, blk_sha256_buf, 8))
+		{
+			return ERT_IAP_fileDigest;
+		}
+
 		SHA256_update(&sha256ctx, pBin, binLen);
 		break;
 	}

@@ -60,6 +60,7 @@ extern "C"
         CRYPTO_CURVE_ED25519,
     } crypto_curve_t;
 
+    /** Function declarations */
     bool ecdsa_sign(
         crypto_curve_t curve,
         uint8_t *hash,
@@ -82,7 +83,6 @@ extern "C"
     bool crypto_init(void);
     bool ed25519_public_key(uint8_t *private_key, uint8_t *public_key);
 
-    /** Function declarations */
     void u32_to_buff(uint32_t u32, uint8_t *buf);
     unsigned int myatoui(const char *str);
     CRYPTO_API_EXT void ripeMD160_api(uint8_t *pData, uint32_t len, uint8_t *pDigest);

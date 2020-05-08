@@ -95,7 +95,12 @@ void low_power_init(void)
 	REG_SENSOR_SECR2 &= ~((1 << 14) | (1 << 11) | (1 << 4) | (1 << 0));			   //forbid verify LD/AS/VD/PGD
 #endif
 }
-
+/**
+ * @functionname: tamper_init
+ * @description: 
+ * @para: 
+ * @return: 
+ */
 void tamper_init(void)
 {
 	stHDWStatusType status;
@@ -324,7 +329,7 @@ int main(void)
 
 	crypto_init();
 
-	printfS("App startup.\r\n");
+	printf("mason startup.\r\n");
 
 	while (1)
 	{

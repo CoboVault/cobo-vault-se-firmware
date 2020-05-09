@@ -66,9 +66,6 @@ typedef struct update_key_s
     uint8_t key[MAX_UPDATE_KEY_LEN];
 } update_key_t;
 
-#define UPDATE_KEY_LEN 422
-extern uint8_t update_key_ex[UPDATE_KEY_LEN];
-
 /** Function declarations */
 bool mason_generate_entropy(uint8_t *output_entropy, uint16_t bits, bool need_checksum);
 bool mason_wallet_setup(mnemonic_t *mnemonic, uint8_t *passphrase, uint16_t passphrase_len);

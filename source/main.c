@@ -34,6 +34,7 @@ in the file COPYING.  If not, see <http://www.gnu.org/licenses/>.
 #include "crypto_api.h"
 #include "mason_wallet.h"
 #include "mason_setting.h"
+#include "version_def.h"
 /** Macro definitions*/
 #define standby_auto ((void (*)(void))(ROM_BASE_ADDR + 0x00001053))
 
@@ -329,7 +330,11 @@ int main(void)
 
 	crypto_init();
 
-	printf("mason startup.\r\n");
+#if VER_REL
+	printf("Mason startup.\r\n");
+#else
+	printf("Mason Develop Mode, startup.\r\n");
+#endif
 
 	while (1)
 	{

@@ -58,7 +58,7 @@ extern "C"
 #define FLASH_ADDR_CHIP_MODE_WITH_CHECKSUM_12B                   (FLASH_ADDR_ROOT_3DES_KEY_AND_IV_WITH_CHECKSUM_36B + ROOT_3DES_SIZE)
 #define CHIP_MODE_SIZE                                           12
 
-#define FLASH_ADDR_APP_VERCODE_4B           (FLASH_ADDR_CHIP_MODE_WITH_CHECKSUM_12B + CHIP_MODE_SIZE)              
+#define FLASH_ADDR_APP_VERCODE_4B           (FLASH_ADDR_CHIP_MODE_WITH_CHECKSUM_12B + CHIP_MODE_SIZE)
 #define APP_VERCODE_SIZE                    4
 
 // 0x38200 fac data area

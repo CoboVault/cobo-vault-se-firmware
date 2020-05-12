@@ -70,7 +70,12 @@ bool mason_get_mode(volatile stHDWStatusType *status)
 
 	return true;
 }
-
+/**
+ * @functionname: mason_set_mode
+ * @description: 
+ * @para: 
+ * @return: 
+ */
 bool mason_set_mode(uint8_t type)
 {
 	stHDWStatusType status;
@@ -81,7 +86,27 @@ bool mason_set_mode(uint8_t type)
 	status = gstHDWStatus[type];
 	return mason_storage_write_buffer((uint8_t *)&status, sizeof(status), FLASH_ADDR_CHIP_MODE_WITH_CHECKSUM_12B);
 }
-
+/**
+ * @functionname: mason_set_appvercode
+ * @description: 
+ * @para: 
+ * @return: 
+ */
+bool mason_set_appvercode(void)
+{
+	uint32_t vercode = VERSION_BCD;
+	return mason_storage_write_buffer((uint8_t *)&vercode, sizeof(uint32_t), FLASH_ADDR_APP_VERCODE_4B);
+}
+/**
+ * @functionname: mason_get_appvercode
+ * @description: 
+ * @para: 
+ * @return: 
+ */
+bool mason_get_appvercode(uint32_t *vercode)
+{
+	return mason_storage_read((uint8_t *)vercode, sizeof(uint32_t), FLASH_ADDR_APP_VERCODE_4B);
+}
 /**
 * @functionname: mason_HDW_gen_sha256
 * @description: 

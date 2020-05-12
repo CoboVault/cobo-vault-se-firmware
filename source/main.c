@@ -191,7 +191,7 @@ void enter_sleep(void)
 
 	if (status.emHDWStatus == E_HDWS_CHIP || status.emHDWStatus == E_HDWS_FACTORY)
 	{
-		REG_SCU_WUCR = (1 << 2) | (1 << 8); //enable uarta-rx & GPIO30 & GPIO25 wakeup
+		REG_SCU_WUCR = (1 << 2) | (1 << 8); //enable uarta-rx & GPIO30
 	}
 	else
 	{
@@ -307,6 +307,16 @@ void timer_handler(void)
 	printf("Timer time out!\r\n");
 }
 /**
+ * @functionname: mason_init
+ * @description: 
+ * @para: 
+ * @return: 
+ */
+void mason_init(void)
+{
+	(void)mason_set_appvercode();
+}
+/**
  * @functionname: main
  * @description: 
  * @para: 
@@ -335,6 +345,8 @@ int main(void)
 #else
 	printf("Mason Develop Mode, startup.\r\n");
 #endif
+
+	mason_init();
 
 	while (1)
 	{

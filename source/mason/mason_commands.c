@@ -1995,9 +1995,14 @@ static void mason_cmd0802_tamper_test(void *pContext)
 	{
 		mason_cmd_append_to_outputTLVArray(&stStack, TLV_T_ACTIVE_TAMPER, 2, (uint8_t *)"AT");
 	}
+
 	if (gpio_high(BIT_DET1 | BIT_DET2 | BIT_DET3, 500))
 	{
 		mason_cmd_append_to_outputTLVArray(&stStack, TLV_T_PASSIVE_TAMPER, 2, (uint8_t *)"PT");
+	}
+	else if (gpio_high(BIT_DET1, 500)||gpio_high(BIT_DET2, 500)||gpio_high(BIT_DET3, 500))
+	{
+		mason_cmd_append_to_outputTLVArray(&stStack, TLV_T_PASSIVE_TAMPER, 2, (uint8_t *)"QT");
 	}
 
 	u16_to_buf(bufRet, (uint16_t)emRet);

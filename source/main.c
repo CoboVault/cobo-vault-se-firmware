@@ -269,7 +269,7 @@ void tamper_check(void)
 		defense_trig_flag = true;
 	}
 
-	if (gpio_high(BIT_DET1 | BIT_DET2 | BIT_DET3, 500))
+	if (gpio_high(BIT_DET1, 500)||gpio_high(BIT_DET2, 500)||gpio_high(BIT_DET3, 500))
 	{
 		printf("Passive defense !\r\n");
 		defense_trig_flag = true;

@@ -97,7 +97,7 @@ extern "C"
 	bool mason_get_mode(volatile stHDWStatusType *status);
 	bool mason_set_mode(uint8_t type);
 	bool mason_get_appvercode(uint32_t *vercode);
-	bool mason_set_appvercode(void);	
+	bool mason_set_appvercode(void);
 
 /** Compatibility with the cplusplus*/
 #ifdef __cplusplus

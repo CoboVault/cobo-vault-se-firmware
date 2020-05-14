@@ -61,6 +61,7 @@ static void mason_cmd0303_change_wallet_passphrase(void *pContext);
 static void mason_cmd0305_get_extpubkey(void *pContext);
 static void mason_cmd0306_delete_wallet(void *pContext);
 static void mason_cmd0307_sign_ECDSA(void *pContext);
+static void mason_cmd0308_get_masterkey_fingerprint(void *pContext);
 static void mason_cmd0401_generate_public_key_from_private_key(void *pContext);
 static void mason_cmd0502_mnemonic_verify(void *pContext);
 static void mason_cmd0701_web_authentication(void *pContext);
@@ -172,8 +173,8 @@ MASON_COMMANDS_EXT volatile stCmdHandlerType gstCmdHandlers[CMD_H_MAX][CMD_L_MAX
 			 mason_cmd0307_sign_ECDSA,
 		 },
 		 {
-			 USER_ALL,
-			 mason_cmd_invalid,
+			 USER_WALLET,
+			 mason_cmd0308_get_masterkey_fingerprint,
 		 }},
 		{//04 XX
 		 {
@@ -1496,20 +1497,6 @@ static void mason_cmd0305_get_extpubkey(void *pContext)
 		mason_cmd_append_to_outputTLVArray(&stStack, TLV_T_EXT_KEY, base58_ext_key_len - 1, (uint8_t *)base58_ext_key);
 		mason_cmd_append_to_outputTLVArray(&stStack, TLV_T_HDP_DEPTH, 1, &wallet_path.num_of_segments);
 	}
-
-	if (emRet == ERT_OK)
-	{
-		uint8_t fingerprint[4] = {0};
-		if (!mason_bip32_derive_master_key_fingerprint(curve_type, fingerprint, sizeof(fingerprint)))
-		{
-			emRet = ERT_CommFailParam;
-		}
-		else
-		{
-			mason_cmd_append_to_outputTLVArray(&stStack, TLV_T_MASTER_KEY_FP, sizeof(fingerprint), fingerprint);
-		}
-	}
-
 	mason_cmd_end_outputTLVArray(&stStack, gpstCMD->unFlag.stFlag.enc ? ENCRYPT : PLAIN);
 	stack_destroy(&stStack);
 }
@@ -1715,6 +1702,54 @@ static void mason_cmd0307_sign_ECDSA(void *pContext)
 		mason_cmd_append_to_outputTLVArray(&stStack, TLV_T_PUBKEY, derived_public_key.len, derived_public_key.data);
 		mason_cmd_append_to_outputTLVArray(&stStack, TLV_T_SIGNATURE, signature_len, signature);
 	}
+	mason_cmd_append_to_outputTLVArray(&stStack, TLV_T_RESPONSE, sizeof(bufRet), bufRet);
+	mason_cmd_end_outputTLVArray(&stStack, gpstCMD->unFlag.stFlag.enc ? ENCRYPT : PLAIN);
+	stack_destroy(&stStack);
+}
+/**
+ * @functionname: mason_cmd0308_get_masterkey_fingerprint
+ * @description: command for get specific extended public key by given hdpath and algorithm
+ * @para: 
+ * @return: 
+ */
+static void mason_cmd0308_get_masterkey_fingerprint(void *pContext)
+{
+	emRetType emRet = ERT_OK;
+	uint8_t bufRet[2] = {0x00, 0x00};
+	pstStackType pstS = (pstStackType)pContext;
+	stStackType stStack = {{NULL}, -1};
+	stackElementType pstTLV = NULL;
+	crypto_curve_t curve_type = CRYPTO_CURVE_SECP256K1;
+
+	mason_cmd_init_outputTLVArray(&stStack);
+	if (stack_search_by_tag(pstS, &pstTLV, TLV_T_CMD))
+	{
+		mason_cmd_append_ele_to_outputTLVArray(&stStack, pstTLV);
+	}
+	else
+	{
+		emRet = ERT_CommFailParam;
+	}
+
+	if (emRet == ERT_OK && stack_search_by_tag(pstS, &pstTLV, TLV_T_CURVE_TYPE))
+	{
+		curve_type = (crypto_curve_t)(*(uint8_t *)pstTLV->pV);
+	}
+
+	if (emRet == ERT_OK)
+	{
+		uint8_t fingerprint[4] = {0};
+		if (!mason_bip32_derive_master_key_fingerprint(curve_type, fingerprint, sizeof(fingerprint)))
+		{
+			emRet = ERT_CommFailParam;
+		}
+		else
+		{
+			mason_cmd_append_to_outputTLVArray(&stStack, TLV_T_MASTER_KEY_FP, sizeof(fingerprint), fingerprint);
+		}
+	}
+
+	u16_to_buf(bufRet, (uint16_t)emRet);
 	mason_cmd_append_to_outputTLVArray(&stStack, TLV_T_RESPONSE, sizeof(bufRet), bufRet);
 	mason_cmd_end_outputTLVArray(&stStack, gpstCMD->unFlag.stFlag.enc ? ENCRYPT : PLAIN);
 	stack_destroy(&stStack);

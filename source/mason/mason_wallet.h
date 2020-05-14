@@ -98,4 +98,6 @@ bool mason_bip32_derive_keys(
     private_key_t *private_key,
     chaincode_t *chaincode,
     extended_key_t *extended_key);
+
+bool mason_bip32_derive_master_key_fingerprint(crypto_curve_t curve, uint8_t *fingerprint, uint16_t fingerprint_len);
 #endif

@@ -496,3 +496,25 @@ bool mason_bip32_derive_keys(
 
     return true;
 }
+/**
+ * @functionname: mason_bip32_derive_master_key_fingerprint
+ * @description: 
+ * @para: 
+ * @return: 
+ */
+bool mason_bip32_derive_master_key_fingerprint(crypto_curve_t curve, uint8_t *fingerprint, uint16_t fingerprint_len)
+{
+    private_key_t master_private_key;
+    chaincode_t master_chaincode;
+    if (!mason_bip32_generate_master_key_from_root_seed(
+            curve,
+            &master_private_key,
+            &master_chaincode))
+    {
+        return false;
+    }
+
+    private_key_to_fingerprint(curve, &master_private_key, fingerprint, fingerprint_len);
+
+    return true;
+}

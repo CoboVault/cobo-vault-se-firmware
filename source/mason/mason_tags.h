@@ -82,6 +82,7 @@ extern "C"
 #define TLV_T_HDP_DEPTH					0x0208
 #define TLV_T_ADDRESS					0x0209
 #define TLV_T_EXT_KEY					0x020A
+#define TLV_T_MASTER_KEY_FP				0x020B
 #define TLV_T_SECURITY_SWITCH			0x020F
 
 #define TLV_T_DES_KEY					0x0301

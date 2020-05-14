@@ -1497,6 +1497,20 @@ static void mason_cmd0305_get_extpubkey(void *pContext)
 		mason_cmd_append_to_outputTLVArray(&stStack, TLV_T_EXT_KEY, base58_ext_key_len - 1, (uint8_t *)base58_ext_key);
 		mason_cmd_append_to_outputTLVArray(&stStack, TLV_T_HDP_DEPTH, 1, &wallet_path.num_of_segments);
 	}
+
+	if (emRet == ERT_OK)
+	{
+		uint8_t fingerprint[4] = {0};
+		if (!mason_bip32_derive_master_key_fingerprint(curve_type, fingerprint, sizeof(fingerprint)))
+		{
+			emRet = ERT_CommFailParam;
+		}
+		else
+		{
+			mason_cmd_append_to_outputTLVArray(&stStack, TLV_T_MASTER_KEY_FP, sizeof(fingerprint), fingerprint);
+		}
+	}
+
 	mason_cmd_end_outputTLVArray(&stStack, gpstCMD->unFlag.stFlag.enc ? ENCRYPT : PLAIN);
 	stack_destroy(&stStack);
 }

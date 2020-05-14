@@ -22,7 +22,7 @@ in the file COPYING.  If not, see <http://www.gnu.org/licenses/>.
 #ifdef MASON_STORAGE_GLOBAL
 #define MASON_STORAGE_EXT
 #else
-#define MASON_STORAGE_EXT	extern
+#define MASON_STORAGE_EXT extern
 #endif
 
 /** Header file reference */
@@ -30,8 +30,7 @@ in the file COPYING.  If not, see <http://www.gnu.org/licenses/>.
 #include <stdlib.h>
 #include <stdint.h>
 #include <stdbool.h>
-#include <string.h>	//memcpy...
-#include "des.h"
+#include <string.h>
 #include "mason_errno.h"
 #include "mason_flash_partition.h"
 
@@ -58,6 +57,9 @@ extern "C"
 
 #define FLASH_ADDR_CHIP_MODE_WITH_CHECKSUM_12B                   (FLASH_ADDR_ROOT_3DES_KEY_AND_IV_WITH_CHECKSUM_36B + ROOT_3DES_SIZE)
 #define CHIP_MODE_SIZE                                           12
+
+#define FLASH_ADDR_APP_VERCODE_4B           (FLASH_ADDR_CHIP_MODE_WITH_CHECKSUM_12B + CHIP_MODE_SIZE)
+#define APP_VERCODE_SIZE                    4
 
 // 0x38200 fac data area
 #define FLASH_ADDR_WALLET_START             (FLASH_ADDR_PARAM_START + PAGE_SIZE)
@@ -93,20 +95,20 @@ extern "C"
 
 #define FLASH_ADDR_PU_CNT_4B				(FLASH_ADDR_MAX-4)
 
-/** Function declarations */
-MASON_STORAGE_EXT emRetType mason_storage_encryption(uint8_t nType, uint8_t *pIn, uint16_t len, uint8_t *pOut);
-MASON_STORAGE_EXT emRetType mason_storage_read(uint8_t *pBuf, uint32_t bufLen, uint32_t addr);
-MASON_STORAGE_EXT uint32_t
-mason_storage_read_flag(uint32_t addr);
-MASON_STORAGE_EXT emRetType
-mason_storage_write_flag(uint32_t addr, uint32_t u32Flag);
-MASON_STORAGE_EXT emRetType
-mason_storage_write_flag_safe(uint32_t addr, uint32_t u32Flag);
-MASON_STORAGE_EXT bool
-mason_storage_check_flag(uint32_t addr, uint32_t u32Flag);
+    /** Function declarations */
+    MASON_STORAGE_EXT emRetType mason_storage_encryption(uint8_t nType, uint8_t *pIn, uint16_t len, uint8_t *pOut);
+    MASON_STORAGE_EXT emRetType mason_storage_read(uint8_t *pBuf, uint32_t bufLen, uint32_t addr);
+    MASON_STORAGE_EXT uint32_t
+    mason_storage_read_flag(uint32_t addr);
+    MASON_STORAGE_EXT emRetType
+    mason_storage_write_flag(uint32_t addr, uint32_t u32Flag);
+    MASON_STORAGE_EXT emRetType
+    mason_storage_write_flag_safe(uint32_t addr, uint32_t u32Flag);
+    MASON_STORAGE_EXT bool
+    mason_storage_check_flag(uint32_t addr, uint32_t u32Flag);
 
-bool mason_storage_write_buffer(uint8_t *buffer, uint32_t len, uint32_t addr);
-bool mason_storage_write_buffer_in_one_page(uint8_t *buffer, uint32_t len, uint32_t addr);
+    bool mason_storage_write_buffer(uint8_t *buffer, uint32_t len, uint32_t addr);
+    bool mason_storage_write_buffer_in_one_page(uint8_t *buffer, uint32_t len, uint32_t addr);
 
 /** Compatibility with the cplusplus*/
 #ifdef __cplusplus

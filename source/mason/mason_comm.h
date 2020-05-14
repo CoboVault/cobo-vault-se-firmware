@@ -19,10 +19,10 @@ in the file COPYING.  If not, see <http://www.gnu.org/licenses/>.
 #define MASON_COMM_H
 
 /** Avoid duplicate definitions */
-#ifdef  MASON_COMM_GLOBAL
+#ifdef MASON_COMM_GLOBAL
 #define MASON_COMM_EXT
 #else
-#define MASON_COMM_EXT	extern
+#define MASON_COMM_EXT extern
 #endif
 
 /** Header file reference */
@@ -30,7 +30,7 @@ in the file COPYING.  If not, see <http://www.gnu.org/licenses/>.
 #include <stdlib.h>
 #include <stdint.h>
 #include <stdbool.h>
-#include <string.h>	//memcpy...
+#include <string.h> //memcpy...
 #include <limits.h>
 #include "mason_errno.h"
 
@@ -38,10 +38,10 @@ in the file COPYING.  If not, see <http://www.gnu.org/licenses/>.
 #ifdef __cplusplus
 extern "C"
 {
-#endif    /* __cplusplus */
+#endif /* __cplusplus */
 
-/** Function declarations */
-void mason_comm_handler(void);
+    /** Function declarations */
+    void mason_comm_handler(void);
 
 /** Compatibility with the cplusplus*/
 #ifdef __cplusplus

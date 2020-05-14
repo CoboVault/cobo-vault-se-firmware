@@ -67,7 +67,7 @@ bool ckd_private_to_private(
     {
         u32_to_buf(data + COMPRESSED_PUBLIC_KEY_LEN, index);
         hmac_sha512_api(
-            data, 
+            data,
             data_len,
             parent_chaincode->data,
             CHAINCODE_LEN,
@@ -77,38 +77,38 @@ bool ckd_private_to_private(
         i_right = hmac_sha512_buf + PRIVATE_KEY_LEN;
 
         // generate child private key
-        switch(curve)
+        switch (curve)
         {
-            case CRYPTO_CURVE_ED25519:
-            {
-                memcpy(derived_private_key, i_left, PRIVATE_KEY_LEN);
-                break;
-            }
-            case CRYPTO_CURVE_SECP256K1:
-            {
-                if(!secp256k1_generate_valid_key(i_left, parent_private_key->data, derived_private_key))
-                {
-                    index++;
-                    continue;
-                }
-                break;
-            }
-            case CRYPTO_CURVE_SECP256R1:
-            {
-                if(!secp256r1_generate_valid_key(i_left, parent_private_key->data, derived_private_key))
-                {
-                    data[0] = 0x01;
-                    memcpy(data + 1, i_right, PRIVATE_KEY_LEN);
-                    continue;
-                }
-                break;
-            }
-            default:
-            {
-                return false;
-            }
+        case CRYPTO_CURVE_ED25519:
+        {
+            memcpy(derived_private_key, i_left, PRIVATE_KEY_LEN);
+            break;
         }
-        
+        case CRYPTO_CURVE_SECP256K1:
+        {
+            if (!secp256k1_generate_valid_key(i_left, parent_private_key->data, derived_private_key))
+            {
+                index++;
+                continue;
+            }
+            break;
+        }
+        case CRYPTO_CURVE_SECP256R1:
+        {
+            if (!secp256r1_generate_valid_key(i_left, parent_private_key->data, derived_private_key))
+            {
+                data[0] = 0x01;
+                memcpy(data + 1, i_right, PRIVATE_KEY_LEN);
+                continue;
+            }
+            break;
+        }
+        default:
+        {
+            return false;
+        }
+        }
+
         memcpy(child_private_key->data, derived_private_key, PRIVATE_KEY_LEN);
         memcpy(child_chaincode->data, i_right, CHAINCODE_LEN);
         break;

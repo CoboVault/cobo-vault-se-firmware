@@ -220,12 +220,12 @@ uint8_t get_lrc(uint8_t *pMsg, uint16_t msgLen)
 {
 	uint8_t lrc = 0x00;
 	uint16_t i = 0;
-	
-	for (i=0; i<msgLen; i++)
+
+	for (i = 0; i < msgLen; i++)
 	{
 		lrc ^= pMsg[i];
 	}
-	
+
 	return lrc;
 }
 /**
@@ -245,4 +245,3 @@ void debug_key(char *name, uint8_t *key, uint16_t len)
 	}
 	printf("\n");
 }
-

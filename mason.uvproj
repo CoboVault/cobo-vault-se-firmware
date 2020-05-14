@@ -421,19 +421,9 @@
               <FilePath>.\source\driver\wdt.c</FilePath>
             </File>
             <File>
-              <FileName>crc16.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\source\driver\crc16.c</FilePath>
-            </File>
-            <File>
               <FileName>eflash.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\source\driver\eflash.c</FilePath>
-            </File>
-            <File>
-              <FileName>des_v1.lib</FileName>
-              <FileType>4</FileType>
-              <FilePath>.\source\driver\des_v1.lib</FilePath>
             </File>
             <File>
               <FileName>ecdsa_v1.lib</FileName>
@@ -451,34 +441,9 @@
               <FilePath>.\source\driver\hrng_v1.lib</FilePath>
             </File>
             <File>
-              <FileName>pki_v1.lib</FileName>
-              <FileType>4</FileType>
-              <FilePath>.\source\driver\pki_v1.lib</FilePath>
-            </File>
-            <File>
-              <FileName>rsa_v1.lib</FileName>
-              <FileType>4</FileType>
-              <FilePath>.\source\driver\rsa_v1.lib</FilePath>
-            </File>
-            <File>
-              <FileName>sha1_v1.lib</FileName>
-              <FileType>4</FileType>
-              <FilePath>.\source\driver\sha1_v1.lib</FilePath>
-            </File>
-            <File>
               <FileName>sha256_v1.lib</FileName>
               <FileType>4</FileType>
               <FilePath>.\source\driver\sha256_v1.lib</FilePath>
-            </File>
-            <File>
-              <FileName>sha384_512_v1.lib</FileName>
-              <FileType>4</FileType>
-              <FilePath>.\source\driver\sha384_512_v1.lib</FilePath>
-            </File>
-            <File>
-              <FileName>sm1_v1.lib</FileName>
-              <FileType>4</FileType>
-              <FilePath>.\source\driver\sm1_v1.lib</FilePath>
             </File>
             <File>
               <FileName>sm2sm3_v1.lib</FileName>
@@ -486,9 +451,24 @@
               <FilePath>.\source\driver\sm2sm3_v1.lib</FilePath>
             </File>
             <File>
-              <FileName>sm4_v1.lib</FileName>
+              <FileName>sha384_512_v1.lib</FileName>
               <FileType>4</FileType>
-              <FilePath>.\source\driver\sm4_v1.lib</FilePath>
+              <FilePath>.\source\driver\sha384_512_v1.lib</FilePath>
+            </File>
+            <File>
+              <FileName>sha1_v1.lib</FileName>
+              <FileType>4</FileType>
+              <FilePath>.\source\driver\sha1_v1.lib</FilePath>
+            </File>
+            <File>
+              <FileName>rsa_v1.lib</FileName>
+              <FileType>4</FileType>
+              <FilePath>.\source\driver\rsa_v1.lib</FilePath>
+            </File>
+            <File>
+              <FileName>pki_v1.lib</FileName>
+              <FileType>4</FileType>
+              <FilePath>.\source\driver\pki_v1.lib</FilePath>
             </File>
           </Files>
         </Group>
@@ -551,11 +531,6 @@
               <FilePath>.\source\crypto\bip39.c</FilePath>
             </File>
             <File>
-              <FileName>bip32.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\source\crypto\bip32.c</FilePath>
-            </File>
-            <File>
               <FileName>bip44.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\source\crypto\bip44.c</FilePath>
@@ -575,6 +550,11 @@
               <FileType>1</FileType>
               <FilePath>.\source\main.c</FilePath>
             </File>
+            <File>
+              <FileName>version_def.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\source\version_def.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -584,11 +564,6 @@
               <FileName>mason_debug.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\source\mason\mason_debug.c</FilePath>
-            </File>
-            <File>
-              <FileName>mason_api_test.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\source\mason\mason_api_test.c</FilePath>
             </File>
             <File>
               <FileName>mason_comm.c</FileName>

@@ -49,7 +49,7 @@ uint32_t tlv_get_tag(pstTLVType pstTLV, const char *stream, uint32_t index)
  * @para: 
  * @return: 
  */
-uint32_t tlv_get_len(pstTLVType pstTLV, const char* stream, uint32_t index)
+uint32_t tlv_get_len(pstTLVType pstTLV, const char *stream, uint32_t index)
 {
     pstTLVType pstTmpTLV = pstTLV;
     uint16_t tmpLen = 0;
@@ -66,10 +66,10 @@ uint32_t tlv_get_len(pstTLVType pstTLV, const char* stream, uint32_t index)
  * @para: 
  * @return: 
  */
-uint32_t tlv_get_value(pstTLVType pstTLV, const char* stream, uint32_t index)
+uint32_t tlv_get_value(pstTLVType pstTLV, const char *stream, uint32_t index)
 {
     pstTLVType pstTmpTLV = pstTLV;
-    
+
     pstTmpTLV->pV = stream + index;
 
     return index + pstTmpTLV->L;

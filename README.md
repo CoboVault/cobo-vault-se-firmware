@@ -29,9 +29,11 @@ Modules:
 
 `source` : Source files for Secure Element firmware
 
+`upgrade` : Python script for verifying update package
+
 `*.bat`: Script file for compiling
 
-`uvproj and uvopt`: Project files for MDK IDE
+`uvproj`: Project files for MDK IDE
 
 ## Issues and PRs
 Please submit any issues  [here](https://github.com/CoboVault/cobo-vault-SE-firmware/issues). PRs are also welcome!

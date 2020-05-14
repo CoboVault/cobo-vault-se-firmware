@@ -187,7 +187,7 @@ STACK_EXT void stack_destroy(pstStackType pstStack)
 	pstStackType pstS = pstStack;
 	stackElementType element;
 
-	while(EM_STACK_OK == stack_pop(pstS, &element))
+	while (EM_STACK_OK == stack_pop(pstS, &element))
 	{
 		if (NULL != element)
 		{
@@ -195,4 +195,3 @@ STACK_EXT void stack_destroy(pstStackType pstStack)
 		}
 	}
 }
-

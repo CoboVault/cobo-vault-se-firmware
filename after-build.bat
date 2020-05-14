@@ -27,3 +27,5 @@ xcopy  .\Objects\%projectName%.hex  .\  /Y
 xcopy  .\Objects\%projectName%.hex  .\hexHistory\  /Y
 if exist .\hexHistory\%projectName%-%PREFIX%%dateTime%.hex ( del .\hexHistory\%projectName%-%PREFIX%%dateTime%.hex )
 ren .\hexHistory\%projectName%.hex %projectName%-%PREFIX%%dateTime%.hex
+
+xcopy  .\Objects\%projectName%.hex  .\upgrade\  /Y

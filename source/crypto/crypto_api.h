@@ -22,7 +22,7 @@ in the file COPYING.  If not, see <http://www.gnu.org/licenses/>.
 #ifdef CRYPTO_API_GLOBAL
 #define CRYPTO_API_EXT
 #else
-#define CRYPTO_API_EXT	extern
+#define CRYPTO_API_EXT extern
 #endif
 
 /** Header file reference */
@@ -30,7 +30,7 @@ in the file COPYING.  If not, see <http://www.gnu.org/licenses/>.
 #include <stdlib.h>
 #include <stdint.h>
 #include <stdbool.h>
-#include <string.h>	//memcpy...
+#include <string.h> //memcpy...
 #include <limits.h>
 #include <ctype.h>
 #include <secp256.h>
@@ -40,56 +40,56 @@ in the file COPYING.  If not, see <http://www.gnu.org/licenses/>.
 #ifdef __cplusplus
 extern "C"
 {
-#endif    /* __cplusplus */
+#endif /* __cplusplus */
 
 /** Macro definitions*/
 #ifndef SHA256_LEN
-#define SHA256_LEN				32
+#define SHA256_LEN 32
 #endif
 #ifndef SHA512_LEN
-#define SHA512_LEN				64
+#define SHA512_LEN 64
 #endif
 #ifndef RPMD160_LEN
-#define RPMD160_LEN				20
+#define RPMD160_LEN 20
 #endif
 
-typedef enum crypto_curve_e
-{
-  CRYPTO_CURVE_SECP256K1 = 0,
-  CRYPTO_CURVE_SECP256R1,
-  CRYPTO_CURVE_ED25519,
-} crypto_curve_t;
+    typedef enum crypto_curve_e
+    {
+        CRYPTO_CURVE_SECP256K1 = 0,
+        CRYPTO_CURVE_SECP256R1,
+        CRYPTO_CURVE_ED25519,
+    } crypto_curve_t;
 
-bool ecdsa_sign(
-        crypto_curve_t curve, 
-        uint8_t *hash, 
-        uint16_t hash_len, 
-        uint8_t *private_key, 
-        uint8_t *signature, 
+    /** Function declarations */
+    bool ecdsa_sign(
+        crypto_curve_t curve,
+        uint8_t *hash,
+        uint16_t hash_len,
+        uint8_t *private_key,
+        uint8_t *signature,
         uint16_t *signature_len);
 
-bool ecdsa_verify(crypto_curve_t curve, uint8_t *hash, uint8_t *public_key, uint8_t *signature);
-void crypto_api_sm2_init(void);
-bool crypto_api_sm2_decrypt(
-        uint8_t *private_key, 
-        uint8_t *encrypted_data, 
-        uint32_t encrypted_data_len, 
-        uint8_t *output, 
+    bool ecdsa_verify(crypto_curve_t curve, uint8_t *hash, uint8_t *public_key, uint8_t *signature);
+    void crypto_api_sm2_init(void);
+    bool crypto_api_sm2_decrypt(
+        uint8_t *private_key,
+        uint8_t *encrypted_data,
+        uint32_t encrypted_data_len,
+        uint8_t *output,
         uint32_t *output_len);
 
-bool is_valid_private_key(crypto_curve_t curve, uint8_t *private_key);
+    bool is_valid_private_key(crypto_curve_t curve, uint8_t *private_key);
 
-bool crypto_init(void);
-bool ed25519_public_key(uint8_t *private_key, uint8_t *public_key);
+    bool crypto_init(void);
+    bool ed25519_public_key(uint8_t *private_key, uint8_t *public_key);
 
-/** Function declarations */
-void u32_to_buff(uint32_t u32, uint8_t *buf);
-unsigned int myatoui(const char *str);
-CRYPTO_API_EXT void ripeMD160_api(uint8_t *pData, uint32_t len, uint8_t *pDigest);
-CRYPTO_API_EXT void sha256_api(uint8_t *pData, uint32_t len, uint8_t *pDigest);
-CRYPTO_API_EXT void sha512_api(uint8_t *pData, uint32_t len, uint8_t *pDigest);
-CRYPTO_API_EXT void hmac_sha512_api(uint8_t *pData, uint32_t dataLen, 
-        uint8_t *pKey, uint32_t keyLen, uint8_t *pDigest);
+    void u32_to_buff(uint32_t u32, uint8_t *buf);
+    unsigned int myatoui(const char *str);
+    CRYPTO_API_EXT void ripeMD160_api(uint8_t *pData, uint32_t len, uint8_t *pDigest);
+    CRYPTO_API_EXT void sha256_api(uint8_t *pData, uint32_t len, uint8_t *pDigest);
+    CRYPTO_API_EXT void sha512_api(uint8_t *pData, uint32_t len, uint8_t *pDigest);
+    CRYPTO_API_EXT void hmac_sha512_api(uint8_t *pData, uint32_t dataLen,
+                                        uint8_t *pKey, uint32_t keyLen, uint8_t *pDigest);
 
 /** Compatibility with the cplusplus*/
 #ifdef __cplusplus

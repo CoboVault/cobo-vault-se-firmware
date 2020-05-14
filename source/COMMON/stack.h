@@ -40,34 +40,34 @@ extern "C"
 #endif /* __cplusplus */
 
 /** Macro definitions*/
-#define STACK_SIZE			10
+#define STACK_SIZE 10
 
-/** Variable declarations */
-typedef pstTLVType stackElementType;
+	/** Variable declarations */
+	typedef pstTLVType stackElementType;
 
-typedef enum EM_STACK
-{
-	EM_STACK_OK,
-	EM_STACK_FULL,
-	EM_STACK_EMPTY,
-	EM_STACK_INVALID,
-} emStackStatusType;
+	typedef enum EM_STACK
+	{
+		EM_STACK_OK,
+		EM_STACK_FULL,
+		EM_STACK_EMPTY,
+		EM_STACK_INVALID,
+	} emStackStatusType;
 
-typedef struct ST_STACK
-{
-	stackElementType stack[STACK_SIZE];
-	int top;
-} stStackType, *pstStackType;
-// STACK_EXT stStackType stStack;
+	typedef struct ST_STACK
+	{
+		stackElementType stack[STACK_SIZE];
+		int top;
+	} stStackType, *pstStackType;
+	// STACK_EXT stStackType stStack;
 
-/** Function declarations */
-STACK_EXT void stack_init(pstStackType pstStack);
-STACK_EXT bool stack_empty(pstStackType pstStack);
-STACK_EXT emStackStatusType stack_push(pstStackType pstStack, stackElementType element);
-STACK_EXT emStackStatusType stack_pop(pstStackType pstStack, stackElementType *pelement);
-STACK_EXT emStackStatusType stack_top(pstStackType pstStack, stackElementType *pelement);
-STACK_EXT emStackStatusType stack_get(pstStackType pstStack, stackElementType *pelement, int index);
-STACK_EXT void stack_destroy(pstStackType pstStack);
+	/** Function declarations */
+	STACK_EXT void stack_init(pstStackType pstStack);
+	STACK_EXT bool stack_empty(pstStackType pstStack);
+	STACK_EXT emStackStatusType stack_push(pstStackType pstStack, stackElementType element);
+	STACK_EXT emStackStatusType stack_pop(pstStackType pstStack, stackElementType *pelement);
+	STACK_EXT emStackStatusType stack_top(pstStackType pstStack, stackElementType *pelement);
+	STACK_EXT emStackStatusType stack_get(pstStackType pstStack, stackElementType *pelement, int index);
+	STACK_EXT void stack_destroy(pstStackType pstStack);
 
 /** Compatibility with the cplusplus*/
 #ifdef __cplusplus

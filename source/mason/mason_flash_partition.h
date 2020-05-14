@@ -19,10 +19,10 @@ in the file COPYING.  If not, see <http://www.gnu.org/licenses/>.
 #define STONE_FLASH_PARTTITION_H
 
 /** Avoid duplicate definitions */
-#ifdef  STONE_FLASH_PARTTITION_GLOBAL
+#ifdef STONE_FLASH_PARTTITION_GLOBAL
 #define STONE_FLASH_PARTTITION_EXT
 #else
-#define STONE_FLASH_PARTTITION_EXT	extern
+#define STONE_FLASH_PARTTITION_EXT extern
 #endif
 
 /** Header file reference */
@@ -38,7 +38,7 @@ in the file COPYING.  If not, see <http://www.gnu.org/licenses/>.
 #ifdef __cplusplus
 extern "C"
 {
-#endif    /* __cplusplus */
+#endif /* __cplusplus */
 
 /** Macro definitions*/
 #ifndef FLASH_PAGE_SIZE

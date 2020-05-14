@@ -38,14 +38,14 @@ typedef void (*funcptr)(void);
  */
 __inline void set_vect_to(uint32_t addr)
 {
-    // uint32_t i = 0;
+	// uint32_t i = 0;
 
-    // for (i = 0; i < 48; i++)
-    // {
-    //     *((uint32_t *)(0x68000000 + (i << 2))) = *(__IO uint32_t *)(addr + (i << 2));
-    // }
-    REG_MPUCR |= 0x1;
-    REG_MPUVectorOffset = addr;
+	// for (i = 0; i < 48; i++)
+	// {
+	//     *((uint32_t *)(0x68000000 + (i << 2))) = *(__IO uint32_t *)(addr + (i << 2));
+	// }
+	REG_MPUCR |= 0x1;
+	REG_MPUVectorOffset = addr;
 }
 /**
  * @functionname: jump_to
@@ -55,13 +55,13 @@ __inline void set_vect_to(uint32_t addr)
  */
 static void jump_to(uint32_t addr)
 {
-    // REG_MPUCR |= 0x1;
-    // REG_MPUVectorOffset = addr;
+	//REG_MPUCR |= 0x1;
+	//REG_MPUVectorOffset = addr;
 
-    _delay_ms(10);
+	_delay_ms(10);
 
-    __set_MSP(*(UINT32 *)(addr));
-    (*(funcptr) * (UINT32 *)(addr + Reset_Handler_offset))();
+	__set_MSP(*(UINT32 *)(addr));
+	(*(funcptr) * (UINT32 *)(addr + Reset_Handler_offset))();
 }
 /**
  * @functionname: mason_iap_run
@@ -71,8 +71,8 @@ static void jump_to(uint32_t addr)
  */
 static void mason_iap_run(uint32_t addr)
 {
-    set_vect_to(addr);
-    jump_to(addr);
+	set_vect_to(addr);
+	jump_to(addr);
 }
 /**
  * @functionname: mason_iap_run_app
@@ -82,7 +82,7 @@ static void mason_iap_run(uint32_t addr)
  */
 STONE_ISP_EXT void mason_iap_run_app(void)
 {
-    mason_iap_run(FLASH_ADDR_APP_START);
+	mason_iap_run(FLASH_ADDR_APP_START);
 }
 /**
  * @functionname: mason_iap_run_boot
@@ -92,7 +92,7 @@ STONE_ISP_EXT void mason_iap_run_app(void)
  */
 STONE_ISP_EXT void mason_iap_run_boot(void)
 {
-    mason_iap_run(OFF_MASK(eflash_read_word(FLASH_ADDR_BOOT_ADDR_4B)));
+	mason_iap_run(OFF_MASK(eflash_read_word(FLASH_ADDR_BOOT_ADDR_4B)));
 }
 /**
  * @functionname: mason_iap_check_app_exsit
@@ -102,7 +102,7 @@ STONE_ISP_EXT void mason_iap_run_boot(void)
  */
 bool mason_iap_check_app_exsit(void)
 {
-    return mason_storage_check_flag(FLASH_ADDR_APP_EXIST_4B, FLAG_APP_EXIST);
+	return mason_storage_check_flag(FLASH_ADDR_APP_EXIST_4B, FLAG_APP_EXIST);
 }
 /**
  * @functionname: mason_iap_write_page_safe
@@ -112,36 +112,36 @@ bool mason_iap_check_app_exsit(void)
  */
 int mason_iap_write_page_safe(uint32_t addr, uint8_t buf[], uint32_t bufLen)
 {
-    uint32_t i = 0;
-    UINT32 data;
-    UINT32 writeAddr = addr, readAddr = addr;
-    uint8_t bufRead[PAGE_SIZE] = {0};
+	uint32_t i = 0;
+	UINT32 data;
+	UINT32 writeAddr = addr, readAddr = addr;
+	uint8_t bufRead[PAGE_SIZE] = {0};
 
-    if (addr % PAGE_SIZE)
-    {
-        return -1;
-    }
+	if (addr % PAGE_SIZE)
+	{
+		return -1;
+	}
 
-    eflash_erase_page(addr);
+	eflash_erase_page(addr);
 
-    for (i = 0; i < bufLen; i += 4)
-    {
-        data = (buf[i + 3] << 24) | (buf[i + 2] << 16) | (buf[i + 1] << 8) | (buf[i]);
-        eflash_write_word(writeAddr, data);
-        writeAddr += 4;
-    }
+	for (i = 0; i < bufLen; i += 4)
+	{
+		data = (buf[i + 3] << 24) | (buf[i + 2] << 16) | (buf[i + 1] << 8) | (buf[i]);
+		eflash_write_word(writeAddr, data);
+		writeAddr += 4;
+	}
 
-    for (i = 0; i < bufLen; i++)
-    {
-        bufRead[i] = eflash_read_byte(readAddr++);
-    }
+	for (i = 0; i < bufLen; i++)
+	{
+		bufRead[i] = eflash_read_byte(readAddr++);
+	}
 
-    if (memcmp_ATA(bufRead, buf, bufLen))
-    {
-        return -2;
-    }
+	if (memcmp_ATA(bufRead, buf, bufLen))
+	{
+		return -2;
+	}
 
-    return 0;
+	return 0;
 }
 /**
  * @functionname: mason_iap_pack_verify_process
@@ -151,58 +151,66 @@ int mason_iap_write_page_safe(uint32_t addr, uint8_t buf[], uint32_t bufLen)
  */
 emRetType mason_iap_pack_verify_process(emFwPackTypeType emFwPackType, uint8_t *pBin, uint32_t binLen)
 {
-    emRetType emRet = ERT_OK;
+	emRetType emRet = ERT_OK;
 	static SHA256_CTX sha256ctx;
 	uint8_t *PckHash = NULL;
-    
-    switch (emFwPackType)
-    {
-        case E_PACK_FIRST:
-        {
-            SHA256_init(&sha256ctx);
-        }
-        case E_PACK_CONTINUE:
-		case E_PACK_LAST:
-        {
-            SHA256_update(&sha256ctx, pBin, binLen);
-            break;
-        }
-		case E_PACK_HDR:
+
+	switch (emFwPackType)
+	{
+	case E_PACK_FIRST:
+	{
+		SHA256_init(&sha256ctx);
+	}
+	case E_PACK_CONTINUE:
+	case E_PACK_LAST:
+	{
+		uint8_t blk_sha256_buf[SHA256_LEN] = {0};
+		uint8_t *blkHash = NULL;
+		sha256_api(pBin, (binLen-8), blk_sha256_buf);
+		blkHash = pBin + binLen - 8;
+		if (memcmp_ATA(blkHash, blk_sha256_buf, 8))
 		{
-			uint8_t bufSHA256[SHA256_LEN] = {0};
-			SHA256_final(bufSHA256, &sha256ctx);
+			return ERT_IAP_fileDigest;
+		}
 
-			PckHash = pBin + 32;
-			if ( memcmp(PckHash, bufSHA256, SHA256_LEN) )
-            {
-                emRet = ERT_IAP_fileDigest;
-            }
+		SHA256_update(&sha256ctx, pBin, binLen);
+		break;
+	}
+	case E_PACK_HDR:
+	{
+		uint8_t bufSHA256[SHA256_LEN] = {0};
+		SHA256_final(bufSHA256, &sha256ctx);
 
-			//k1 verify
-			if(ERT_OK == emRet)
+		PckHash = pBin + 32;
+		if (memcmp_ATA(PckHash, bufSHA256, SHA256_LEN))
+		{
+			emRet = ERT_IAP_fileDigest;
+		}
+
+		//k1 verify
+		if (ERT_OK == emRet)
+		{
+			uint8_t *Sign = pBin + 64;
+			uint8_t public_key[PUB_KEY_LEN] = {0};
+			if (ERT_OK == mason_storage_read((uint8_t *)public_key, PUB_KEY_LEN, FLASH_ADDR_WEB_AUTH_PUB_KEY_64B))
 			{
-				uint8_t *Sign = pBin + 64;                
-				uint8_t public_key[PUB_KEY_LEN] = {0};
-				if(ERT_OK == mason_storage_read((uint8_t *)public_key, PUB_KEY_LEN, FLASH_ADDR_WEB_AUTH_PUB_KEY_64B))
+				//hash again
+				sha256_api(PckHash, SHA256_LEN, bufSHA256);
+				if (!ecdsa_verify(CRYPTO_CURVE_SECP256K1, bufSHA256, public_key, Sign))
 				{
-					//hash again
-					sha256_api(PckHash,  SHA256_LEN, bufSHA256);				
-					if (!ecdsa_verify(CRYPTO_CURVE_SECP256K1, bufSHA256, public_key, Sign))
-					{	
-						emRet = ERT_IAP_fileDigest;
-					}
-				}
-				else
-				{
-					emRet = ERT_IAP_FAIL;
+					emRet = ERT_IAP_fileDigest;
 				}
 			}
-            break;
+			else
+			{
+				emRet = ERT_IAP_FAIL;
+			}
 		}
-        default:
-            break;
-    }
+		break;
+	}
+	default:
+		break;
+	}
 
-    return emRet;
+	return emRet;
 }
-

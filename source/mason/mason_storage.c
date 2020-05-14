@@ -31,15 +31,6 @@ in the file COPYING.  If not, see <http://www.gnu.org/licenses/>.
  */
 MASON_STORAGE_EXT emRetType mason_storage_encryption(uint8_t nType, uint8_t *pIn, uint16_t len, uint8_t *pOut)
 {
-	uint8_t bufTransKey[24] = {0};
-	uint8_t bufTransIV[8] = {0};
-
-	des_set_key_u8(DES_TRIPLE_KEY, bufTransKey, DES_SWAP_ENABLE);
-	if (DES_FAIL == des_crypt_u8(pIn, pOut, len >> 3, nType, DES_MODE_CBC, bufTransIV, DES_NORMAL_MODE))
-	{
-		return ERT_3DESFail;
-	}
-
 	return ERT_OK;
 }
 /**
@@ -53,12 +44,12 @@ MASON_STORAGE_EXT emRetType mason_storage_read(uint8_t *pBuf, uint32_t bufLen, u
 	emRetType emRet = ERT_OK;
 	uint32_t addrTmp = addr;
 	uint32_t i = 0;
-	
-	for (i=0; i<bufLen; i++,addrTmp++)
+
+	for (i = 0; i < bufLen; i++, addrTmp++)
 	{
 		pBuf[i] = eflash_read_byte(addrTmp);
 	}
-		
+
 	return emRet;
 }
 /**
@@ -96,10 +87,10 @@ mason_storage_write_flag_safe(uint32_t addr, uint32_t u32Flag)
 {
 	eflash_rewrite_word(addr, u32Flag);
 
-    if (u32Flag != eflash_read_word(addr))
-    {
-        return ERT_StorageFail;
-    }
+	if (u32Flag != eflash_read_word(addr))
+	{
+		return ERT_StorageFail;
+	}
 
 	return ERT_OK;
 }

@@ -19,10 +19,10 @@ in the file COPYING.  If not, see <http://www.gnu.org/licenses/>.
 #define STONE_TAGS_H
 
 /** Avoid duplicate definitions */
-#ifdef  STONE_TAGS_GLOBAL
+#ifdef STONE_TAGS_GLOBAL
 #define STONE_TAGS_EXT
 #else
-#define STONE_TAGS_EXT	extern
+#define STONE_TAGS_EXT extern
 #endif
 
 /** Header file reference */
@@ -30,14 +30,14 @@ in the file COPYING.  If not, see <http://www.gnu.org/licenses/>.
 #include <stdlib.h>
 #include <stdint.h>
 #include <stdbool.h>
-#include <string.h>	//memcpy...
+#include <string.h> //memcpy...
 #include "mason_errno.h"
 
 /** Compatibility with the cplusplus*/
 #ifdef __cplusplus
 extern "C"
 {
-#endif    /* __cplusplus */
+#endif /* __cplusplus */
 
 /** Macro definitions*/
 #define TLV_T_CMD						0x0001
@@ -82,6 +82,7 @@ extern "C"
 #define TLV_T_HDP_DEPTH					0x0208
 #define TLV_T_ADDRESS					0x0209
 #define TLV_T_EXT_KEY					0x020A
+#define TLV_T_MASTER_KEY_FP				0x020B
 #define TLV_T_SECURITY_SWITCH			0x020F
 
 #define TLV_T_DES_KEY					0x0301

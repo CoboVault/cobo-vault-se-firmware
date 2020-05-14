@@ -22,7 +22,7 @@ in the file COPYING.  If not, see <http://www.gnu.org/licenses/>.
 #ifdef BIP44_GLOBAL
 #define BIP44_EXT
 #else
-#define BIP44_EXT	extern
+#define BIP44_EXT extern
 #endif
 
 /** Header file reference */
@@ -30,36 +30,35 @@ in the file COPYING.  If not, see <http://www.gnu.org/licenses/>.
 #include <stdlib.h>
 #include <stdint.h>
 #include <stdbool.h>
-#include <string.h>	//memcpy...
+#include <string.h> //memcpy...
 #include <ctype.h>
 
 /** Compatibility with the cplusplus*/
 #ifdef __cplusplus
 extern "C"
 {
-#endif    /* __cplusplus */
+#endif /* __cplusplus */
 
 /** Macro definitions*/
-#define SF_VB_INT_MNET_PUB		0x0488B21E
-#define SF_VB_INT_MNET_PRV		0x0488ADE4
-#define SF_VB_INT_TNET_PUB		0x043587CF
-#define SF_VB_INT_TNET_PRV		0x04358394
-#define SF_VB_BUF_MNET_PUB		(0x04, 0x88, 0xB2, 0x1E)
-#define SF_VB_BUF_MNET_PRV		(0x04, 0x88, 0xAD, 0xE4)
-#define SF_VB_BUF_TNET_PUB		(0x04, 0x35, 0x87, 0xCF)
-#define SF_VB_BUF_TNET_PRV		(0x04, 0x35, 0x83, 0x94)
+#define SF_VB_INT_MNET_PUB 0x0488B21E
+#define SF_VB_INT_MNET_PRV 0x0488ADE4
+#define SF_VB_INT_TNET_PUB 0x043587CF
+#define SF_VB_INT_TNET_PRV 0x04358394
+#define SF_VB_BUF_MNET_PUB (0x04, 0x88, 0xB2, 0x1E)
+#define SF_VB_BUF_MNET_PRV (0x04, 0x88, 0xAD, 0xE4)
+#define SF_VB_BUF_TNET_PUB (0x04, 0x35, 0x87, 0xCF)
+#define SF_VB_BUF_TNET_PRV (0x04, 0x35, 0x83, 0x94)
 
+	/** Variable declarations */
+	typedef struct
+	{
+		uint32_t verBytes;
+		uint32_t value[5];
+		uint8_t depth;
+	} stHDPathType;
 
-/** Variable declarations */
-typedef struct
-{
-	uint32_t verBytes;
-	uint32_t value[5];
-	uint8_t depth;
-}stHDPathType;
-
-/** Function declarations */
-BIP44_EXT bool bip44_str_to_hdpath(uint8_t *pStr, uint32_t strLen, stHDPathType *pstHDPath);
+	/** Function declarations */
+	BIP44_EXT bool bip44_str_to_hdpath(uint8_t *pStr, uint32_t strLen, stHDPathType *pstHDPath);
 
 /** Compatibility with the cplusplus*/
 #ifdef __cplusplus

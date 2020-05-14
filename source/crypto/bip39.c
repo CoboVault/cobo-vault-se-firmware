@@ -41,24 +41,24 @@ void PBKDF2_HMAC_SHA512(uint8_t *pPassword, uint32_t passwordLen,
 						uint8_t *pSalt, uint32_t saltLen,
 						uint32_t iterC, uint8_t *pOut, int32_t outLen)
 {
-	uint32_t i = 0, j = 0;
+	uint32_t i, j;
 	uint8_t *pKey = pPassword;
 	uint32_t keyLen = passwordLen;
 	char *pPassphrase_prefix = PASSPHRASE_PREFIX;
 	uint8_t *pText;
 	uint32_t textLen = 0;
-	
+
 	uint8_t bufSHA512Key[SHA512_LEN];
 	uint8_t bufSHA512[SHA512_LEN];
 	uint8_t bufSHA512Tmp[SHA512_LEN];
 	uint32_t I = 1;
 	uint8_t bufI[4] = {0x00};
 	uint32_t outOffset = 0;
-	
- 	memset(bufSHA512, 0x00, SHA512_LEN);
+
+	memset(bufSHA512, 0x00, SHA512_LEN);
 	memset(bufSHA512Tmp, 0x00, SHA512_LEN);
 	textLen = strlen(pPassphrase_prefix);
-	pText = (uint8_t*)calloc(textLen + saltLen + 4, sizeof(uint8_t));
+	pText = (uint8_t *)calloc(textLen + saltLen + 4, sizeof(uint8_t));
 	if (NULL == pText)
 	{
 		return;
@@ -66,38 +66,38 @@ void PBKDF2_HMAC_SHA512(uint8_t *pPassword, uint32_t passwordLen,
 	memcpy(pText, pPassphrase_prefix, textLen);
 	if (saltLen > 0)
 	{
-		memcpy(pText+textLen, pSalt, saltLen);
+		memcpy(pText + textLen, pSalt, saltLen);
 		textLen += saltLen;
 	}
-	
+
 	if (keyLen > 128)
 	{
 		sha512_api(pKey, keyLen, bufSHA512Key);
 		pKey = bufSHA512Key;
 		keyLen = SHA512_LEN;
 	}
-	while(outLen > 0)
+	while (outLen > 0)
 	{
 		bufI[0] = (uint8_t)((I >> 24) & 0xff);
 		bufI[1] = (uint8_t)((I >> 16) & 0xff);
 		bufI[2] = (uint8_t)((I >> 8) & 0xff);
-		bufI[3] = (uint8_t)( I & 0xff);
+		bufI[3] = (uint8_t)(I & 0xff);
 		// u32_to_buf(bufI, I);
-		memcpy(pText+textLen, bufI, 4);
-		
+		memcpy(pText + textLen, bufI, 4);
+
 		hmac_sha512_api(pText, textLen + 4, pKey, keyLen, bufSHA512Tmp);
 		memcpy(bufSHA512, bufSHA512Tmp, SHA512_LEN);
-		for (i=1; i<iterC; i++)
+		for (i = 1; i < iterC; i++)
 		{
 			// feed_dog();
 			wdt_feed();
 			hmac_sha512_api(bufSHA512Tmp, SHA512_LEN, pKey, keyLen, bufSHA512Tmp);
-			for (j=0; j<SHA512_LEN; j++)
+			for (j = 0; j < SHA512_LEN; j++)
 			{
 				bufSHA512[j] ^= bufSHA512Tmp[j];
 			}
 		}
-		memcpy(pOut+outOffset, bufSHA512, outLen>=SHA512_LEN?SHA512_LEN:outLen);
+		memcpy(pOut + outOffset, bufSHA512, outLen >= SHA512_LEN ? SHA512_LEN : outLen);
 		outOffset += SHA512_LEN;
 		outLen -= SHA512_LEN;
 		I++;
@@ -106,7 +106,7 @@ void PBKDF2_HMAC_SHA512(uint8_t *pPassword, uint32_t passwordLen,
 	{
 		free(pText);
 	}
-	
+
 	return;
 }
 
@@ -118,11 +118,10 @@ void PBKDF2_HMAC_SHA512(uint8_t *pPassword, uint32_t passwordLen,
 * @notice: pMnemonic -> password;pPassphrase -> salt
 * @notice: seed output from BIP39 is BIP32 input seed
 */
-void bip39_gen_seed_with_mnomonic(uint8_t *pMnemonic, uint32_t mnemonicLen, 
-		uint8_t *pPassphrase, uint32_t passphraseLen, 
-		uint8_t *pSeed, int32_t seedLen)
+void bip39_gen_seed_with_mnomonic(uint8_t *pMnemonic, uint32_t mnemonicLen,
+								  uint8_t *pPassphrase, uint32_t passphraseLen,
+								  uint8_t *pSeed, int32_t seedLen)
 {
-	PBKDF2_HMAC_SHA512(pMnemonic, mnemonicLen, pPassphrase, passphraseLen, 
-			2048, pSeed, seedLen);
+	PBKDF2_HMAC_SHA512(pMnemonic, mnemonicLen, pPassphrase, passphraseLen,
+					   2048, pSeed, seedLen);
 }
-

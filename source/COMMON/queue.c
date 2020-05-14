@@ -31,12 +31,12 @@ QUEUE_EXT stQueueType stQueue;
  * @para: 
  * @return: 
  */
-QUEUE_EXT void queue_init(volatile stQueueType* pstQueue)
+QUEUE_EXT void queue_init(volatile stQueueType *pstQueue)
 {
 	pstQueue->head = 0;
 	pstQueue->tail = 0;
 	pstQueue->size = 0;
-	memset((void*)pstQueue->queue, (int)NULL, QUEUE_SIZE);
+	memset((void *)pstQueue->queue, (int)NULL, QUEUE_SIZE);
 	QUEUE_LOG("queue init! max size = %d\r\n", QUEUE_SIZE);
 }
 /**
@@ -45,9 +45,9 @@ QUEUE_EXT void queue_init(volatile stQueueType* pstQueue)
  * @para: 
  * @return: 
  */
-QUEUE_EXT uint32_t queue_size(volatile stQueueType* pstQueue)
+QUEUE_EXT uint32_t queue_size(volatile stQueueType *pstQueue)
 {
-	QUEUE_LOG("Queue size = %d\r\n", pstQueue->size);
+	QUEUE_LOG("Queue size = %u\r\n", pstQueue->size);
 	return (pstQueue->size);
 }
 /**
@@ -57,7 +57,7 @@ QUEUE_EXT uint32_t queue_size(volatile stQueueType* pstQueue)
  * @return: 1: queue is empty
 			0: queue is not empty
  */
-QUEUE_EXT int queue_is_empty(volatile stQueueType* pstQueue)
+QUEUE_EXT int queue_is_empty(volatile stQueueType *pstQueue)
 {
 	return ((pstQueue->head == pstQueue->tail) && (!pstQueue->size));
 }
@@ -68,7 +68,7 @@ QUEUE_EXT int queue_is_empty(volatile stQueueType* pstQueue)
 * @return:	1: queue is full
 			0: queue is not full
 */
-QUEUE_EXT int queue_is_full(volatile stQueueType * pstQueue)
+QUEUE_EXT int queue_is_full(volatile stQueueType *pstQueue)
 {
 	return ((pstQueue->head == pstQueue->tail) && (pstQueue->size));
 }
@@ -79,7 +79,7 @@ QUEUE_EXT int queue_is_full(volatile stQueueType * pstQueue)
 			element: element in queue type
 * @return:	void
 */
-QUEUE_EXT void enqueue_overwrite(volatile stQueueType* pstQueue, queueElementType element)
+QUEUE_EXT void enqueue_overwrite(volatile stQueueType *pstQueue, queueElementType element)
 {
 	QUEUE_LOG("enqueue_overwrite!\r\n");
 	pstQueue->queue[pstQueue->tail] = element;
@@ -102,7 +102,7 @@ QUEUE_EXT void enqueue_overwrite(volatile stQueueType* pstQueue, queueElementTyp
 			element: element in queue type
 * @return:	void
 */
-QUEUE_EXT void enqueue_safe(volatile stQueueType* pstQueue, queueElementType element)
+QUEUE_EXT void enqueue_safe(volatile stQueueType *pstQueue, queueElementType element)
 {
 	QUEUE_LOG("enqueue_safe!\r\n");
 	if (!queue_is_full(pstQueue))
@@ -126,7 +126,7 @@ QUEUE_EXT void enqueue_safe(volatile stQueueType* pstQueue, queueElementType ele
 * @para:	pstQueue: pointer of a queue struct
 * @return:	queue element in the head position
 */
-QUEUE_EXT queueElementType dequeue(volatile stQueueType* pstQueue)
+QUEUE_EXT queueElementType dequeue(volatile stQueueType *pstQueue)
 {
 	queueElementType e = (queueElementType)NULL;
 
@@ -147,7 +147,6 @@ QUEUE_EXT queueElementType dequeue(volatile stQueueType* pstQueue)
 		QUEUE_LOG("Queue is empty!\r\n");
 	}
 
-
 	return e;
 }
 /**
@@ -157,18 +156,18 @@ QUEUE_EXT queueElementType dequeue(volatile stQueueType* pstQueue)
 			cb: pointer of a queue element display callback function
 * @return: void
 */
-QUEUE_EXT void queue_display(volatile stQueueType* pstQueue, display_element_callback cb)
+QUEUE_EXT void queue_display(volatile stQueueType *pstQueue, display_element_callback cb)
 {
 	uint32_t index = pstQueue->head;
 	uint32_t count = 0;
 
 	QUEUE_LOG("Queue display:\r\n");
-	printf("[%5d] ", pstQueue->size);
+	printf("[%5u] ", pstQueue->size);
 	while (count++ < pstQueue->size)
 	{
-		cb((void*)&(pstQueue->queue[index++ % QUEUE_SIZE]));
+		cb((void *)&(pstQueue->queue[index++ % QUEUE_SIZE]));
 	}
-    printf("\r\n");
+	printf("\r\n");
 }
 /**
 * @functionname: queue_display_detail
@@ -177,17 +176,17 @@ QUEUE_EXT void queue_display(volatile stQueueType* pstQueue, display_element_cal
 			cb: pointer of a queue element display callback function
 * @return: void
 */
-QUEUE_EXT void queue_display_detail(volatile stQueueType* pstQueue, display_element_callback cb)
+QUEUE_EXT void queue_display_detail(volatile stQueueType *pstQueue, display_element_callback cb)
 {
 	uint32_t index = pstQueue->head;
 	uint32_t count = 0;
 
 	QUEUE_LOG("Queue display detail:\r\n");
-	printf("head = %d, tail = %d\r\n", pstQueue->head, pstQueue->tail);
-	printf("[%6d]", pstQueue->size);
+	printf("head = %u, tail = %u\r\n", pstQueue->head, pstQueue->tail);
+	printf("[%6u]", pstQueue->size);
 	while (count++ < pstQueue->size)
 	{
-		cb((void*)&(pstQueue->queue[index++ % QUEUE_SIZE]));
+		cb((void *)&(pstQueue->queue[index++ % QUEUE_SIZE]));
 	}
 	printf("\r\n");
 }
@@ -198,7 +197,7 @@ QUEUE_EXT void queue_display_detail(volatile stQueueType* pstQueue, display_elem
 			cb: pointer of a queue element display callback function
 * @return: void
 */
-QUEUE_EXT void queue_display_detail_by_order(volatile stQueueType* pstQueue, display_element_callback cb)
+QUEUE_EXT void queue_display_detail_by_order(volatile stQueueType *pstQueue, display_element_callback cb)
 {
 	uint32_t index = 0;
 
@@ -221,7 +220,7 @@ QUEUE_EXT void queue_display_detail_by_order(volatile stQueueType* pstQueue, dis
 			}
 			for (index = pstQueue->head; index < pstQueue->tail; index++)
 			{
-				cb((void*) & (pstQueue->queue[index % QUEUE_SIZE]));
+				cb((void *)&(pstQueue->queue[index % QUEUE_SIZE]));
 			}
 			for (index = pstQueue->tail; index < QUEUE_SIZE; index++)
 			{
@@ -232,7 +231,7 @@ QUEUE_EXT void queue_display_detail_by_order(volatile stQueueType* pstQueue, dis
 		{
 			for (index = 0; index < pstQueue->tail; index++)
 			{
-				cb((void*) & (pstQueue->queue[index % QUEUE_SIZE]));
+				cb((void *)&(pstQueue->queue[index % QUEUE_SIZE]));
 			}
 			for (index = pstQueue->tail; index < pstQueue->head; index++)
 			{
@@ -240,7 +239,7 @@ QUEUE_EXT void queue_display_detail_by_order(volatile stQueueType* pstQueue, dis
 			}
 			for (index = pstQueue->head; index < QUEUE_SIZE; index++)
 			{
-				cb((void*) & (pstQueue->queue[index % QUEUE_SIZE]));
+				cb((void *)&(pstQueue->queue[index % QUEUE_SIZE]));
 			}
 		}
 	}
@@ -252,7 +251,7 @@ QUEUE_EXT void queue_display_detail_by_order(volatile stQueueType* pstQueue, dis
 * @para: element
 * @return: void
 */
-QUEUE_EXT void display_element(queueElementType* pElement)
+QUEUE_EXT void display_element(queueElementType *pElement)
 {
 	pstCMDType pstCMD = *pElement;
 	printf("dequeue:\n");

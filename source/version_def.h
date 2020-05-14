@@ -39,27 +39,36 @@ extern "C"
 #endif /* __cplusplus */
 
 /** Macro definitions*/
+#define VER_REL 0 // 0 -- develop mode , 1 -- release mode
+
 #define VER_Major			0
 #define VER_Minor			3
 #define VER_Release			5
-#define VER_Build			00001
+#define VER_Build			00003
+
 #if VER_Major>0x9 || VER_Minor>0x9 || VER_Release>0x9 || VER_Build>0x0FFFFF
 #if defined _WIN32 || _WIN64
-#pragma message ("VERSION define error, please check!")
+#pragma message("VERSION define error, please check!")
 #else
 #error "VERSION define error, please check!"
 #endif
 #endif
 
-#define _CONCATENATE_AS_DEC(a,b,c)		a##b##c
-#define _CONCATENATE_AS_HEX(a,b,c)		0x##a##b##c
-#define _VER_F3(a,b,c)		(_CONCATENATE_AS_HEX(a, b, c))
-#define VER_F3				(_VER_F3(VER_Major, VER_Minor, VER_Release))
-#define VERSION_BCD			(uint32_t)(VER_F3<<20 | VER_Build)
+#define _CONCATENATE_AS_DEC(a, b, c) a##b##c
+#define _CONCATENATE_AS_HEX(a, b, c) 0x##a##b##c
+#define _VER_F3(a, b, c) (_CONCATENATE_AS_HEX(a, b, c))
+#define VER_F3 (_VER_F3(VER_Major, VER_Minor, VER_Release))
+#define VERSION_BCD (uint32_t)(VER_F3 << 20 | VER_Build)
 
-#define VER_LEN				12+1
-#define GET_VERSION_STR(buf, len)	do{snprintf(buf,len,"%d.%d.%d.%06d",VER_Major,VER_Minor,VER_Release,VER_Build);}while(0)
+#define VER_LEN 12 + 1
+#define GET_VERSION_STR(buf, len)                                                          \
+    do                                                                                     \
+    {                                                                                      \
+        snprintf(buf, len, "%d.%d.%d.%06d", VER_Major, VER_Minor, VER_Release, VER_Build); \
+    } while (0)
 
+
+extern uint8_t update_key_ex[422];
 /** Compatibility with the cplusplus*/
 #ifdef __cplusplus
 } /* Extern C */

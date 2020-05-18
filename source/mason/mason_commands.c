@@ -165,7 +165,7 @@ MASON_COMMANDS_EXT volatile stCmdHandlerType gstCmdHandlers[CMD_H_MAX][CMD_L_MAX
 			 mason_cmd0305_get_extpubkey,
 		 },
 		 {
-			 USER_WALLET,
+			 USER_ALL,
 			 mason_cmd0306_delete_wallet,
 		 },
 		 {
@@ -1531,12 +1531,16 @@ static void mason_cmd0306_delete_wallet(void *pContext)
 	}
 	else
 	{
-		if (!mason_set_mode(HDW_STATUS_EMPTY))
+		stHDWStatusType status;
+		mason_get_mode(&status);
+		if(E_HDWS_ATTACK != status.emHDWStatus)
 		{
-			printf("Set mode %d failed\n", HDW_STATUS_EMPTY);
-			emRet = ERT_CommFailParam;
+			if (!mason_set_mode(HDW_STATUS_EMPTY))
+			{
+				printf("Set mode %d failed\n", HDW_STATUS_EMPTY);
+				emRet = ERT_CommFailParam;
+			}
 		}
-
 		mason_setting_delete();
 	}
 

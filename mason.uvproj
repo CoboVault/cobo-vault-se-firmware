@@ -372,7 +372,7 @@
             <useFile>0</useFile>
             <TextAddressRange>0x00000000</TextAddressRange>
             <DataAddressRange>0x00000000</DataAddressRange>
-            <ScatterFile>.\Listings\ACL16.sct</ScatterFile>
+            <ScatterFile>.\Listings\SE.sct</ScatterFile>
             <IncludeLibs></IncludeLibs>
             <IncludeLibsPath></IncludeLibsPath>
             <Misc></Misc>
@@ -391,9 +391,9 @@
               <FilePath>.\source\system\startup.s</FilePath>
             </File>
             <File>
-              <FileName>system_acl16.c</FileName>
+              <FileName>system_se.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\source\system\system_acl16.c</FilePath>
+              <FilePath>.\source\system\system_se.c</FilePath>
             </File>
           </Files>
         </Group>

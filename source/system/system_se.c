@@ -1,5 +1,5 @@
-#include  "system_acl16.h"
-#include  "acl16.h"
+#include  "system_se.h"
+#include  "se.h"
 
 uint32_t SystemCoreClock = 0;   //core CLK (uint:Hz)
 uint32_t SRCClock = 0;          //source CLK (uint:Hz)

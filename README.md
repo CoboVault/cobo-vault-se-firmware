@@ -25,8 +25,6 @@ You can also follow [@CoboVault](https://twitter.com/CoboVault) on Twitter.
 ## Code Structure
 Modules:
 
-`Listings`: Configuration files for compiling Secure Element source code
-
 `source` : Source files for Secure Element firmware
 
 `upgrade` : Python script for verifying update package

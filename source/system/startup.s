@@ -8,7 +8,7 @@
 ; *****************************************************************************/
 Stack_Size      EQU     0x00000800
 Heap_Size       EQU     0x00002000
-;__initial_sp    EQU    0x20003000	   ;手动定义SP值
+;__initial_sp    EQU    0x20003000	   ;config sp value
 
                 AREA    STACK, NOINIT, READWRITE, ALIGN=3
 Stack_Mem       SPACE   Stack_Size
@@ -39,11 +39,11 @@ __Vectors
                 DCD     0                           ; Reserved
                 DCD     0                           ; Reserved
                 DCD     0                           ; Reserved
-                DCD     SVC_Handler                 ; SVCall Handler ，相当于SWI
+                DCD     SVC_Handler                 ; SVCall Handler, like SWI
                 DCD     0                           ; Reserved
                 DCD     0                           ; Reserved
                 DCD     PendSV_Handler              ; PendSV Handler
-                DCD     SysTick_Handler             ; SysTick Handler，系统滴答定时器，即周期性溢出的时基定时器
+                DCD     SysTick_Handler             ; SysTick Handler, sys timer
 
                 ; External Interrupts
                 DCD     WDT_IRQHandler				; 0:  WDT_IRQHandler    
@@ -86,12 +86,12 @@ Reset_Handler   PROC
                 IMPORT  __main
 
                 ;IMPORT  __set_CONTROL
-				;MOVS     R0, #0x01		  ;用户级，Thread和handler模式共享同一个堆栈MSP
-				;BL 	    __set_CONTROL	  ;转入用户级线程模式
+				;MOVS     R0, #0x01		;user level,Thread and handler mode share same stack MSP
+				;BL 	    __set_CONTROL	  ;jump to user level thread mode
 
 
                 LDR     R0, =__main
-                BX      R0	              ;BX:跳转到由寄存器给出的地址,	B:跳转到标号处对应的地址
+                BX      R0	              ;BX:jump to address from register.B:jump to related address
                 ENDP
 
 

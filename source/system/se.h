@@ -1,5 +1,5 @@
-#ifndef __ACL16_H__
-#define __ACL16_H__
+#ifndef __SE_H__
+#define __SE_H__
 
 #ifdef __cplusplus
 extern "C"
@@ -82,7 +82,7 @@ typedef enum IRQn
 
 
 #include "core_cm0.h"                       /* Processor and core peripherals */
-#include "system_acl16.h"                 /* System Header */
+#include "system_se.h"                 /* System Header */
 
 /* --------  End of section using anonymous unions and disabling warnings  -------- */
 #if   defined (__CC_ARM)

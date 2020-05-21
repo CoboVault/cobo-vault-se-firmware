@@ -391,9 +391,9 @@
               <FilePath>.\source\system\startup.s</FilePath>
             </File>
             <File>
-              <FileName>system_acl16.c</FileName>
+              <FileName>system_se.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\source\system\system_acl16.c</FilePath>
+              <FilePath>.\source\system\system_se.c</FilePath>
             </File>
           </Files>
         </Group>

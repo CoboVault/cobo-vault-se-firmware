@@ -194,7 +194,7 @@ MASON_COMMANDS_EXT volatile stCmdHandlerType gstCmdHandlers[CMD_H_MAX][CMD_L_MAX
 		{//04 XX
 		 {
 			 USER_EMPTY | USER_WALLET,
-			 mason_cmd0401_generate_public_key_from_private_key
+			 mason_cmd0401_generate_public_key_from_private_key,
 		 },
 		 {
 			 USER_ALL,
@@ -389,7 +389,7 @@ MASON_COMMANDS_EXT volatile stCmdHandlerType gstCmdHandlers[CMD_H_MAX][CMD_L_MAX
 			 USER_CHIP | USER_FACTORY | USER_EMPTY | USER_WALLET,
 			 mason_cmd0908_token_delete,
 		 }}
-};
+	};
 
 /** Function implementations */
 /**
@@ -981,7 +981,7 @@ static void mason_cmd0107_factory_activate(void *pContext)
 		mason_set_mode(HDW_STATUS_EMPTY);
 		mason_delete_wallet();
 		mason_setting_delete();
-	} while(0);
+	} while (0);
 
 	MASON_CMD_RESP_OUTPUT()
 }
@@ -1942,7 +1942,6 @@ static void mason_cmd0903_usrpwd_verify(void *pContext)
 		{
 			break;
 		}
-
 
 		if (stack_search_by_tag(pstS, &pstTLV, TLV_T_RETURN_TOKEN))
 		{

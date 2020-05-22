@@ -42,6 +42,20 @@ in the file COPYING.  If not, see <http://www.gnu.org/licenses/>.
 #include "crypto_api.h"
 #include <mason_setting.h>
 
+/** Macro definitions*/
+#define MASON_CMD_DECLARE_VARIABLE(ret)         \
+	emRetType emRet = ret;                      \
+	uint8_t bufRet[2] = {0x00, 0x00};           \
+	pstStackType pstS = (pstStackType)pContext; \
+	stStackType stStack = {{NULL}, -1};         \
+	stackElementType pstTLV = NULL;
+
+#define MASON_CMD_RESP_OUTPUT()                                                           \
+	u16_to_buf(bufRet, (uint16_t)emRet);                                                  \
+	mason_cmd_append_to_outputTLVArray(&stStack, TLV_T_RESPONSE, sizeof(bufRet), bufRet); \
+	mason_cmd_end_outputTLVArray(&stStack, gpstCMD->unFlag.stFlag.enc ? ENCRYPT : PLAIN); \
+	stack_destroy(&stStack);
+
 /** Variable definitions */
 typedef void (*funcptr)(void);
 MASON_COMMANDS_EXT volatile emCmdFSMType gemCmdFSM = E_CMD_FSM_IDLE;
@@ -51,6 +65,7 @@ uint32_t stream_to_tlv(pstStackType pstStack, const char *stream, uint32_t strea
 void mason_execute_cmd(pstStackType pstStack);
 emRetType mason_cmd_preprocess(pstCMDType pstCMD);
 void mason_cmd_invalid(void *pContext);
+emRetType mason_cmd_verify_passwd(pstStackType pstStack, stackElementType *pelement);
 static void mason_cmd0102_get_information(void *pContext);
 static void mason_cmd0107_factory_activate(void *pContext);
 static void mason_cmd0201_iap_request(void *pContext);
@@ -392,7 +407,7 @@ uint32_t stream_to_tlv(pstStackType pstStack, const char *stream, uint32_t strea
 	while (index < streamLen)
 	{
 		pstTLV = (pstTLVType)calloc(1, sizeof(stTLVType));
-		if(NULL == pstTLV)
+		if (NULL == pstTLV)
 		{
 			return index;
 		}
@@ -645,8 +660,7 @@ void mason_execute_cmd(pstStackType pstStack)
 
 	is_succeed = stack_search_CMDNo(pstStack, &pstTLV, &unCMDNo);
 
-	if ((false == is_succeed) || unCMDNo.buf[0] > CMD_H_MAX || unCMDNo.buf[1] > CMD_H_MAX
-		|| 0 == unCMDNo.buf[0] || 0 == unCMDNo.buf[1])
+	if ((false == is_succeed) || unCMDNo.buf[0] > CMD_H_MAX || unCMDNo.buf[1] > CMD_H_MAX || 0 == unCMDNo.buf[0] || 0 == unCMDNo.buf[1])
 	{
 		mason_cmd_invalid((void *)pstStack);
 		return;
@@ -870,6 +884,31 @@ void mason_cmd_invalid(void *pContext)
 	stack_destroy(&stStack);
 }
 /**
+ * @functionname: mason_cmd_verify_passwd
+ * @description: 
+ * @para: 
+ * @return: 
+ */
+emRetType mason_cmd_verify_passwd(pstStackType pstStack, stackElementType *pelement)
+{
+	uint8_t *cur_pwd = NULL;
+	uint16_t cur_pwd_len = 0;
+
+	if (!stack_search_by_tag(pstStack, pelement, TLV_T_USRPWD_CUR))
+	{
+		return ERT_needUsrPass;
+	}
+	cur_pwd = (uint8_t *)(*pelement)->pV;
+	cur_pwd_len = (*pelement)->L;
+	if (!mason_usrpwd_verify(cur_pwd, cur_pwd_len))
+	{
+		mason_usrcount();
+		return ERT_UsrPassVerifyFail;
+	}
+	mason_usrcount_reset();
+	return ERT_OK;
+}
+/**
  * @functionname: mason_cmd0102_get_information
  * @description: 
  * @para: 
@@ -877,11 +916,7 @@ void mason_cmd_invalid(void *pContext)
  */
 static void mason_cmd0102_get_information(void *pContext)
 {
-	emRetType emRet = ERT_OK;
-	uint8_t bufRet[2] = {0x00, 0x00};
-	pstStackType pstS = (pstStackType)pContext;
-	stStackType stStack = {{NULL}, -1};
-	stackElementType pstTLV = NULL;
+	MASON_CMD_DECLARE_VARIABLE(ERT_OK)
 
 	uint8_t bufVerName[VER_LEN] = {0x00};
 	uint8_t bufVerCode[4] = {0x00};
@@ -909,12 +944,9 @@ static void mason_cmd0102_get_information(void *pContext)
 		mason_get_mode(&status);
 		u32_to_buf(status_buf, status.emHDWStatus);
 		mason_cmd_append_to_outputTLVArray(&stStack, TLV_T_FW_STATUS, sizeof(status.emHDWStatus), status_buf);
-	}while(0);
+	} while (0);
 
-	u16_to_buf(bufRet, (uint16_t)emRet);
-	mason_cmd_append_to_outputTLVArray(&stStack, TLV_T_RESPONSE, sizeof(bufRet), bufRet);
-	mason_cmd_end_outputTLVArray(&stStack, gpstCMD->unFlag.stFlag.enc ? ENCRYPT : PLAIN);
-	stack_destroy(&stStack);
+	MASON_CMD_RESP_OUTPUT()
 }
 /**
  * @functionname: mason_cmd0107_factory_activate
@@ -924,11 +956,7 @@ static void mason_cmd0102_get_information(void *pContext)
  */
 static void mason_cmd0107_factory_activate(void *pContext)
 {
-	emRetType emRet = ERT_OK;
-	uint8_t bufRet[2] = {0x00, 0x00};
-	pstStackType pstS = (pstStackType)pContext;
-	stStackType stStack = {{NULL}, -1};
-	stackElementType pstTLV = NULL;
+	MASON_CMD_DECLARE_VARIABLE(ERT_OK)
 
 	stHDWStatusType status;
 
@@ -953,12 +981,9 @@ static void mason_cmd0107_factory_activate(void *pContext)
 		mason_set_mode(HDW_STATUS_EMPTY);
 		mason_delete_wallet();
 		mason_setting_delete();
-	}while(0);
+	} while(0);
 
-	u16_to_buf(bufRet, (uint16_t)emRet);
-	mason_cmd_append_to_outputTLVArray(&stStack, TLV_T_RESPONSE, sizeof(bufRet), bufRet);
-	mason_cmd_end_outputTLVArray(&stStack, gpstCMD->unFlag.stFlag.enc ? ENCRYPT : PLAIN);
-	stack_destroy(&stStack);
+	MASON_CMD_RESP_OUTPUT()
 }
 /**
  * @functionname: mason_cmd0201_iap_request
@@ -968,11 +993,7 @@ static void mason_cmd0107_factory_activate(void *pContext)
  */
 static void mason_cmd0201_iap_request(void *pContext)
 {
-	emRetType emRet = ERT_OK;
-	uint8_t bufRet[2] = {0x00, 0x00};
-	pstStackType pstS = (pstStackType)pContext;
-	stStackType stStack = {{NULL}, -1};
-	stackElementType pstTLV = NULL;
+	MASON_CMD_DECLARE_VARIABLE(ERT_OK)
 
 	uint32_t appVerCode = 0UL;
 	uint32_t block_length = 0;
@@ -1013,12 +1034,9 @@ static void mason_cmd0201_iap_request(void *pContext)
 			emRet = ERT_VerConflict;
 			break;
 		}
-	}while(0);
+	} while (0);
 
-	u16_to_buf(bufRet, (uint16_t)emRet);
-	mason_cmd_append_to_outputTLVArray(&stStack, TLV_T_RESPONSE, sizeof(bufRet), bufRet);
-	mason_cmd_end_outputTLVArray(&stStack, gpstCMD->unFlag.stFlag.enc ? ENCRYPT : PLAIN);
-	stack_destroy(&stStack);
+	MASON_CMD_RESP_OUTPUT()
 }
 /**
  * @functionname: mason_cmd0203_iap_verify
@@ -1028,17 +1046,11 @@ static void mason_cmd0201_iap_request(void *pContext)
  */
 static void mason_cmd0203_iap_verify(void *pContext)
 {
-	emRetType emRet = ERT_OK;
-	uint8_t bufRet[2] = {0x00, 0x00};
-	pstStackType pstS = (pstStackType)pContext;
-	stStackType stStack = {{NULL}, -1};
-	stackElementType pstTLV = NULL;
+	MASON_CMD_DECLARE_VARIABLE(ERT_OK)
 
 	emFwPackTypeType emFwPackType = E_PACK_ERR;
 	uint8_t *pFwPack = NULL;
 	uint32_t fwPackLen = 0;
-	uint8_t *cur_pwd = NULL;
-	uint16_t cur_pwd_len = 0;
 
 	mason_cmd_init_outputTLVArray(&stStack);
 
@@ -1051,20 +1063,10 @@ static void mason_cmd0203_iap_verify(void *pContext)
 		}
 		mason_cmd_append_ele_to_outputTLVArray(&stStack, pstTLV);
 
-		if (!stack_search_by_tag(pstS, &pstTLV, TLV_T_USRPWD_CUR))
+		if (ERT_OK != (emRet = mason_cmd_verify_passwd(pstS, &pstTLV)))
 		{
-			emRet = ERT_needUsrPass;
 			break;
 		}
-		cur_pwd = (uint8_t *)pstTLV->pV;
-		cur_pwd_len = pstTLV->L;
-		if (!mason_usrpwd_verify(cur_pwd, cur_pwd_len))
-		{
-			mason_usrcount();
-			emRet = ERT_UsrPassVerifyFail;
-			break;
-		}
-		mason_usrcount_reset();
 
 		if (!stack_search_by_tag(pstS, &pstTLV, TLV_T_UPDATE_PACK_TYPE) || (1 != pstTLV->L))
 		{
@@ -1102,7 +1104,7 @@ static void mason_cmd0203_iap_verify(void *pContext)
 			}
 		}
 
-		if(ERT_OK != (emRet = mason_iap_pack_verify_process(emFwPackType, pFwPack, fwPackLen)))
+		if (ERT_OK != (emRet = mason_iap_pack_verify_process(emFwPackType, pFwPack, fwPackLen)))
 		{
 			break;
 		}
@@ -1119,12 +1121,9 @@ static void mason_cmd0203_iap_verify(void *pContext)
 			u32_to_buf(bufAddr, addr);
 			mason_cmd_append_to_outputTLVArray(&stStack, TLV_T_FLASH_ADDR, sizeof(bufAddr), bufAddr);
 		}
-	}while(0);
+	} while (0);
 
-	u16_to_buf(bufRet, (uint16_t)emRet);
-	mason_cmd_append_to_outputTLVArray(&stStack, TLV_T_RESPONSE, sizeof(bufRet), bufRet);
-	mason_cmd_end_outputTLVArray(&stStack, gpstCMD->unFlag.stFlag.enc ? ENCRYPT : PLAIN);
-	stack_destroy(&stStack);
+	MASON_CMD_RESP_OUTPUT()
 
 	if ((ERT_OK == emRet) && (E_PACK_HDR == emFwPackType))
 	{
@@ -1143,11 +1142,7 @@ static void mason_cmd0203_iap_verify(void *pContext)
  */
 static void mason_cmd0301_get_entropy(void *pContext)
 {
-	emRetType emRet = ERT_OK;
-	uint8_t bufRet[2] = {0x00, 0x00};
-	pstStackType pstS = (pstStackType)pContext;
-	stStackType stStack = {{NULL}, -1};
-	stackElementType pstTLV = NULL;
+	MASON_CMD_DECLARE_VARIABLE(ERT_OK)
 
 	uint16_t entropyBits = 0;
 	uint8_t needChecksum = 0;
@@ -1165,7 +1160,7 @@ static void mason_cmd0301_get_entropy(void *pContext)
 		}
 		mason_cmd_append_ele_to_outputTLVArray(&stStack, pstTLV);
 
-		if(!stack_search_by_tag(pstS, &pstTLV, TLV_T_ENTROPY_BITS) || (2 != pstTLV->L))
+		if (!stack_search_by_tag(pstS, &pstTLV, TLV_T_ENTROPY_BITS) || (2 != pstTLV->L))
 		{
 			emRet = ERT_CommFailParam;
 			break;
@@ -1195,12 +1190,9 @@ static void mason_cmd0301_get_entropy(void *pContext)
 			break;
 		}
 		mason_cmd_append_to_outputTLVArray(&stStack, TLV_T_ENTROPY, entropy_length, entropy_buffer);
-	}while(0);
+	} while (0);
 
-	u16_to_buf(bufRet, (uint16_t)emRet);
-	mason_cmd_append_to_outputTLVArray(&stStack, TLV_T_RESPONSE, sizeof(bufRet), bufRet);
-	mason_cmd_end_outputTLVArray(&stStack, gpstCMD->unFlag.stFlag.enc ? ENCRYPT : PLAIN);
-	stack_destroy(&stStack);
+	MASON_CMD_RESP_OUTPUT()
 
 	if (entropy_buffer != NULL)
 	{
@@ -1215,14 +1207,8 @@ static void mason_cmd0301_get_entropy(void *pContext)
  */
 static void mason_cmd0302_create_wallet(void *pContext)
 {
-	emRetType emRet = ERT_OK;
-	uint8_t bufRet[2] = {0x00, 0x00};
-	pstStackType pstS = (pstStackType)pContext;
-	stStackType stStack = {{NULL}, -1};
-	stackElementType pstTLV = NULL;
+	MASON_CMD_DECLARE_VARIABLE(ERT_OK)
 
-	uint8_t *cur_pwd = NULL;
-	uint16_t cur_pwd_len = 0;
 	uint8_t *mnemonic = NULL;
 	uint16_t mnemonic_len = 0;
 
@@ -1237,20 +1223,10 @@ static void mason_cmd0302_create_wallet(void *pContext)
 		}
 		mason_cmd_append_ele_to_outputTLVArray(&stStack, pstTLV);
 
-		if (!stack_search_by_tag(pstS, &pstTLV, TLV_T_USRPWD_CUR))
+		if (ERT_OK != (emRet = mason_cmd_verify_passwd(pstS, &pstTLV)))
 		{
-			emRet = ERT_needUsrPass;
 			break;
 		}
-		cur_pwd = (uint8_t *)pstTLV->pV;
-		cur_pwd_len = pstTLV->L;
-		if (!mason_usrpwd_verify(cur_pwd, cur_pwd_len))
-		{
-			mason_usrcount();
-			emRet = ERT_UsrPassVerifyFail;
-			break;
-		}
-		mason_usrcount_reset();
 
 		if (!stack_search_by_tag(pstS, &pstTLV, TLV_T_MNEMONIC))
 		{
@@ -1261,7 +1237,7 @@ static void mason_cmd0302_create_wallet(void *pContext)
 		mnemonic_len = pstTLV->L;
 		if (!mason_create_wallet(mnemonic, mnemonic_len))
 		{
-			emRet = ERT_CommFailParam;			
+			emRet = ERT_CommFailParam;
 			break;
 		}
 		if (!mason_set_mode(HDW_STATUS_WALLET))
@@ -1269,12 +1245,9 @@ static void mason_cmd0302_create_wallet(void *pContext)
 			emRet = ERT_CommFailParam;
 			break;
 		}
-	}while(0);
+	} while (0);
 
-	u16_to_buf(bufRet, (uint16_t)emRet);
-	mason_cmd_append_to_outputTLVArray(&stStack, TLV_T_RESPONSE, sizeof(bufRet), bufRet);
-	mason_cmd_end_outputTLVArray(&stStack, gpstCMD->unFlag.stFlag.enc ? ENCRYPT : PLAIN);
-	stack_destroy(&stStack);
+	MASON_CMD_RESP_OUTPUT()
 }
 /**
  * @functionname: mason_cmd0303_change_wallet_passphrase
@@ -1284,14 +1257,8 @@ static void mason_cmd0302_create_wallet(void *pContext)
  */
 static void mason_cmd0303_change_wallet_passphrase(void *pContext)
 {
-	emRetType emRet = ERT_OK;
-	uint8_t bufRet[2] = {0x00, 0x00};
-	pstStackType pstS = (pstStackType)pContext;
-	stStackType stStack = {{NULL}, -1};
-	stackElementType pstTLV = NULL;
+	MASON_CMD_DECLARE_VARIABLE(ERT_OK)
 
-	uint8_t *cur_pwd = NULL;
-	uint16_t cur_pwd_len = 0;
 	uint8_t *passphrase = NULL;
 	uint16_t passphrase_len = 0;
 	stHDWStatusType status;
@@ -1307,20 +1274,10 @@ static void mason_cmd0303_change_wallet_passphrase(void *pContext)
 		}
 		mason_cmd_append_ele_to_outputTLVArray(&stStack, pstTLV);
 
-		if (!stack_search_by_tag(pstS, &pstTLV, TLV_T_USRPWD_CUR))
+		if (ERT_OK != (emRet = mason_cmd_verify_passwd(pstS, &pstTLV)))
 		{
-			emRet = ERT_needUsrPass;
 			break;
 		}
-		cur_pwd = (uint8_t *)pstTLV->pV;
-		cur_pwd_len = pstTLV->L;
-		if (!mason_usrpwd_verify(cur_pwd, cur_pwd_len))
-		{
-			mason_usrcount();
-			emRet = ERT_UsrPassVerifyFail;
-			break;
-		}
-		mason_usrcount_reset();
 
 		mason_get_mode(&status);
 		if (status.emHDWStatus != E_HDWS_WALLET)
@@ -1332,7 +1289,7 @@ static void mason_cmd0303_change_wallet_passphrase(void *pContext)
 		if (!stack_search_by_tag(pstS, &pstTLV, TLV_T_PASSPHRASE))
 		{
 			emRet = ERT_CommFailParam;
-			break;			
+			break;
 		}
 		passphrase = (uint8_t *)pstTLV->pV;
 		passphrase_len = pstTLV->L;
@@ -1341,12 +1298,9 @@ static void mason_cmd0303_change_wallet_passphrase(void *pContext)
 			emRet = ERT_CommFailParam;
 			break;
 		}
-	}while(0);
+	} while (0);
 
-	u16_to_buf(bufRet, (uint16_t)emRet);
-	mason_cmd_append_to_outputTLVArray(&stStack, TLV_T_RESPONSE, sizeof(bufRet), bufRet);
-	mason_cmd_end_outputTLVArray(&stStack, gpstCMD->unFlag.stFlag.enc ? ENCRYPT : PLAIN);
-	stack_destroy(&stStack);
+	MASON_CMD_RESP_OUTPUT()
 }
 /**
  * @functionname: mason_cmd0305_get_extpubkey
@@ -1356,11 +1310,7 @@ static void mason_cmd0303_change_wallet_passphrase(void *pContext)
  */
 static void mason_cmd0305_get_extpubkey(void *pContext)
 {
-	emRetType emRet = ERT_OK;
-	uint8_t bufRet[2] = {0x00, 0x00};
-	pstStackType pstS = (pstStackType)pContext;
-	stStackType stStack = {{NULL}, -1};
-	stackElementType pstTLV = NULL;
+	MASON_CMD_DECLARE_VARIABLE(ERT_OK)
 
 	uint8_t *path = NULL;
 	uint16_t path_len = 0;
@@ -1404,7 +1354,7 @@ static void mason_cmd0305_get_extpubkey(void *pContext)
 			break;
 		}
 
-		if(stack_search_by_tag(pstS, &pstTLV, TLV_T_CURVE_TYPE)&&((1 == pstTLV->L)))
+		if (stack_search_by_tag(pstS, &pstTLV, TLV_T_CURVE_TYPE) && ((1 == pstTLV->L)))
 		{
 			curve_type = (crypto_curve_t)(*(uint8_t *)pstTLV->pV);
 		}
@@ -1419,12 +1369,9 @@ static void mason_cmd0305_get_extpubkey(void *pContext)
 		base58_ext_key[base58_ext_key_len] = 0;
 		mason_cmd_append_to_outputTLVArray(&stStack, TLV_T_EXT_KEY, base58_ext_key_len - 1, (uint8_t *)base58_ext_key);
 		mason_cmd_append_to_outputTLVArray(&stStack, TLV_T_HDP_DEPTH, 1, &wallet_path.num_of_segments);
-	}while(0);
+	} while (0);
 
-	u16_to_buf(bufRet, (uint16_t)emRet);
-	mason_cmd_append_to_outputTLVArray(&stStack, TLV_T_RESPONSE, sizeof(bufRet), bufRet);
-	mason_cmd_end_outputTLVArray(&stStack, gpstCMD->unFlag.stFlag.enc ? ENCRYPT : PLAIN);
-	stack_destroy(&stStack);
+	MASON_CMD_RESP_OUTPUT()
 }
 /**
  * @functionname: mason_cmd0306_delete_wallet
@@ -1434,11 +1381,7 @@ static void mason_cmd0305_get_extpubkey(void *pContext)
  */
 static void mason_cmd0306_delete_wallet(void *pContext)
 {
-	emRetType emRet = ERT_OK;
-	uint8_t bufRet[2] = {0x00, 0x00};
-	pstStackType pstS = (pstStackType)pContext;
-	stStackType stStack = {{NULL}, -1};
-	stackElementType pstTLV = NULL;
+	MASON_CMD_DECLARE_VARIABLE(ERT_OK)
 
 	stHDWStatusType status;
 
@@ -1461,7 +1404,7 @@ static void mason_cmd0306_delete_wallet(void *pContext)
 		mason_setting_delete();
 
 		mason_get_mode(&status);
-		if(E_HDWS_ATTACK != status.emHDWStatus)
+		if (E_HDWS_ATTACK != status.emHDWStatus)
 		{
 			if (!mason_set_mode(HDW_STATUS_EMPTY))
 			{
@@ -1469,12 +1412,9 @@ static void mason_cmd0306_delete_wallet(void *pContext)
 				break;
 			}
 		}
-	}while(0);
+	} while (0);
 
-	u16_to_buf(bufRet, (uint16_t)emRet);
-	mason_cmd_append_to_outputTLVArray(&stStack, TLV_T_RESPONSE, sizeof(bufRet), bufRet);
-	mason_cmd_end_outputTLVArray(&stStack, gpstCMD->unFlag.stFlag.enc ? ENCRYPT : PLAIN);
-	stack_destroy(&stStack);
+	MASON_CMD_RESP_OUTPUT()
 }
 /**
  * @functionname: mason_cmd0307_sign_ECDSA
@@ -1484,11 +1424,7 @@ static void mason_cmd0306_delete_wallet(void *pContext)
  */
 static void mason_cmd0307_sign_ECDSA(void *pContext)
 {
-	emRetType emRet = ERT_OK;
-	uint8_t bufRet[2] = {0x00, 0x00};
-	pstStackType pstS = (pstStackType)pContext;
-	stStackType stStack = {{NULL}, -1};
-	stackElementType pstTLV = NULL;
+	MASON_CMD_DECLARE_VARIABLE(ERT_OK)
 
 	uint8_t *path = NULL;
 	uint16_t path_len = 0;
@@ -1570,7 +1506,7 @@ static void mason_cmd0307_sign_ECDSA(void *pContext)
 			break;
 		}
 
-		if(stack_search_by_tag(pstS, &pstTLV, TLV_T_CURVE_TYPE)&&((1 == pstTLV->L)))
+		if (stack_search_by_tag(pstS, &pstTLV, TLV_T_CURVE_TYPE) && ((1 == pstTLV->L)))
 		{
 			curve_type = (crypto_curve_t)(*(uint8_t *)pstTLV->pV);
 		}
@@ -1587,18 +1523,15 @@ static void mason_cmd0307_sign_ECDSA(void *pContext)
 			emRet = ERT_ECDSASignFail;
 			break;
 		}
-		
+
 		b58enc(base58_ext_key, &base58_ext_key_len, (uint8_t *)&extended_public_key, sizeof(extended_public_key));
 		base58_ext_key[base58_ext_key_len] = 0;
 		mason_cmd_append_to_outputTLVArray(&stStack, TLV_T_EXT_KEY, base58_ext_key_len - 1, (uint8_t *)base58_ext_key);
 		mason_cmd_append_to_outputTLVArray(&stStack, TLV_T_PUBKEY, derived_public_key.len, derived_public_key.data);
 		mason_cmd_append_to_outputTLVArray(&stStack, TLV_T_SIGNATURE, signature_len, signature);
-	}while(0);
+	} while (0);
 
-	u16_to_buf(bufRet, (uint16_t)emRet);
-	mason_cmd_append_to_outputTLVArray(&stStack, TLV_T_RESPONSE, sizeof(bufRet), bufRet);
-	mason_cmd_end_outputTLVArray(&stStack, gpstCMD->unFlag.stFlag.enc ? ENCRYPT : PLAIN);
-	stack_destroy(&stStack);
+	MASON_CMD_RESP_OUTPUT()
 }
 /**
  * @functionname: mason_cmd0308_get_masterkey_fingerprint
@@ -1608,11 +1541,7 @@ static void mason_cmd0307_sign_ECDSA(void *pContext)
  */
 static void mason_cmd0308_get_masterkey_fingerprint(void *pContext)
 {
-	emRetType emRet = ERT_OK;
-	uint8_t bufRet[2] = {0x00, 0x00};
-	pstStackType pstS = (pstStackType)pContext;
-	stStackType stStack = {{NULL}, -1};
-	stackElementType pstTLV = NULL;
+	MASON_CMD_DECLARE_VARIABLE(ERT_OK)
 
 	crypto_curve_t curve_type = CRYPTO_CURVE_SECP256K1;
 	uint8_t fingerprint[4] = {0};
@@ -1628,7 +1557,7 @@ static void mason_cmd0308_get_masterkey_fingerprint(void *pContext)
 		}
 		mason_cmd_append_ele_to_outputTLVArray(&stStack, pstTLV);
 
-		if(stack_search_by_tag(pstS, &pstTLV, TLV_T_CURVE_TYPE)&&((1 == pstTLV->L)))
+		if (stack_search_by_tag(pstS, &pstTLV, TLV_T_CURVE_TYPE) && ((1 == pstTLV->L)))
 		{
 			curve_type = (crypto_curve_t)(*(uint8_t *)pstTLV->pV);
 		}
@@ -1639,12 +1568,9 @@ static void mason_cmd0308_get_masterkey_fingerprint(void *pContext)
 			break;
 		}
 		mason_cmd_append_to_outputTLVArray(&stStack, TLV_T_MASTER_KEY_FP, sizeof(fingerprint), fingerprint);
-	}while(0);
+	} while (0);
 
-	u16_to_buf(bufRet, (uint16_t)emRet);
-	mason_cmd_append_to_outputTLVArray(&stStack, TLV_T_RESPONSE, sizeof(bufRet), bufRet);
-	mason_cmd_end_outputTLVArray(&stStack, gpstCMD->unFlag.stFlag.enc ? ENCRYPT : PLAIN);
-	stack_destroy(&stStack);
+	MASON_CMD_RESP_OUTPUT()
 }
 /**
  * @functionname: mason_cmd0401_generate_public_key_from_private_key
@@ -1654,11 +1580,7 @@ static void mason_cmd0308_get_masterkey_fingerprint(void *pContext)
  */
 static void mason_cmd0401_generate_public_key_from_private_key(void *pContext)
 {
-	emRetType emRet = ERT_OK;
-	uint8_t bufRet[2] = {0x00, 0x00};
-	pstStackType pstS = (pstStackType)pContext;
-	stStackType stStack = {{NULL}, -1};
-	stackElementType pstTLV = NULL;
+	MASON_CMD_DECLARE_VARIABLE(ERT_OK)
 
 	private_key_t private_key;
 	public_key_t public_key;
@@ -1675,7 +1597,7 @@ static void mason_cmd0401_generate_public_key_from_private_key(void *pContext)
 		}
 		mason_cmd_append_ele_to_outputTLVArray(&stStack, pstTLV);
 
-		if (!stack_search_by_tag(pstS, &pstTLV, TLV_T_PRVKEY)||(PRIVATE_KEY_LEN != pstTLV->L))
+		if (!stack_search_by_tag(pstS, &pstTLV, TLV_T_PRVKEY) || (PRIVATE_KEY_LEN != pstTLV->L))
 		{
 			emRet = ERT_CommFailParam;
 			break;
@@ -1683,12 +1605,9 @@ static void mason_cmd0401_generate_public_key_from_private_key(void *pContext)
 		memcpy(private_key.data, pstTLV->pV, PRIVATE_KEY_LEN);
 		private_key_to_public_key(curve_type, &private_key, &public_key);
 		mason_cmd_append_to_outputTLVArray(&stStack, TLV_T_PUBKEY, PUBLIC_KEY_LEN, public_key.data);
-	}while(0);
+	} while (0);
 
-	u16_to_buf(bufRet, (uint16_t)emRet);
-	mason_cmd_append_to_outputTLVArray(&stStack, TLV_T_RESPONSE, sizeof(bufRet), bufRet);
-	mason_cmd_end_outputTLVArray(&stStack, gpstCMD->unFlag.stFlag.enc ? ENCRYPT : PLAIN);
-	stack_destroy(&stStack);
+	MASON_CMD_RESP_OUTPUT()
 }
 /**
  * @functionname: mason_cmd0502_mnemonic_verify
@@ -1698,11 +1617,7 @@ static void mason_cmd0401_generate_public_key_from_private_key(void *pContext)
  */
 static void mason_cmd0502_mnemonic_verify(void *pContext)
 {
-	emRetType emRet = ERT_OK;
-	uint8_t bufRet[2] = {0x00, 0x00};
-	pstStackType pstS = (pstStackType)pContext;
-	stStackType stStack = {{NULL}, -1};
-	stackElementType pstTLV = NULL;
+	MASON_CMD_DECLARE_VARIABLE(ERT_OK)
 
 	uint8_t *mnemonic = NULL;
 	uint16_t mnemonic_len = 0;
@@ -1718,24 +1633,21 @@ static void mason_cmd0502_mnemonic_verify(void *pContext)
 		}
 		mason_cmd_append_ele_to_outputTLVArray(&stStack, pstTLV);
 
-		if(!stack_search_by_tag(pstS, &pstTLV, TLV_T_MNEMONIC))
+		if (!stack_search_by_tag(pstS, &pstTLV, TLV_T_MNEMONIC))
 		{
 			emRet = ERT_CommFailParam;
 			break;
-		}		
+		}
 		mnemonic = (uint8_t *)pstTLV->pV;
 		mnemonic_len = pstTLV->L;
-		if(!mason_verify_menonic((char *)mnemonic, mnemonic_len))
+		if (!mason_verify_menonic((char *)mnemonic, mnemonic_len))
 		{
 			emRet = ERT_MnemonicNotMatch;
 			break;
 		}
-	}while(0);
+	} while (0);
 
-	u16_to_buf(bufRet, (uint16_t)emRet);
-	mason_cmd_append_to_outputTLVArray(&stStack, TLV_T_RESPONSE, sizeof(bufRet), bufRet);
-	mason_cmd_end_outputTLVArray(&stStack, gpstCMD->unFlag.stFlag.enc ? ENCRYPT : PLAIN);
-	stack_destroy(&stStack);
+	MASON_CMD_RESP_OUTPUT()
 }
 /**
  * @functionname: mason_cmd0701_web_authentication
@@ -1745,11 +1657,7 @@ static void mason_cmd0502_mnemonic_verify(void *pContext)
  */
 static void mason_cmd0701_web_authentication(void *pContext)
 {
-	emRetType emRet = ERT_OK;
-	uint8_t bufRet[2] = {0x00, 0x00};
-	pstStackType pstS = (pstStackType)pContext;
-	stStackType stStack = {{NULL}, -1};
-	stackElementType pstTLV = NULL;
+	MASON_CMD_DECLARE_VARIABLE(ERT_OK)
 
 	uint8_t signature[SHA512_LEN];
 	uint16_t signature_len = SHA512_LEN;
@@ -1772,17 +1680,17 @@ static void mason_cmd0701_web_authentication(void *pContext)
 		}
 		mason_cmd_append_ele_to_outputTLVArray(&stStack, pstTLV);
 
-		if(ERT_OK != (emRet = mason_storage_read((uint8_t *)web_auth_private_key, PRIVATE_KEY_LEN, FLASH_ADDR_WEB_AUTH_PRI_KEY_32B)))
+		if (ERT_OK != (emRet = mason_storage_read((uint8_t *)web_auth_private_key, PRIVATE_KEY_LEN, FLASH_ADDR_WEB_AUTH_PRI_KEY_32B)))
 		{
 			break;
 		}
 
-		if(ERT_OK != (emRet = mason_storage_read((uint8_t *)web_auth_public_key, PUB_KEY_LEN, FLASH_ADDR_WEB_AUTH_PUB_KEY_64B)))
+		if (ERT_OK != (emRet = mason_storage_read((uint8_t *)web_auth_public_key, PUB_KEY_LEN, FLASH_ADDR_WEB_AUTH_PUB_KEY_64B)))
 		{
 			break;
 		}
 
-		if(!stack_search_by_tag(pstS, &pstTLV, TLV_T_ENCRYPT_MSG))
+		if (!stack_search_by_tag(pstS, &pstTLV, TLV_T_ENCRYPT_MSG))
 		{
 			emRet = ERT_CommFailParam;
 			break;
@@ -1790,7 +1698,7 @@ static void mason_cmd0701_web_authentication(void *pContext)
 		encrypt_message = (uint8_t *)pstTLV->pV;
 		encrypt_message_len = pstTLV->L;
 
-		if(!stack_search_by_tag(pstS, &pstTLV, TLV_T_SIGNATURE) || (signature_len != pstTLV->L))
+		if (!stack_search_by_tag(pstS, &pstTLV, TLV_T_SIGNATURE) || (signature_len != pstTLV->L))
 		{
 			emRet = ERT_CommFailParam;
 			break;
@@ -1799,23 +1707,20 @@ static void mason_cmd0701_web_authentication(void *pContext)
 		sha256_api(encrypt_message, encrypt_message_len, message_sha256_buf);
 		if (!ecdsa_verify(CRYPTO_CURVE_SECP256K1, message_sha256_buf, web_auth_public_key, signature))
 		{
-			emRet = ERT_ECDSAVerifyFail;			
+			emRet = ERT_ECDSAVerifyFail;
 			break;
 		}
 
-  		if (!crypto_api_sm2_decrypt(web_auth_private_key, encrypt_message, encrypt_message_len, output, &output_len))
+		if (!crypto_api_sm2_decrypt(web_auth_private_key, encrypt_message, encrypt_message_len, output, &output_len))
 		{
-			emRet = ERT_CommFailParam;			
+			emRet = ERT_CommFailParam;
 			break;
 		}
 		output[output_len] = 0;
 		mason_cmd_append_to_outputTLVArray(&stStack, TLV_T_PLAIN_MSG, output_len, output);
-	}while(0);
+	} while (0);
 
-	u16_to_buf(bufRet, (uint16_t)emRet);
-	mason_cmd_append_to_outputTLVArray(&stStack, TLV_T_RESPONSE, sizeof(bufRet), bufRet);
-	mason_cmd_end_outputTLVArray(&stStack, gpstCMD->unFlag.stFlag.enc ? PLAIN : PLAIN);
-	stack_destroy(&stStack);
+	MASON_CMD_RESP_OUTPUT()
 }
 /**
  * @functionname: mason_cmd0702_update_key
@@ -1825,11 +1730,7 @@ static void mason_cmd0701_web_authentication(void *pContext)
  */
 static void mason_cmd0702_update_key(void *pContext)
 {
-	emRetType emRet = ERT_OK;
-	uint8_t bufRet[2] = {0x00, 0x00};
-	pstStackType pstS = (pstStackType)pContext;
-	stStackType stStack = {{NULL}, -1};
-	stackElementType pstTLV = NULL;
+	MASON_CMD_DECLARE_VARIABLE(ERT_OK)
 
 	uint8_t is_read = 0;
 
@@ -1844,25 +1745,22 @@ static void mason_cmd0702_update_key(void *pContext)
 		}
 		mason_cmd_append_ele_to_outputTLVArray(&stStack, pstTLV);
 
-		if(!stack_search_by_tag(pstS, &pstTLV, TLV_T_WR_RD) || (1 != pstTLV->L))
+		if (!stack_search_by_tag(pstS, &pstTLV, TLV_T_WR_RD) || (1 != pstTLV->L))
 		{
 			emRet = ERT_CommFailParam;
 			break;
 		}
 
 		is_read = *(uint8_t *)pstTLV->pV;
-		if(!is_read)
+		if (!is_read)
 		{
 			emRet = ERT_CMD_FAIL;
 			break;
 		}
 		mason_cmd_append_to_outputTLVArray(&stStack, TLV_T_UPDATE_KEY, sizeof(update_key_ex), update_key_ex);
-	}while(0);
+	} while (0);
 
-	u16_to_buf(bufRet, (uint16_t)emRet);
-	mason_cmd_append_to_outputTLVArray(&stStack, TLV_T_RESPONSE, sizeof(bufRet), bufRet);
-	mason_cmd_end_outputTLVArray(&stStack, gpstCMD->unFlag.stFlag.enc ? ENCRYPT : PLAIN);
-	stack_destroy(&stStack);
+	MASON_CMD_RESP_OUTPUT()
 }
 /**
  * @functionname: mason_cmd0802_tamper_test
@@ -1872,11 +1770,7 @@ static void mason_cmd0702_update_key(void *pContext)
  */
 static void mason_cmd0802_tamper_test(void *pContext)
 {
-	emRetType emRet = ERT_OK;
-	uint8_t bufRet[2] = {0x00, 0x00};
-	pstStackType pstS = (pstStackType)pContext;
-	stStackType stStack = {{NULL}, -1};
-	stackElementType pstTLV = NULL;
+	MASON_CMD_DECLARE_VARIABLE(ERT_OK)
 
 	mason_cmd_init_outputTLVArray(&stStack);
 
@@ -1897,17 +1791,14 @@ static void mason_cmd0802_tamper_test(void *pContext)
 		{
 			mason_cmd_append_to_outputTLVArray(&stStack, TLV_T_PASSIVE_TAMPER, 2, (uint8_t *)"PT");
 		}
-		else if (gpio_high(BIT_DET1, 500)||gpio_high(BIT_DET2, 500)||gpio_high(BIT_DET3, 500))
+		else if (gpio_high(BIT_DET1, 500) || gpio_high(BIT_DET2, 500) || gpio_high(BIT_DET3, 500))
 		{
 			mason_cmd_append_to_outputTLVArray(&stStack, TLV_T_PASSIVE_TAMPER, 2, (uint8_t *)"QT");
 		}
 
-	}while(0);
+	} while (0);
 
-	u16_to_buf(bufRet, (uint16_t)emRet);
-	mason_cmd_append_to_outputTLVArray(&stStack, TLV_T_RESPONSE, sizeof(bufRet), bufRet);
-	mason_cmd_end_outputTLVArray(&stStack, gpstCMD->unFlag.stFlag.enc ? ENCRYPT : PLAIN);
-	stack_destroy(&stStack);
+	MASON_CMD_RESP_OUTPUT()
 }
 /**
  * @functionname: mason_cmd0901_usrpwd_modify
@@ -1917,14 +1808,8 @@ static void mason_cmd0802_tamper_test(void *pContext)
  */
 static void mason_cmd0901_usrpwd_modify(void *pContext)
 {
-	emRetType emRet = ERT_OK;
-	uint8_t bufRet[2] = {0x00, 0x00};
-	pstStackType pstS = (pstStackType)pContext;
-	stStackType stStack = {{NULL}, -1};
-	stackElementType pstTLV = NULL;
+	MASON_CMD_DECLARE_VARIABLE(ERT_OK)
 
-	uint8_t *cur_pwd = NULL;
-	uint16_t cur_pwd_len = 0;
 	uint8_t *new_pwd = NULL;
 	uint16_t new_pwd_len = 0;
 
@@ -1939,22 +1824,12 @@ static void mason_cmd0901_usrpwd_modify(void *pContext)
 		}
 		mason_cmd_append_ele_to_outputTLVArray(&stStack, pstTLV);
 
-		if (!stack_search_by_tag(pstS, &pstTLV, TLV_T_USRPWD_CUR))
+		if (ERT_OK != (emRet = mason_cmd_verify_passwd(pstS, &pstTLV)))
 		{
-			emRet = ERT_needUsrPass;
 			break;
 		}
-		cur_pwd = (uint8_t *)pstTLV->pV;
-		cur_pwd_len = pstTLV->L;
-		if (!mason_usrpwd_verify(cur_pwd, cur_pwd_len))
-		{
-			mason_usrcount();
-			emRet = ERT_UsrPassVerifyFail;
-			break;
-		}
-		mason_usrcount_reset();
 
-		if(!stack_search_by_tag(pstS, &pstTLV, TLV_T_USRPWD_NEW))
+		if (!stack_search_by_tag(pstS, &pstTLV, TLV_T_USRPWD_NEW))
 		{
 			emRet = ERT_needUsrPass;
 			break;
@@ -1966,12 +1841,9 @@ static void mason_cmd0901_usrpwd_modify(void *pContext)
 			emRet = ERT_UsrPassParaERR;
 			break;
 		}
-	}while(0);
+	} while (0);
 
-	u16_to_buf(bufRet, (uint16_t)emRet);
-	mason_cmd_append_to_outputTLVArray(&stStack, TLV_T_RESPONSE, sizeof(bufRet), bufRet);
-	mason_cmd_end_outputTLVArray(&stStack, gpstCMD->unFlag.stFlag.enc ? ENCRYPT : PLAIN);
-	stack_destroy(&stStack);
+	MASON_CMD_RESP_OUTPUT()
 }
 /**
  * @functionname: mason_cmd0902_usrpwd_reset
@@ -1981,11 +1853,7 @@ static void mason_cmd0901_usrpwd_modify(void *pContext)
  */
 static void mason_cmd0902_usrpwd_reset(void *pContext)
 {
-	emRetType emRet = ERT_OK;
-	uint8_t bufRet[2] = {0x00, 0x00};
-	pstStackType pstS = (pstStackType)pContext;
-	stStackType stStack = {{NULL}, -1};
-	stackElementType pstTLV = NULL;
+	MASON_CMD_DECLARE_VARIABLE(ERT_OK)
 
 	stHDWStatusType status;
 	uint8_t *cur_mnemonic = NULL;
@@ -2030,7 +1898,7 @@ static void mason_cmd0902_usrpwd_reset(void *pContext)
 			break;
 		}
 
-		if(!stack_search_by_tag(pstS, &pstTLV, TLV_T_USRPWD_NEW))
+		if (!stack_search_by_tag(pstS, &pstTLV, TLV_T_USRPWD_NEW))
 		{
 			emRet = ERT_needUsrPass;
 			break;
@@ -2042,12 +1910,9 @@ static void mason_cmd0902_usrpwd_reset(void *pContext)
 			emRet = ERT_UsrPassParaERR;
 			break;
 		}
-	}while(0);
+	} while (0);
 
-	u16_to_buf(bufRet, (uint16_t)emRet);
-	mason_cmd_append_to_outputTLVArray(&stStack, TLV_T_RESPONSE, sizeof(bufRet), bufRet);
-	mason_cmd_end_outputTLVArray(&stStack, gpstCMD->unFlag.stFlag.enc ? ENCRYPT : PLAIN);
-	stack_destroy(&stStack);
+	MASON_CMD_RESP_OUTPUT()
 }
 /**
  * @functionname: mason_cmd0903_usrpwd_verify
@@ -2057,14 +1922,8 @@ static void mason_cmd0902_usrpwd_reset(void *pContext)
  */
 static void mason_cmd0903_usrpwd_verify(void *pContext)
 {
-	emRetType emRet = ERT_OK;
-	uint8_t bufRet[2] = {0x00, 0x00};
-	pstStackType pstS = (pstStackType)pContext;
-	stStackType stStack = {{NULL}, -1};
-	stackElementType pstTLV = NULL;
+	MASON_CMD_DECLARE_VARIABLE(ERT_OK)
 
-	uint8_t *cur_pwd = NULL;
-	uint16_t cur_pwd_len = 0;
 	uint8_t *return_token = NULL;
 	uint16_t return_token_len = 0;
 
@@ -2079,20 +1938,11 @@ static void mason_cmd0903_usrpwd_verify(void *pContext)
 		}
 		mason_cmd_append_ele_to_outputTLVArray(&stStack, pstTLV);
 
-		if (!stack_search_by_tag(pstS, &pstTLV, TLV_T_USRPWD_CUR))
+		if (ERT_OK != (emRet = mason_cmd_verify_passwd(pstS, &pstTLV)))
 		{
-			emRet = ERT_needUsrPass;
 			break;
 		}
-		cur_pwd = (uint8_t *)pstTLV->pV;
-		cur_pwd_len = pstTLV->L;
-		if (!mason_usrpwd_verify(cur_pwd, cur_pwd_len))
-		{
-			mason_usrcount();
-			emRet = ERT_UsrPassVerifyFail;
-			break;
-		}
-		mason_usrcount_reset();
+
 
 		if (stack_search_by_tag(pstS, &pstTLV, TLV_T_RETURN_TOKEN))
 		{
@@ -2106,12 +1956,9 @@ static void mason_cmd0903_usrpwd_verify(void *pContext)
 				mason_cmd_append_to_outputTLVArray(&stStack, TLV_T_TOKEN, token->length, token->token);
 			}
 		}
-	}while(0);
+	} while (0);
 
-	u16_to_buf(bufRet, (uint16_t)emRet);
-	mason_cmd_append_to_outputTLVArray(&stStack, TLV_T_RESPONSE, sizeof(bufRet), bufRet);
-	mason_cmd_end_outputTLVArray(&stStack, gpstCMD->unFlag.stFlag.enc ? ENCRYPT : PLAIN);
-	stack_destroy(&stStack);
+	MASON_CMD_RESP_OUTPUT()
 }
 /**
  * @functionname: mason_cmd0905_message_gen
@@ -2121,11 +1968,7 @@ static void mason_cmd0903_usrpwd_verify(void *pContext)
  */
 static void mason_cmd0905_message_gen(void *pContext)
 {
-	emRetType emRet = ERT_OK;
-	uint8_t bufRet[2] = {0x00, 0x00};
-	pstStackType pstS = (pstStackType)pContext;
-	stStackType stStack = {{NULL}, -1};
-	stackElementType pstTLV = NULL;
+	MASON_CMD_DECLARE_VARIABLE(ERT_OK)
 
 	setting_message_t *message;
 
@@ -2143,12 +1986,9 @@ static void mason_cmd0905_message_gen(void *pContext)
 		mason_message_gen();
 		message = mason_message_get();
 		mason_cmd_append_to_outputTLVArray(&stStack, TLV_T_MESSAGE, message->length, message->message);
-	}while(0);
+	} while (0);
 
-	u16_to_buf(bufRet, (uint16_t)emRet);
-	mason_cmd_append_to_outputTLVArray(&stStack, TLV_T_RESPONSE, sizeof(bufRet), bufRet);
-	mason_cmd_end_outputTLVArray(&stStack, gpstCMD->unFlag.stFlag.enc ? ENCRYPT : PLAIN);
-	stack_destroy(&stStack);
+	MASON_CMD_RESP_OUTPUT()
 }
 /**
  * @functionname: mason_cmd0906_usrfing_create
@@ -2158,14 +1998,8 @@ static void mason_cmd0905_message_gen(void *pContext)
  */
 static void mason_cmd0906_usrfing_create(void *pContext)
 {
-	emRetType emRet = ERT_OK;
-	uint8_t bufRet[2] = {0x00, 0x00};
-	pstStackType pstS = (pstStackType)pContext;
-	stStackType stStack = {{NULL}, -1};
-	stackElementType pstTLV = NULL;
+	MASON_CMD_DECLARE_VARIABLE(ERT_OK)
 
-	uint8_t *cur_pwd = NULL;
-	uint16_t cur_pwd_len = 0;
 	uint8_t *fing = NULL;
 	uint16_t fing_len = 0;
 
@@ -2180,20 +2014,10 @@ static void mason_cmd0906_usrfing_create(void *pContext)
 		}
 		mason_cmd_append_ele_to_outputTLVArray(&stStack, pstTLV);
 
-		if (!stack_search_by_tag(pstS, &pstTLV, TLV_T_USRPWD_CUR))
+		if (ERT_OK != (emRet = mason_cmd_verify_passwd(pstS, &pstTLV)))
 		{
-			emRet = ERT_needUsrPass;
 			break;
 		}
-		cur_pwd = (uint8_t *)pstTLV->pV;
-		cur_pwd_len = pstTLV->L;
-		if (!mason_usrpwd_verify(cur_pwd, cur_pwd_len))
-		{
-			mason_usrcount();
-			emRet = ERT_UsrPassVerifyFail;
-			break;
-		}
-		mason_usrcount_reset();
 
 		if (!stack_search_by_tag(pstS, &pstTLV, TLV_T_USRFING))
 		{
@@ -2207,12 +2031,9 @@ static void mason_cmd0906_usrfing_create(void *pContext)
 			emRet = ERT_UsrFingParaERR;
 			break;
 		}
-	}while(0);
+	} while (0);
 
-	u16_to_buf(bufRet, (uint16_t)emRet);
-	mason_cmd_append_to_outputTLVArray(&stStack, TLV_T_RESPONSE, sizeof(bufRet), bufRet);
-	mason_cmd_end_outputTLVArray(&stStack, gpstCMD->unFlag.stFlag.enc ? ENCRYPT : PLAIN);
-	stack_destroy(&stStack);
+	MASON_CMD_RESP_OUTPUT()
 }
 /**
  * @functionname: mason_cmd0907_usrfing_verify
@@ -2222,11 +2043,7 @@ static void mason_cmd0906_usrfing_create(void *pContext)
  */
 static void mason_cmd0907_usrfing_verify(void *pContext)
 {
-	emRetType emRet = ERT_OK;
-	uint8_t bufRet[2] = {0x00, 0x00};
-	pstStackType pstS = (pstStackType)pContext;
-	stStackType stStack = {{NULL}, -1};
-	stackElementType pstTLV = NULL;
+	MASON_CMD_DECLARE_VARIABLE(ERT_OK)
 
 	uint8_t *message_sign = NULL;
 	uint16_t message_sign_len = 0;
@@ -2245,8 +2062,8 @@ static void mason_cmd0907_usrfing_verify(void *pContext)
 		mason_cmd_append_ele_to_outputTLVArray(&stStack, pstTLV);
 
 		if (!stack_search_by_tag(pstS, &pstTLV, TLV_T_MESSAGE_SIGN))
-				{
-			emRet = ERT_needMessageSign;			
+		{
+			emRet = ERT_needMessageSign;
 			break;
 		}
 		message_sign = (uint8_t *)pstTLV->pV;
@@ -2254,7 +2071,7 @@ static void mason_cmd0907_usrfing_verify(void *pContext)
 		// verify message/ messagesign /pubkey
 		if (!mason_usrfing_verify(message_sign, message_sign_len))
 		{
-			emRet = ERT_UsrFingVerifyFail;			
+			emRet = ERT_UsrFingVerifyFail;
 			break;
 		}
 
@@ -2270,12 +2087,9 @@ static void mason_cmd0907_usrfing_verify(void *pContext)
 				mason_cmd_append_to_outputTLVArray(&stStack, TLV_T_TOKEN, token->length, token->token);
 			}
 		}
-	}while(0);
+	} while (0);
 
-	u16_to_buf(bufRet, (uint16_t)emRet);
-	mason_cmd_append_to_outputTLVArray(&stStack, TLV_T_RESPONSE, sizeof(bufRet), bufRet);
-	mason_cmd_end_outputTLVArray(&stStack, gpstCMD->unFlag.stFlag.enc ? ENCRYPT : PLAIN);
-	stack_destroy(&stStack);
+	MASON_CMD_RESP_OUTPUT()
 }
 /**
  * @functionname: mason_cmd0908_token_delete
@@ -2285,11 +2099,7 @@ static void mason_cmd0907_usrfing_verify(void *pContext)
  */
 static void mason_cmd0908_token_delete(void *pContext)
 {
-	emRetType emRet = ERT_OK;
-	uint8_t bufRet[2] = {0x00, 0x00};
-	pstStackType pstS = (pstStackType)pContext;
-	stStackType stStack = {{NULL}, -1};
-	stackElementType pstTLV = NULL;
+	MASON_CMD_DECLARE_VARIABLE(ERT_OK)
 
 	mason_cmd_init_outputTLVArray(&stStack);
 
@@ -2303,10 +2113,7 @@ static void mason_cmd0908_token_delete(void *pContext)
 		mason_cmd_append_ele_to_outputTLVArray(&stStack, pstTLV);
 
 		mason_token_delete();
-	}while(0);
+	} while (0);
 
-	u16_to_buf(bufRet, (uint16_t)emRet);
-	mason_cmd_append_to_outputTLVArray(&stStack, TLV_T_RESPONSE, sizeof(bufRet), bufRet);
-	mason_cmd_end_outputTLVArray(&stStack, gpstCMD->unFlag.stFlag.enc ? ENCRYPT : PLAIN);
-	stack_destroy(&stStack);
+	MASON_CMD_RESP_OUTPUT()
 }

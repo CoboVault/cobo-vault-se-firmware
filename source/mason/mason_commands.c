@@ -899,6 +899,7 @@ emRetType mason_cmd_verify_passwd(pstStackType pstStack, stackElementType *pelem
 	emRetType emRet = ERT_CommFailParam;
 	uint8_t *cur_pwd = NULL;
 	uint16_t cur_pwd_len = 0;
+	uint8_t time = 0;
 
 	do
 	{
@@ -917,6 +918,8 @@ emRetType mason_cmd_verify_passwd(pstStackType pstStack, stackElementType *pelem
 		}
 
 		//sleep
+		gen_random(&time, 8);
+		_delay_us(time*2);
 
 		cur_pwd = NULL;
 		cur_pwd_len = 0;
@@ -957,6 +960,7 @@ emRetType mason_cmd_verify_mnemonic(pstStackType pstStack, stackElementType *pel
 	emRetType emRet = ERT_CommFailParam;
 	uint8_t *mnemonic = NULL;
 	uint16_t mnemonic_len = 0;
+	uint8_t time = 0;
 
 	do
 	{
@@ -974,6 +978,8 @@ emRetType mason_cmd_verify_mnemonic(pstStackType pstStack, stackElementType *pel
 		}
 
 		//sleep
+		gen_random(&time, 8);
+		_delay_us(time*2);
 
 		mnemonic = NULL;
 		mnemonic_len = 0;
@@ -1013,6 +1019,7 @@ emRetType mason_cmd_verify_token(pstStackType pstStack, stackElementType *peleme
 	setting_token_t token = {0};
 	uint8_t *token_v = NULL;
 	uint16_t token_l = 0;
+	uint8_t time = 0;
 
 	do
 	{
@@ -1038,6 +1045,8 @@ emRetType mason_cmd_verify_token(pstStackType pstStack, stackElementType *peleme
 		}
 
 		//sleep
+		gen_random(&time, 8);
+		_delay_us(time*2);
 
 		memset(&token, 0, sizeof(setting_token_t));
 		token_v = NULL;
@@ -1086,6 +1095,7 @@ emRetType mason_cmd_verify_fing(pstStackType pstStack, stackElementType *pelemen
 	emRetType emRet = ERT_CommFailParam;
 	uint8_t *message_sign = NULL;
 	uint16_t message_sign_len = 0;
+	uint8_t time = 0;
 
 	do
 	{
@@ -1104,6 +1114,8 @@ emRetType mason_cmd_verify_fing(pstStackType pstStack, stackElementType *pelemen
 		}
 
 		//sleep
+		gen_random(&time, 8);
+		_delay_us(time*2);
 
 		message_sign = NULL;
 		message_sign_len = 0;

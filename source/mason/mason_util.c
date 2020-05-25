@@ -21,6 +21,7 @@ in the file COPYING.  If not, see <http://www.gnu.org/licenses/>.
 #include "mason_util.h"
 #include "RipeMD160.h"
 #include "mason_storage.h"
+#include <hrng.h>
 
 /** Function implementations */
 /**
@@ -244,4 +245,21 @@ void debug_key(char *name, uint8_t *key, uint16_t len)
 		printf("%02X ", key[i]);
 	}
 	printf("\n");
+}
+/**
+ * @functionname: gen_random
+ * @description: 
+ * @para: 
+ * @return: 
+ */
+void gen_random(uint8_t *output_random, uint16_t bits)
+{
+	uint16_t bytes = bits >> 3;
+	int i = 0;
+
+	hrng_initial();
+	for (i = 0; i < bytes; i++)
+	{
+		output_random[i] = get_hrng8();
+	}
 }

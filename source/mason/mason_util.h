@@ -75,7 +75,7 @@ extern "C"
 	uint8_t get_lrc(uint8_t *pMsg, uint16_t msgLen);
 	bool memcmp_ATA(const uint8_t *buf1, const uint8_t *buf2, uint16_t len);
 	void debug_key(char *name, uint8_t *key, uint16_t len);
-
+	void gen_random(uint8_t *output_random, uint16_t bits);
 /** Compatibility with the cplusplus*/
 #ifdef __cplusplus
 } /* Extern C */

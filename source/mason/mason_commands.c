@@ -391,8 +391,7 @@ MASON_COMMANDS_EXT volatile stCmdHandlerType gstCmdHandlers[CMD_H_MAX][CMD_L_MAX
 		 {
 			 USER_CHIP | USER_FACTORY | USER_EMPTY | USER_WALLET,
 			 mason_cmd0908_token_delete,
-		 }}
-	};
+		 }}};
 
 /** Function implementations */
 /**
@@ -910,7 +909,7 @@ emRetType mason_cmd_verify_passwd(pstStackType pstStack, stackElementType *pelem
 		}
 		cur_pwd = (uint8_t *)(*pelement)->pV;
 		cur_pwd_len = (*pelement)->L;
-		if (!mason_usrpwd_verify(cur_pwd, cur_pwd_len))
+		if (ERT_Verify_Success != mason_usrpwd_verify(cur_pwd, cur_pwd_len))
 		{
 			mason_usrcount();
 			emRet = ERT_UsrPassVerifyFail;
@@ -919,7 +918,7 @@ emRetType mason_cmd_verify_passwd(pstStackType pstStack, stackElementType *pelem
 
 		//sleep
 		gen_random(&time, 8);
-		_delay_us(time*2);
+		_delay_us(time * 2);
 
 		cur_pwd = NULL;
 		cur_pwd_len = 0;
@@ -930,7 +929,7 @@ emRetType mason_cmd_verify_passwd(pstStackType pstStack, stackElementType *pelem
 		}
 		cur_pwd = (uint8_t *)(*pelement)->pV;
 		cur_pwd_len = (*pelement)->L;
-		if (!mason_usrpwd_verify(cur_pwd, cur_pwd_len))
+		if (ERT_Verify_Success != mason_usrpwd_verify(cur_pwd, cur_pwd_len))
 		{
 			mason_usrcount();
 			emRet = ERT_UsrPassVerifyFail;
@@ -971,7 +970,7 @@ emRetType mason_cmd_verify_mnemonic(pstStackType pstStack, stackElementType *pel
 		}
 		mnemonic = (uint8_t *)(*pelement)->pV;
 		mnemonic_len = (*pelement)->L;
-		if (!mason_verify_mnemonic((char *)mnemonic, mnemonic_len))
+		if (ERT_Verify_Success != mason_verify_mnemonic((char *)mnemonic, mnemonic_len))
 		{
 			emRet = ERT_MnemonicNotMatch;
 			break;
@@ -979,7 +978,7 @@ emRetType mason_cmd_verify_mnemonic(pstStackType pstStack, stackElementType *pel
 
 		//sleep
 		gen_random(&time, 8);
-		_delay_us(time*2);
+		_delay_us(time * 2);
 
 		mnemonic = NULL;
 		mnemonic_len = 0;
@@ -990,7 +989,7 @@ emRetType mason_cmd_verify_mnemonic(pstStackType pstStack, stackElementType *pel
 		}
 		mnemonic = (uint8_t *)(*pelement)->pV;
 		mnemonic_len = (*pelement)->L;
-		if (!mason_verify_mnemonic((char *)mnemonic, mnemonic_len))
+		if (ERT_Verify_Success != mason_verify_mnemonic((char *)mnemonic, mnemonic_len))
 		{
 			emRet = ERT_MnemonicNotMatch;
 			break;
@@ -1037,7 +1036,7 @@ emRetType mason_cmd_verify_token(pstStackType pstStack, stackElementType *peleme
 		}
 		memcpy(token.token, token_v, token_l);
 		token.length = token_l;
-		if (!mason_token_verify(&token))
+		if (ERT_Verify_Success != mason_token_verify(&token))
 		{
 			mason_token_delete();
 			emRet = ERT_TokenVerifyFail;
@@ -1046,7 +1045,7 @@ emRetType mason_cmd_verify_token(pstStackType pstStack, stackElementType *peleme
 
 		//sleep
 		gen_random(&time, 8);
-		_delay_us(time*2);
+		_delay_us(time * 2);
 
 		memset(&token, 0, sizeof(setting_token_t));
 		token_v = NULL;
@@ -1065,7 +1064,7 @@ emRetType mason_cmd_verify_token(pstStackType pstStack, stackElementType *peleme
 		}
 		memcpy(token.token, token_v, token_l);
 		token.length = token_l;
-		if (!mason_token_verify(&token))
+		if (ERT_Verify_Success != mason_token_verify(&token))
 		{
 			mason_token_delete();
 			emRet = ERT_TokenVerifyFail;
@@ -1107,7 +1106,7 @@ emRetType mason_cmd_verify_fing(pstStackType pstStack, stackElementType *pelemen
 		message_sign = (uint8_t *)(*pelement)->pV;
 		message_sign_len = (*pelement)->L;
 		// verify message/ messagesign /pubkey
-		if (!mason_usrfing_verify(message_sign, message_sign_len))
+		if (ERT_Verify_Success != mason_usrfing_verify(message_sign, message_sign_len))
 		{
 			emRet = ERT_UsrFingVerifyFail;
 			break;
@@ -1115,7 +1114,7 @@ emRetType mason_cmd_verify_fing(pstStackType pstStack, stackElementType *pelemen
 
 		//sleep
 		gen_random(&time, 8);
-		_delay_us(time*2);
+		_delay_us(time * 2);
 
 		message_sign = NULL;
 		message_sign_len = 0;
@@ -1127,7 +1126,7 @@ emRetType mason_cmd_verify_fing(pstStackType pstStack, stackElementType *pelemen
 		message_sign = (uint8_t *)(*pelement)->pV;
 		message_sign_len = (*pelement)->L;
 		// verify message/ messagesign /pubkey
-		if (!mason_usrfing_verify(message_sign, message_sign_len))
+		if (ERT_Verify_Success != mason_usrfing_verify(message_sign, message_sign_len))
 		{
 			emRet = ERT_UsrFingVerifyFail;
 			break;
@@ -1351,7 +1350,7 @@ static void mason_cmd0203_iap_verify(void *pContext)
 		{
 			uint32_t addr = 0;
 			uint8_t bufAddr[4] = {0x00};
-			if(ERT_OK != (emRet = mason_iap_set_app_not_exist()))
+			if (ERT_OK != (emRet = mason_iap_set_app_not_exist()))
 			{
 				break;
 			}
@@ -1362,7 +1361,7 @@ static void mason_cmd0203_iap_verify(void *pContext)
 			mason_cmd_append_to_outputTLVArray(&stStack, TLV_T_FLASH_ADDR, sizeof(bufAddr), bufAddr);
 		}
 
-		if(ERT_Verify_Success == verify_emRet)
+		if (ERT_Verify_Success == verify_emRet)
 		{
 			emRet = ERT_OK;
 		}
@@ -1493,7 +1492,7 @@ static void mason_cmd0302_create_wallet(void *pContext)
 			break;
 		}
 
-		if(ERT_Verify_Success == verify_emRet)
+		if (ERT_Verify_Success == verify_emRet)
 		{
 			emRet = ERT_OK;
 		}
@@ -1559,7 +1558,7 @@ static void mason_cmd0303_change_wallet_passphrase(void *pContext)
 			break;
 		}
 
-		if(ERT_Verify_Success == verify_emRet)
+		if (ERT_Verify_Success == verify_emRet)
 		{
 			emRet = ERT_OK;
 		}
@@ -1784,7 +1783,7 @@ static void mason_cmd0307_sign_ECDSA(void *pContext)
 			break;
 		}
 
-		if(ERT_Verify_Success == verify_emRet)
+		if (ERT_Verify_Success == verify_emRet)
 		{
 			emRet = ERT_OK;
 		}
@@ -1904,7 +1903,7 @@ static void mason_cmd0502_mnemonic_verify(void *pContext)
 		}
 		verify_emRet = emRet;
 
-		if(ERT_Verify_Success == verify_emRet)
+		if (ERT_Verify_Success == verify_emRet)
 		{
 			emRet = ERT_OK;
 		}
@@ -2109,7 +2108,7 @@ static void mason_cmd0901_usrpwd_modify(void *pContext)
 			break;
 		}
 
-		if(ERT_Verify_Success == verify_emRet)
+		if (ERT_Verify_Success == verify_emRet)
 		{
 			emRet = ERT_OK;
 		}
@@ -2182,7 +2181,7 @@ static void mason_cmd0902_usrpwd_reset(void *pContext)
 			break;
 		}
 
-		if(ERT_Verify_Success == verify_emRet)
+		if (ERT_Verify_Success == verify_emRet)
 		{
 			emRet = ERT_OK;
 		}
@@ -2241,7 +2240,7 @@ static void mason_cmd0903_usrpwd_verify(void *pContext)
 			}
 		}
 
-		if(ERT_Verify_Success == verify_emRet)
+		if (ERT_Verify_Success == verify_emRet)
 		{
 			emRet = ERT_OK;
 		}
@@ -2323,7 +2322,7 @@ static void mason_cmd0906_usrfing_create(void *pContext)
 			break;
 		}
 
-		if(ERT_Verify_Success == verify_emRet)
+		if (ERT_Verify_Success == verify_emRet)
 		{
 			emRet = ERT_OK;
 		}
@@ -2381,7 +2380,7 @@ static void mason_cmd0907_usrfing_verify(void *pContext)
 			}
 		}
 
-		if(ERT_Verify_Success == verify_emRet)
+		if (ERT_Verify_Success == verify_emRet)
 		{
 			emRet = ERT_OK;
 		}

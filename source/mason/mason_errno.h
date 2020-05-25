@@ -115,6 +115,8 @@ extern "C"
 		ERT_TokenVerifyFail,
 
 		ERT_Verify_Init    = 0x0800,
+		ERT_VerifyValueFail,
+		ERT_VerifyLenFail,
 
 		ERT_Verify_Success = 0x5AA5,
 

@@ -323,8 +323,9 @@ bool mason_valid_wallet_path(wallet_path_t *wallet_path)
  * @para: 
  * @return: 
  */
-bool mason_verify_mnemonic(char *mnemonic_str, uint16_t len)
+emRetType mason_verify_mnemonic(char *mnemonic_str, uint16_t len)
 {
+    emRetType emRet = ERT_Verify_Init;
     mnemonic_t mnemonic = {0};
     bool is_succeed = false;
 
@@ -333,24 +334,27 @@ bool mason_verify_mnemonic(char *mnemonic_str, uint16_t len)
         is_succeed = (mason_storage_read((uint8_t *)&mnemonic, sizeof(mnemonic), FLASH_ADDR_MNOMONIC_512B) == ERT_OK);
         if (!is_succeed)
         {
+            emRet = ERT_VerifyValueFail;
             break;
         }
 
         if (len != mnemonic.size)
         {
-            is_succeed = false;
+            emRet = ERT_VerifyLenFail;
             break;
         }
 
         if (memcmp_ATA((uint8_t *)mnemonic_str, mnemonic.data, len))
         {
-            is_succeed = false;
+            emRet = ERT_VerifyValueFail;
             break;
         }
+
+        emRet = ERT_Verify_Success;
     } while (0);
 
     memset(&mnemonic, 0, sizeof(mnemonic_t));
-    return is_succeed;
+    return emRet;
 }
 /**
  * @functionname: mason_bip32_generate_master_key_from_root_seed

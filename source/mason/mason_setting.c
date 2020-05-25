@@ -91,9 +91,9 @@ bool mason_usrpwd_write(uint8_t *passwd, uint16_t passwd_len)
  * @para: 
  * @return: 
  */
-bool mason_usrpwd_verify(uint8_t *passwd, uint16_t passwd_len)
+emRetType mason_usrpwd_verify(uint8_t *passwd, uint16_t passwd_len)
 {
-    bool is_succeed = false;
+    emRetType emRet = ERT_Verify_Init;
     uint8_t cur_passwd[SETTING_USRPWD_LEN] = {0};
     uint16_t cur_passwd_len = 0;
     uint8_t checksum[SHA256_LEN] = {0};
@@ -103,19 +103,19 @@ bool mason_usrpwd_verify(uint8_t *passwd, uint16_t passwd_len)
     {
         if (SHA256_LEN != passwd_len)
         {
-            is_succeed = false;
+            emRet = ERT_VerifyLenFail;
             break;
         }
 
         if (!mason_usrpwd_read(cur_passwd, &cur_passwd_len))
         {
-            is_succeed = false;
+            emRet = ERT_VerifyValueFail;
             break;
         }
 
         if (checksumlen != cur_passwd_len)
         {
-            is_succeed = false;
+            emRet = ERT_VerifyLenFail;
             break;
         }
 
@@ -123,16 +123,16 @@ bool mason_usrpwd_verify(uint8_t *passwd, uint16_t passwd_len)
 
         if (memcmp_ATA(checksum, cur_passwd, cur_passwd_len))
         {
-            is_succeed = false;
+            emRet = ERT_VerifyValueFail;
             break;
         }
 
-        is_succeed = true;
+        emRet = ERT_Verify_Success;
     } while (0);
 
     memset(cur_passwd, 0, SETTING_USRPWD_LEN);
     memset(checksum, 0, SHA256_LEN);
-    return is_succeed;
+    return emRet;
 }
 /**
  * @functionname: mason_usrpwd_store
@@ -341,9 +341,9 @@ bool mason_usrfing_write(uint8_t *fing, uint16_t fing_len)
  * @para: 
  * @return: 
  */
-bool mason_usrfing_verify(uint8_t *sign, uint16_t sign_len)
+emRetType mason_usrfing_verify(uint8_t *sign, uint16_t sign_len)
 {
-    bool is_succeed = false;
+    emRetType emRet = ERT_Verify_Init;
     uint8_t cur_fing[SETTING_USRFING_LEN] = {0};
     uint16_t cur_fing_len = 0;
     setting_message_t *message = NULL;
@@ -353,13 +353,14 @@ bool mason_usrfing_verify(uint8_t *sign, uint16_t sign_len)
     {
         if (!sign_len)
         {
-            is_succeed = false;
+            emRet = ERT_VerifyLenFail;
             break;
         }
 
         if (!mason_usrfing_read(cur_fing, &cur_fing_len))
         {
-            is_succeed = false;
+            emRet = ERT_VerifyValueFail;
+            ;
             break;
         }
 
@@ -370,17 +371,17 @@ bool mason_usrfing_verify(uint8_t *sign, uint16_t sign_len)
 
         if (!ecdsa_verify(CRYPTO_CURVE_SECP256R1, hash_message, cur_fing, sign))
         {
-            is_succeed = false;
+            emRet = ERT_VerifyValueFail;
             break;
         }
 
-        is_succeed = true;
+        emRet = ERT_Verify_Success;
     } while (0);
 
     mason_message_delete();
     memset(&cur_fing, 0, SETTING_USRFING_LEN);
     memset(&hash_message, 0, SHA256_LEN);
-    return is_succeed;
+    return emRet;
 }
 /**
  * @functionname: mason_usrfing_store
@@ -488,9 +489,8 @@ setting_token_t *mason_token_get(void)
  * @para: 
  * @return: 
  */
-bool mason_token_verify(setting_token_t *token)
+emRetType mason_token_verify(setting_token_t *token)
 {
-    bool is_succeed = false;
     setting_token_t *cur_token = NULL;
 
     cur_token = mason_token_get();
@@ -499,10 +499,10 @@ bool mason_token_verify(setting_token_t *token)
     {
         if (!memcmp_ATA(token->token, cur_token->token, token->length))
         {
-            return true;
+            return ERT_Verify_Success;
         }
     }
-    return is_succeed;
+    return ERT_VerifyValueFail;
 }
 /**
  * @functionname: mason_token_delete

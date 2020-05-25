@@ -896,7 +896,7 @@ void mason_cmd_invalid(void *pContext)
  */
 emRetType mason_cmd_verify_passwd(pstStackType pstStack, stackElementType *pelement)
 {
-	emRetType emRet = ERT_CommFailParam;
+	emRetType emRet = ERT_Verify_Init;
 	uint8_t *cur_pwd = NULL;
 	uint16_t cur_pwd_len = 0;
 	uint8_t time = 0;
@@ -938,7 +938,7 @@ emRetType mason_cmd_verify_passwd(pstStackType pstStack, stackElementType *pelem
 		}
 
 		mason_usrcount_reset();
-		emRet = ERT_OK;
+		emRet = ERT_Verify_Success;
 	} while (0);
 
 	if (cur_pwd)
@@ -957,7 +957,7 @@ emRetType mason_cmd_verify_passwd(pstStackType pstStack, stackElementType *pelem
  */
 emRetType mason_cmd_verify_mnemonic(pstStackType pstStack, stackElementType *pelement)
 {
-	emRetType emRet = ERT_CommFailParam;
+	emRetType emRet = ERT_Verify_Init;
 	uint8_t *mnemonic = NULL;
 	uint16_t mnemonic_len = 0;
 	uint8_t time = 0;
@@ -996,7 +996,7 @@ emRetType mason_cmd_verify_mnemonic(pstStackType pstStack, stackElementType *pel
 			break;
 		}
 
-		emRet = ERT_OK;
+		emRet = ERT_Verify_Success;
 	} while (0);
 
 	if (mnemonic)
@@ -1015,7 +1015,7 @@ emRetType mason_cmd_verify_mnemonic(pstStackType pstStack, stackElementType *pel
  */
 emRetType mason_cmd_verify_token(pstStackType pstStack, stackElementType *pelement)
 {
-	emRetType emRet = ERT_CommFailParam;
+	emRetType emRet = ERT_Verify_Init;
 	setting_token_t token = {0};
 	uint8_t *token_v = NULL;
 	uint16_t token_l = 0;
@@ -1072,7 +1072,7 @@ emRetType mason_cmd_verify_token(pstStackType pstStack, stackElementType *peleme
 			break;
 		}
 
-		emRet = ERT_OK;
+		emRet = ERT_Verify_Success;
 	} while (0);
 
 	memset(&token, 0, sizeof(setting_token_t));
@@ -1092,7 +1092,7 @@ emRetType mason_cmd_verify_token(pstStackType pstStack, stackElementType *peleme
  */
 emRetType mason_cmd_verify_fing(pstStackType pstStack, stackElementType *pelement)
 {
-	emRetType emRet = ERT_CommFailParam;
+	emRetType emRet = ERT_Verify_Init;
 	uint8_t *message_sign = NULL;
 	uint16_t message_sign_len = 0;
 	uint8_t time = 0;
@@ -1133,7 +1133,7 @@ emRetType mason_cmd_verify_fing(pstStackType pstStack, stackElementType *pelemen
 			break;
 		}
 
-		emRet = ERT_OK;
+		emRet = ERT_Verify_Success;
 	} while (0);
 
 	if (message_sign)
@@ -1282,11 +1282,12 @@ static void mason_cmd0201_iap_request(void *pContext)
  */
 static void mason_cmd0203_iap_verify(void *pContext)
 {
-	MASON_CMD_DECLARE_VARIABLE(ERT_OK)
+	MASON_CMD_DECLARE_VARIABLE(ERT_CommFailParam)
 
 	emFwPackTypeType emFwPackType = E_PACK_ERR;
 	uint8_t *pFwPack = NULL;
 	uint32_t fwPackLen = 0;
+	emRetType verify_emRet = ERT_Verify_Init;
 
 	mason_cmd_init_outputTLVArray(&stStack);
 
@@ -1299,10 +1300,11 @@ static void mason_cmd0203_iap_verify(void *pContext)
 		}
 		mason_cmd_append_ele_to_outputTLVArray(&stStack, pstTLV);
 
-		if (ERT_OK != (emRet = mason_cmd_verify_passwd(pstS, &pstTLV)))
+		if (ERT_Verify_Success != (emRet = mason_cmd_verify_passwd(pstS, &pstTLV)))
 		{
 			break;
 		}
+		verify_emRet = emRet;
 
 		if (!stack_search_by_tag(pstS, &pstTLV, TLV_T_UPDATE_PACK_TYPE) || (1 != pstTLV->L))
 		{
@@ -1345,23 +1347,30 @@ static void mason_cmd0203_iap_verify(void *pContext)
 			break;
 		}
 
-		if (E_PACK_HDR == emFwPackType)
+		if ((E_PACK_HDR == emFwPackType) && (ERT_Verify_Success == verify_emRet))
 		{
 			uint32_t addr = 0;
 			uint8_t bufAddr[4] = {0x00};
-			emRet = mason_iap_set_app_not_exist();
-
+			if(ERT_OK != (emRet = mason_iap_set_app_not_exist()))
+			{
+				break;
+			}
 			addr = (FLAG_APP_EXIST == eflash_read_word(FLASH_ADDR_APP_EXIST_4B)
 						? FLASH_ADDR_APP_START
 						: OFF_MASK(eflash_read_word(FLASH_ADDR_BOOT_ADDR_4B)));
 			u32_to_buf(bufAddr, addr);
 			mason_cmd_append_to_outputTLVArray(&stStack, TLV_T_FLASH_ADDR, sizeof(bufAddr), bufAddr);
 		}
+
+		if(ERT_Verify_Success == verify_emRet)
+		{
+			emRet = ERT_OK;
+		}
 	} while (0);
 
 	MASON_CMD_RESP_OUTPUT()
 
-	if ((ERT_OK == emRet) && (E_PACK_HDR == emFwPackType))
+	if ((ERT_OK == emRet) && (E_PACK_HDR == emFwPackType) && (ERT_Verify_Success == verify_emRet))
 	{
 		_delay_ms(500);
 		printf("\nClean App && Rebooting..\n");
@@ -1443,10 +1452,11 @@ static void mason_cmd0301_get_entropy(void *pContext)
  */
 static void mason_cmd0302_create_wallet(void *pContext)
 {
-	MASON_CMD_DECLARE_VARIABLE(ERT_OK)
+	MASON_CMD_DECLARE_VARIABLE(ERT_CommFailParam)
 
 	uint8_t *mnemonic = NULL;
 	uint16_t mnemonic_len = 0;
+	emRetType verify_emRet = ERT_Verify_Init;
 
 	mason_cmd_init_outputTLVArray(&stStack);
 
@@ -1459,10 +1469,11 @@ static void mason_cmd0302_create_wallet(void *pContext)
 		}
 		mason_cmd_append_ele_to_outputTLVArray(&stStack, pstTLV);
 
-		if (ERT_OK != (emRet = mason_cmd_verify_passwd(pstS, &pstTLV)))
+		if (ERT_Verify_Success != (emRet = mason_cmd_verify_passwd(pstS, &pstTLV)))
 		{
 			break;
 		}
+		verify_emRet = emRet;
 
 		if (!stack_search_by_tag(pstS, &pstTLV, TLV_T_MNEMONIC))
 		{
@@ -1480,6 +1491,11 @@ static void mason_cmd0302_create_wallet(void *pContext)
 		{
 			emRet = ERT_CommFailParam;
 			break;
+		}
+
+		if(ERT_Verify_Success == verify_emRet)
+		{
+			emRet = ERT_OK;
 		}
 	} while (0);
 
@@ -1499,11 +1515,12 @@ static void mason_cmd0302_create_wallet(void *pContext)
  */
 static void mason_cmd0303_change_wallet_passphrase(void *pContext)
 {
-	MASON_CMD_DECLARE_VARIABLE(ERT_OK)
+	MASON_CMD_DECLARE_VARIABLE(ERT_CommFailParam)
 
 	uint8_t *passphrase = NULL;
 	uint16_t passphrase_len = 0;
 	stHDWStatusType status;
+	emRetType verify_emRet = ERT_Verify_Init;
 
 	mason_cmd_init_outputTLVArray(&stStack);
 
@@ -1516,10 +1533,11 @@ static void mason_cmd0303_change_wallet_passphrase(void *pContext)
 		}
 		mason_cmd_append_ele_to_outputTLVArray(&stStack, pstTLV);
 
-		if (ERT_OK != (emRet = mason_cmd_verify_passwd(pstS, &pstTLV)))
+		if (ERT_Verify_Success != (emRet = mason_cmd_verify_passwd(pstS, &pstTLV)))
 		{
 			break;
 		}
+		verify_emRet = emRet;
 
 		mason_get_mode(&status);
 		if (status.emHDWStatus != E_HDWS_WALLET)
@@ -1539,6 +1557,11 @@ static void mason_cmd0303_change_wallet_passphrase(void *pContext)
 		{
 			emRet = ERT_CommFailParam;
 			break;
+		}
+
+		if(ERT_Verify_Success == verify_emRet)
+		{
+			emRet = ERT_OK;
 		}
 	} while (0);
 
@@ -1674,7 +1697,7 @@ static void mason_cmd0306_delete_wallet(void *pContext)
  */
 static void mason_cmd0307_sign_ECDSA(void *pContext)
 {
-	MASON_CMD_DECLARE_VARIABLE(ERT_OK)
+	MASON_CMD_DECLARE_VARIABLE(ERT_CommFailParam)
 
 	uint8_t *path = NULL;
 	uint16_t path_len = 0;
@@ -1691,6 +1714,7 @@ static void mason_cmd0307_sign_ECDSA(void *pContext)
 	crypto_curve_t curve_type = CRYPTO_CURVE_SECP256K1;
 	char base58_ext_key[256];
 	size_t base58_ext_key_len = 256;
+	emRetType verify_emRet = ERT_Verify_Init;
 
 	mason_cmd_init_outputTLVArray(&stStack);
 
@@ -1703,10 +1727,11 @@ static void mason_cmd0307_sign_ECDSA(void *pContext)
 		}
 		mason_cmd_append_ele_to_outputTLVArray(&stStack, pstTLV);
 
-		if (ERT_OK != (emRet = mason_cmd_verify_token(pstS, &pstTLV)))
+		if (ERT_Verify_Success != (emRet = mason_cmd_verify_token(pstS, &pstTLV)))
 		{
 			break;
 		}
+		verify_emRet = emRet;
 
 		if (!stack_search_by_tag(pstS, &pstTLV, TLV_T_HASH))
 		{
@@ -1759,6 +1784,10 @@ static void mason_cmd0307_sign_ECDSA(void *pContext)
 			break;
 		}
 
+		if(ERT_Verify_Success == verify_emRet)
+		{
+			emRet = ERT_OK;
+		}
 		b58enc(base58_ext_key, &base58_ext_key_len, (uint8_t *)&extended_public_key, sizeof(extended_public_key));
 		base58_ext_key[base58_ext_key_len] = 0;
 		mason_cmd_append_to_outputTLVArray(&stStack, TLV_T_EXT_KEY, base58_ext_key_len - 1, (uint8_t *)base58_ext_key);
@@ -1854,7 +1883,9 @@ static void mason_cmd0401_generate_public_key_from_private_key(void *pContext)
  */
 static void mason_cmd0502_mnemonic_verify(void *pContext)
 {
-	MASON_CMD_DECLARE_VARIABLE(ERT_OK)
+	MASON_CMD_DECLARE_VARIABLE(ERT_CommFailParam)
+
+	emRetType verify_emRet = ERT_Verify_Init;
 
 	mason_cmd_init_outputTLVArray(&stStack);
 
@@ -1867,9 +1898,15 @@ static void mason_cmd0502_mnemonic_verify(void *pContext)
 		}
 		mason_cmd_append_ele_to_outputTLVArray(&stStack, pstTLV);
 
-		if (ERT_OK != (emRet = mason_cmd_verify_mnemonic(pstS, &pstTLV)))
+		if (ERT_Verify_Success != (emRet = mason_cmd_verify_mnemonic(pstS, &pstTLV)))
 		{
 			break;
+		}
+		verify_emRet = emRet;
+
+		if(ERT_Verify_Success == verify_emRet)
+		{
+			emRet = ERT_OK;
 		}
 	} while (0);
 
@@ -2036,10 +2073,11 @@ static void mason_cmd0802_tamper_test(void *pContext)
  */
 static void mason_cmd0901_usrpwd_modify(void *pContext)
 {
-	MASON_CMD_DECLARE_VARIABLE(ERT_OK)
+	MASON_CMD_DECLARE_VARIABLE(ERT_CommFailParam)
 
 	uint8_t *new_pwd = NULL;
 	uint16_t new_pwd_len = 0;
+	emRetType verify_emRet = ERT_Verify_Init;
 
 	mason_cmd_init_outputTLVArray(&stStack);
 
@@ -2052,10 +2090,11 @@ static void mason_cmd0901_usrpwd_modify(void *pContext)
 		}
 		mason_cmd_append_ele_to_outputTLVArray(&stStack, pstTLV);
 
-		if (ERT_OK != (emRet = mason_cmd_verify_passwd(pstS, &pstTLV)))
+		if (ERT_Verify_Success != (emRet = mason_cmd_verify_passwd(pstS, &pstTLV)))
 		{
 			break;
 		}
+		verify_emRet = emRet;
 
 		if (!stack_search_by_tag(pstS, &pstTLV, TLV_T_USRPWD_NEW))
 		{
@@ -2068,6 +2107,11 @@ static void mason_cmd0901_usrpwd_modify(void *pContext)
 		{
 			emRet = ERT_UsrPassParaERR;
 			break;
+		}
+
+		if(ERT_Verify_Success == verify_emRet)
+		{
+			emRet = ERT_OK;
 		}
 	} while (0);
 
@@ -2087,11 +2131,12 @@ static void mason_cmd0901_usrpwd_modify(void *pContext)
  */
 static void mason_cmd0902_usrpwd_reset(void *pContext)
 {
-	MASON_CMD_DECLARE_VARIABLE(ERT_OK)
+	MASON_CMD_DECLARE_VARIABLE(ERT_CommFailParam)
 
 	stHDWStatusType status;
 	uint8_t *new_pwd = NULL;
 	uint16_t new_pwd_len = 0;
+	emRetType verify_emRet = ERT_Verify_Init;
 
 	mason_cmd_init_outputTLVArray(&stStack);
 
@@ -2108,13 +2153,15 @@ static void mason_cmd0902_usrpwd_reset(void *pContext)
 		if (E_HDWS_CHIP == status.emHDWStatus || E_HDWS_FACTORY == status.emHDWStatus || E_HDWS_EMPTY == status.emHDWStatus)
 		{
 			//allow to reset password
+			verify_emRet = ERT_Verify_Success;
 		}
 		else if (E_HDWS_WALLET == status.emHDWStatus)
 		{
-			if (ERT_OK != (emRet = mason_cmd_verify_mnemonic(pstS, &pstTLV)))
+			if (ERT_Verify_Success != (emRet = mason_cmd_verify_mnemonic(pstS, &pstTLV)))
 			{
 				break;
 			}
+			verify_emRet = emRet;
 		}
 		else
 		{
@@ -2133,6 +2180,11 @@ static void mason_cmd0902_usrpwd_reset(void *pContext)
 		{
 			emRet = ERT_UsrPassParaERR;
 			break;
+		}
+
+		if(ERT_Verify_Success == verify_emRet)
+		{
+			emRet = ERT_OK;
 		}
 	} while (0);
 
@@ -2153,10 +2205,11 @@ static void mason_cmd0902_usrpwd_reset(void *pContext)
  */
 static void mason_cmd0903_usrpwd_verify(void *pContext)
 {
-	MASON_CMD_DECLARE_VARIABLE(ERT_OK)
+	MASON_CMD_DECLARE_VARIABLE(ERT_CommFailParam)
 
 	uint8_t *return_token = NULL;
 	uint16_t return_token_len = 0;
+	emRetType verify_emRet = ERT_Verify_Init;
 
 	mason_cmd_init_outputTLVArray(&stStack);
 
@@ -2169,10 +2222,11 @@ static void mason_cmd0903_usrpwd_verify(void *pContext)
 		}
 		mason_cmd_append_ele_to_outputTLVArray(&stStack, pstTLV);
 
-		if (ERT_OK != (emRet = mason_cmd_verify_passwd(pstS, &pstTLV)))
+		if (ERT_Verify_Success != (emRet = mason_cmd_verify_passwd(pstS, &pstTLV)))
 		{
 			break;
 		}
+		verify_emRet = emRet;
 
 		if (stack_search_by_tag(pstS, &pstTLV, TLV_T_RETURN_TOKEN))
 		{
@@ -2185,6 +2239,11 @@ static void mason_cmd0903_usrpwd_verify(void *pContext)
 				token = mason_token_get();
 				mason_cmd_append_to_outputTLVArray(&stStack, TLV_T_TOKEN, token->length, token->token);
 			}
+		}
+
+		if(ERT_Verify_Success == verify_emRet)
+		{
+			emRet = ERT_OK;
 		}
 	} while (0);
 
@@ -2228,10 +2287,11 @@ static void mason_cmd0905_message_gen(void *pContext)
  */
 static void mason_cmd0906_usrfing_create(void *pContext)
 {
-	MASON_CMD_DECLARE_VARIABLE(ERT_OK)
+	MASON_CMD_DECLARE_VARIABLE(ERT_CommFailParam)
 
 	uint8_t *fing = NULL;
 	uint16_t fing_len = 0;
+	emRetType verify_emRet = ERT_Verify_Init;
 
 	mason_cmd_init_outputTLVArray(&stStack);
 
@@ -2244,10 +2304,11 @@ static void mason_cmd0906_usrfing_create(void *pContext)
 		}
 		mason_cmd_append_ele_to_outputTLVArray(&stStack, pstTLV);
 
-		if (ERT_OK != (emRet = mason_cmd_verify_passwd(pstS, &pstTLV)))
+		if (ERT_Verify_Success != (emRet = mason_cmd_verify_passwd(pstS, &pstTLV)))
 		{
 			break;
 		}
+		verify_emRet = emRet;
 
 		if (!stack_search_by_tag(pstS, &pstTLV, TLV_T_USRFING))
 		{
@@ -2260,6 +2321,11 @@ static void mason_cmd0906_usrfing_create(void *pContext)
 		{
 			emRet = ERT_UsrFingParaERR;
 			break;
+		}
+
+		if(ERT_Verify_Success == verify_emRet)
+		{
+			emRet = ERT_OK;
 		}
 	} while (0);
 
@@ -2279,10 +2345,11 @@ static void mason_cmd0906_usrfing_create(void *pContext)
  */
 static void mason_cmd0907_usrfing_verify(void *pContext)
 {
-	MASON_CMD_DECLARE_VARIABLE(ERT_OK)
+	MASON_CMD_DECLARE_VARIABLE(ERT_CommFailParam)
 
 	uint8_t *return_token = NULL;
 	uint16_t return_token_len = 0;
+	emRetType verify_emRet = ERT_Verify_Init;
 
 	mason_cmd_init_outputTLVArray(&stStack);
 
@@ -2295,10 +2362,11 @@ static void mason_cmd0907_usrfing_verify(void *pContext)
 		}
 		mason_cmd_append_ele_to_outputTLVArray(&stStack, pstTLV);
 
-		if (ERT_OK != (emRet = mason_cmd_verify_fing(pstS, &pstTLV)))
+		if (ERT_Verify_Success != (emRet = mason_cmd_verify_fing(pstS, &pstTLV)))
 		{
 			break;
 		}
+		verify_emRet = emRet;
 
 		if (stack_search_by_tag(pstS, &pstTLV, TLV_T_RETURN_TOKEN))
 		{
@@ -2311,6 +2379,11 @@ static void mason_cmd0907_usrfing_verify(void *pContext)
 				token = mason_token_get();
 				mason_cmd_append_to_outputTLVArray(&stStack, TLV_T_TOKEN, token->length, token->token);
 			}
+		}
+
+		if(ERT_Verify_Success == verify_emRet)
+		{
+			emRet = ERT_OK;
 		}
 	} while (0);
 

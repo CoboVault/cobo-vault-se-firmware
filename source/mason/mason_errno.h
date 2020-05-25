@@ -114,6 +114,10 @@ extern "C"
 		ERT_needToken,
 		ERT_TokenVerifyFail,
 
+		ERT_Verify_Init    = 0x0800,
+
+		ERT_Verify_Success = 0x5AA5,
+
 		ERT_DebugInvalid = 0xFF00,
 		ERT_UnderAttack = 0xFFAA,
 		ERT_Unauthorized = 0xFFFF,

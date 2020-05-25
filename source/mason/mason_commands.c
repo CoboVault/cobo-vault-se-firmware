@@ -600,10 +600,12 @@ emCmdFSMType mason_command_manager(void)
 		if (NULL != pstCMD->pV)
 		{
 			free(pstCMD->pV);
+			pstCMD->pV = NULL;
 		}
 		if (NULL != pstCMD)
 		{
 			free(pstCMD);
+			pstCMD = NULL;
 		}
 	}
 
@@ -906,6 +908,12 @@ emRetType mason_cmd_verify_passwd(pstStackType pstStack, stackElementType *pelem
 		return ERT_UsrPassVerifyFail;
 	}
 	mason_usrcount_reset();
+	if (cur_pwd)
+	{
+		memset(cur_pwd, 0, cur_pwd_len);
+		cur_pwd = NULL;
+		cur_pwd_len = 0;
+	}
 	return ERT_OK;
 }
 /**
@@ -1247,6 +1255,12 @@ static void mason_cmd0302_create_wallet(void *pContext)
 		}
 	} while (0);
 
+	if (mnemonic)
+	{
+		memset(mnemonic, 0, mnemonic_len);
+		mnemonic = NULL;
+		mnemonic_len = 0;
+	}
 	MASON_CMD_RESP_OUTPUT()
 }
 /**
@@ -1300,6 +1314,12 @@ static void mason_cmd0303_change_wallet_passphrase(void *pContext)
 		}
 	} while (0);
 
+	if (passphrase)
+	{
+		memset(passphrase, 0, passphrase_len);
+		passphrase = NULL;
+		passphrase_len = 0;
+	}
 	MASON_CMD_RESP_OUTPUT()
 }
 /**
@@ -1371,6 +1391,8 @@ static void mason_cmd0305_get_extpubkey(void *pContext)
 		mason_cmd_append_to_outputTLVArray(&stStack, TLV_T_HDP_DEPTH, 1, &wallet_path.num_of_segments);
 	} while (0);
 
+	memset(&derived_private_key, 0, sizeof(private_key_t));
+	memset(&derived_chaincode, 0, sizeof(chaincode_t));
 	MASON_CMD_RESP_OUTPUT()
 }
 /**
@@ -1442,6 +1464,8 @@ static void mason_cmd0307_sign_ECDSA(void *pContext)
 	setting_token_t token = {0};
 	char base58_ext_key[256];
 	size_t base58_ext_key_len = 256;
+	uint8_t *token_v = NULL;
+	uint16_t token_l = 0;
 
 	mason_cmd_init_outputTLVArray(&stStack);
 
@@ -1459,13 +1483,15 @@ static void mason_cmd0307_sign_ECDSA(void *pContext)
 			emRet = ERT_needToken;
 			break;
 		}
-		if (SETTING_TOKEN_LEN != pstTLV->L)
+		token_v = (uint8_t *)pstTLV->pV;
+		token_l = pstTLV->L;
+		if (SETTING_TOKEN_LEN != token_l)
 		{
 			emRet = ERT_TokenVerifyFail;
 			break;
 		}
-		memcpy(token.token, (uint8_t *)pstTLV->pV, pstTLV->L);
-		token.length = pstTLV->L;
+		memcpy(token.token, token_v, token_l);
+		token.length = token_l;
 		if (!mason_token_verify(&token))
 		{
 			mason_token_delete();
@@ -1531,6 +1557,15 @@ static void mason_cmd0307_sign_ECDSA(void *pContext)
 		mason_cmd_append_to_outputTLVArray(&stStack, TLV_T_SIGNATURE, signature_len, signature);
 	} while (0);
 
+	memset(&derived_private_key, 0, sizeof(private_key_t));
+	memset(&derived_chaincode, 0, sizeof(chaincode_t));
+	memset(&token, 0, sizeof(setting_token_t));
+	if (token_v)
+	{
+		memset(token_v, 0, token_l);
+		token_v = NULL;
+		token_l = 0;
+	}
 	MASON_CMD_RESP_OUTPUT()
 }
 /**
@@ -1640,13 +1675,19 @@ static void mason_cmd0502_mnemonic_verify(void *pContext)
 		}
 		mnemonic = (uint8_t *)pstTLV->pV;
 		mnemonic_len = pstTLV->L;
-		if (!mason_verify_menonic((char *)mnemonic, mnemonic_len))
+		if (!mason_verify_mnemonic((char *)mnemonic, mnemonic_len))
 		{
 			emRet = ERT_MnemonicNotMatch;
 			break;
 		}
 	} while (0);
 
+	if (mnemonic)
+	{
+		memset(mnemonic, 0, mnemonic_len);
+		mnemonic = NULL;
+		mnemonic_len = 0;
+	}
 	MASON_CMD_RESP_OUTPUT()
 }
 /**
@@ -1720,6 +1761,8 @@ static void mason_cmd0701_web_authentication(void *pContext)
 		mason_cmd_append_to_outputTLVArray(&stStack, TLV_T_PLAIN_MSG, output_len, output);
 	} while (0);
 
+	memset(web_auth_private_key, 0, PRIVATE_KEY_LEN);
+	memset(web_auth_public_key, 0, PUB_KEY_LEN);
 	MASON_CMD_RESP_OUTPUT()
 }
 /**
@@ -1843,6 +1886,12 @@ static void mason_cmd0901_usrpwd_modify(void *pContext)
 		}
 	} while (0);
 
+	if (new_pwd)
+	{
+		memset(new_pwd, 0, new_pwd_len);
+		new_pwd = NULL;
+		new_pwd_len = 0;
+	}
 	MASON_CMD_RESP_OUTPUT()
 }
 /**
@@ -1886,7 +1935,7 @@ static void mason_cmd0902_usrpwd_reset(void *pContext)
 			}
 			cur_mnemonic = (uint8_t *)pstTLV->pV;
 			cur_mnemonic_len = pstTLV->L;
-			if (!mason_verify_menonic((char *)cur_mnemonic, cur_mnemonic_len))
+			if (!mason_verify_mnemonic((char *)cur_mnemonic, cur_mnemonic_len))
 			{
 				emRet = ERT_MnemonicNotMatch;
 				break;
@@ -1911,6 +1960,19 @@ static void mason_cmd0902_usrpwd_reset(void *pContext)
 			break;
 		}
 	} while (0);
+
+	if (cur_mnemonic)
+	{
+		memset(cur_mnemonic, 0, cur_mnemonic_len);
+		cur_mnemonic = NULL;
+		cur_mnemonic_len = 0;
+	}
+	if (new_pwd)
+	{
+		memset(new_pwd, 0, new_pwd_len);
+		new_pwd = NULL;
+		new_pwd_len = 0;
+	}
 
 	MASON_CMD_RESP_OUTPUT()
 }
@@ -2032,6 +2094,12 @@ static void mason_cmd0906_usrfing_create(void *pContext)
 		}
 	} while (0);
 
+	if (fing)
+	{
+		memset(fing, 0, fing_len);
+		fing = NULL;
+		fing_len = 0;
+	}
 	MASON_CMD_RESP_OUTPUT()
 }
 /**
@@ -2088,6 +2156,12 @@ static void mason_cmd0907_usrfing_verify(void *pContext)
 		}
 	} while (0);
 
+	if (message_sign)
+	{
+		memset(message_sign, 0, message_sign_len);
+		message_sign = NULL;
+		message_sign_len = 0;
+	}
 	MASON_CMD_RESP_OUTPUT()
 }
 /**

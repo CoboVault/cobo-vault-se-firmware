@@ -57,6 +57,7 @@ bool mason_usrpwd_read(uint8_t *passwd, uint16_t *passwd_len)
         }
     }
 
+    memset(&pwd, 0, sizeof(usrpwd_t));
     return is_succeed;
 }
 /**
@@ -81,6 +82,7 @@ bool mason_usrpwd_write(uint8_t *passwd, uint16_t passwd_len)
 
     is_succeed = mason_storage_write_buffer((uint8_t *)&pwd, sizeof(usrpwd_t), FLASH_ADDR_USRPWD);
 
+    memset(&pwd, 0, sizeof(usrpwd_t));
     return is_succeed;
 }
 /**
@@ -91,35 +93,46 @@ bool mason_usrpwd_write(uint8_t *passwd, uint16_t passwd_len)
  */
 bool mason_usrpwd_verify(uint8_t *passwd, uint16_t passwd_len)
 {
+    bool is_succeed = false;
     uint8_t cur_passwd[SETTING_USRPWD_LEN] = {0};
     uint16_t cur_passwd_len = 0;
-
     uint8_t checksum[SHA256_LEN] = {0};
     uint16_t checksumlen = SHA256_LEN;
 
-    if (SHA256_LEN != passwd_len)
+    do
     {
-        return false;
-    }
+        if (SHA256_LEN != passwd_len)
+        {
+            is_succeed = false;
+            break;
+        }
 
-    if (!mason_usrpwd_read(cur_passwd, &cur_passwd_len))
-    {
-        return false;
-    }
+        if (!mason_usrpwd_read(cur_passwd, &cur_passwd_len))
+        {
+            is_succeed = false;
+            break;
+        }
 
-    if (checksumlen != cur_passwd_len)
-    {
-        return false;
-    }
+        if (checksumlen != cur_passwd_len)
+        {
+            is_succeed = false;
+            break;
+        }
 
-    mason_HDW_gen_sha256sha256(passwd, passwd_len, checksum, checksumlen);
+        mason_HDW_gen_sha256sha256(passwd, passwd_len, checksum, checksumlen);
 
-    if (memcmp_ATA(checksum, cur_passwd, cur_passwd_len))
-    {
-        return false;
-    }
+        if (memcmp_ATA(checksum, cur_passwd, cur_passwd_len))
+        {
+            is_succeed = false;
+            break;
+        }
 
-    return true;
+        is_succeed = true;
+    } while (0);
+
+    memset(cur_passwd, 0, SETTING_USRPWD_LEN);
+    memset(checksum, 0, SHA256_LEN);
+    return is_succeed;
 }
 /**
  * @functionname: mason_usrpwd_store
@@ -129,22 +142,31 @@ bool mason_usrpwd_verify(uint8_t *passwd, uint16_t passwd_len)
  */
 bool mason_usrpwd_store(uint8_t *passwd, uint16_t passwd_len)
 {
+    bool is_succeed = false;
     uint8_t checksum[SHA256_LEN] = {0};
     uint16_t checksumlen = SHA256_LEN;
 
-    if (SHA256_LEN != passwd_len)
+    do
     {
-        return false;
-    }
+        if (SHA256_LEN != passwd_len)
+        {
+            is_succeed = false;
+            break;
+        }
 
-    mason_HDW_gen_sha256sha256(passwd, passwd_len, checksum, checksumlen);
+        mason_HDW_gen_sha256sha256(passwd, passwd_len, checksum, checksumlen);
 
-    if (!mason_usrpwd_write(checksum, checksumlen))
-    {
-        return false;
-    }
+        if (!mason_usrpwd_write(checksum, checksumlen))
+        {
+            is_succeed = false;
+            break;
+        }
 
-    return true;
+        is_succeed = true;
+    } while (0);
+
+    memset(checksum, 0, SHA256_LEN);
+    return is_succeed;
 }
 /**
  * @functionname: mason_usrpwd_delete
@@ -286,7 +308,7 @@ bool mason_usrfing_read(uint8_t *fing, uint16_t *fing_len)
             is_succeed = true;
         }
     }
-
+    memset(&fingerprint, 0, sizeof(usrfing_t));
     return is_succeed;
 }
 /**
@@ -310,7 +332,7 @@ bool mason_usrfing_write(uint8_t *fing, uint16_t fing_len)
     memcpy(&fingerprint.fing[fing_len + 4], SETTING_STORE_FING_SUFFIX, 4);
 
     is_succeed = mason_storage_write_buffer((uint8_t *)&fingerprint, sizeof(usrfing_t), FLASH_ADDR_USRFING);
-
+    memset(&fingerprint, 0, sizeof(usrfing_t));
     return is_succeed;
 }
 /**
@@ -321,35 +343,44 @@ bool mason_usrfing_write(uint8_t *fing, uint16_t fing_len)
  */
 bool mason_usrfing_verify(uint8_t *sign, uint16_t sign_len)
 {
+    bool is_succeed = false;
     uint8_t cur_fing[SETTING_USRFING_LEN] = {0};
     uint16_t cur_fing_len = 0;
     setting_message_t *message = NULL;
     uint8_t hash_message[SHA256_LEN] = {0};
 
-    if (!sign_len)
+    do
     {
-        return false;
-    }
+        if (!sign_len)
+        {
+            is_succeed = false;
+            break;
+        }
 
-    if (!mason_usrfing_read(cur_fing, &cur_fing_len))
-    {
-        return false;
-    }
+        if (!mason_usrfing_read(cur_fing, &cur_fing_len))
+        {
+            is_succeed = false;
+            break;
+        }
 
-    message = mason_message_get();
+        message = mason_message_get();
 
-    //r1 verify
-    sha256_api(message->message, message->length, hash_message);
+        //r1 verify
+        sha256_api(message->message, message->length, hash_message);
 
-    if (!ecdsa_verify(CRYPTO_CURVE_SECP256R1, hash_message, cur_fing, sign))
-    {
-        mason_message_delete();
-        return false;
-    }
+        if (!ecdsa_verify(CRYPTO_CURVE_SECP256R1, hash_message, cur_fing, sign))
+        {
+            is_succeed = false;
+            break;
+        }
+
+        is_succeed = true;
+    } while (0);
 
     mason_message_delete();
-
-    return true;
+    memset(&cur_fing, 0, SETTING_USRFING_LEN);
+    memset(&hash_message, 0, SHA256_LEN);
+    return is_succeed;
 }
 /**
  * @functionname: mason_usrfing_store

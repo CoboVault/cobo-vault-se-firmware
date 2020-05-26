@@ -1800,7 +1800,7 @@ static void mason_cmd0307_sign_ECDSA(void *pContext)
 }
 /**
  * @functionname: mason_cmd0308_get_masterkey_fingerprint
- * @description: command for get specific extended public key by given hdpath and algorithm
+ * @description: 
  * @para: 
  * @return: 
  */

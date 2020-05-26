@@ -1135,6 +1135,7 @@ emRetType mason_cmd_verify_fing(pstStackType pstStack, stackElementType *pelemen
 		emRet = ERT_Verify_Success;
 	} while (0);
 
+	mason_message_delete();
 	if (message_sign)
 	{
 		memset(message_sign, 0, message_sign_len);

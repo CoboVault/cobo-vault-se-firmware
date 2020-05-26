@@ -69,19 +69,18 @@ typedef struct setting_token_s
 } setting_token_t;
 
 /** Function declarations */
-bool mason_usrpwd_verify(uint8_t *passwd, uint16_t passwd_len);
+emRetType mason_usrpwd_verify(uint8_t *passwd, uint16_t passwd_len);
 bool mason_usrpwd_store(uint8_t *passwd, uint16_t passwd_len);
 void mason_usrcount(void);
 bool mason_usrcount_reset(void);
-bool mason_usrfing_verify(uint8_t *sign, uint16_t sign_len);
+emRetType mason_usrfing_verify(uint8_t *sign, uint16_t sign_len);
 bool mason_usrfing_store(uint8_t *fing, uint16_t fing_len);
-
 bool mason_message_gen(void);
 setting_message_t *mason_message_get(void);
 void mason_message_delete(void);
 bool mason_token_gen(void);
 setting_token_t *mason_token_get(void);
-bool mason_token_verify(setting_token_t *token);
+emRetType mason_token_verify(setting_token_t *token);
 void mason_token_delete(void);
 void mason_setting_delete(void);
 

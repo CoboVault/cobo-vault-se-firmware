@@ -36,10 +36,7 @@ in the file COPYING.  If not, see <http://www.gnu.org/licenses/>.
  */
 bool is_entropy_bits_support(uint16_t bits)
 {
-    return (bits == Entropy128Bits) 
-        || (bits == Entropy192Bits) 
-        || (bits == Entropy224Bits) 
-        || (bits == Entropy256Bits);
+    return (bits == Entropy128Bits) || (bits == Entropy192Bits) || (bits == Entropy224Bits) || (bits == Entropy256Bits);
 }
 /**
  * @functionname: mason_generate_entropy
@@ -83,7 +80,7 @@ bool mason_generate_entropy(uint8_t *output_entropy, uint16_t bits, bool need_ch
  */
 bool mason_create_wallet(uint8_t *mnemonic, uint16_t mnemonic_len)
 {
-    mnemonic_t mnemonic_data;
+    mnemonic_t mnemonic_data = {0};
     bool is_succeed = false;
 
     if ((0 == mnemonic_len) || (mnemonic_len > MAX_MNEMONIC_SIZE))
@@ -98,10 +95,13 @@ bool mason_create_wallet(uint8_t *mnemonic, uint16_t mnemonic_len)
 
     if (!is_succeed)
     {
+        memset(&mnemonic_data, 0, sizeof(mnemonic_t));
         return false;
     }
 
-    return mason_mnemonic_write(&mnemonic_data);
+    is_succeed = mason_mnemonic_write(&mnemonic_data);
+    memset(&mnemonic_data, 0, sizeof(mnemonic_t));
+    return is_succeed;
 }
 /**
  * @functionname: mason_mnemonic_read
@@ -118,6 +118,7 @@ bool mason_mnemonic_read(mnemonic_t *mnemonic)
 
     if (mnemonic->size > sizeof(mnemonic->data))
     {
+        memset(mnemonic, 0, sizeof(mnemonic_t));
         return false;
     }
 
@@ -167,7 +168,8 @@ bool mason_seed_write(wallet_seed_t *seed)
  */
 bool mason_change_wallet_passphrase(uint8_t *passphrase, uint16_t passphrase_len)
 {
-    mnemonic_t mnemonic;
+    bool is_succeed = false;
+    mnemonic_t mnemonic = {0};
 
     if (passphrase_len > MAX_PASSPHRASE_SIZE)
     {
@@ -176,10 +178,13 @@ bool mason_change_wallet_passphrase(uint8_t *passphrase, uint16_t passphrase_len
 
     if (!mason_mnemonic_read(&mnemonic))
     {
+        memset(&mnemonic, 0, sizeof(mnemonic_t));
         return false;
     }
 
-    return mason_wallet_setup(&mnemonic, passphrase, passphrase_len);
+    is_succeed = mason_wallet_setup(&mnemonic, passphrase, passphrase_len);
+    memset(&mnemonic, 0, sizeof(mnemonic_t));
+    return is_succeed;
 }
 /**
  * @functionname: mason_wallet_setup
@@ -190,10 +195,11 @@ bool mason_change_wallet_passphrase(uint8_t *passphrase, uint16_t passphrase_len
 bool mason_wallet_setup(mnemonic_t *mnemonic, uint8_t *passphrase, uint16_t passphrase_len)
 {
     bool is_succeed = false;
-    wallet_seed_t seed;
+    wallet_seed_t seed = {0};
     bip39_gen_seed_with_mnomonic(mnemonic->data, mnemonic->size, passphrase, passphrase_len, seed.data, SHA512_LEN);
     seed.length = SHA512_LEN;
     is_succeed = mason_seed_write(&seed);
+    memset(&seed, 0, sizeof(wallet_seed_t));
     return is_succeed;
 }
 /**
@@ -342,32 +348,43 @@ bool mason_valid_wallet_path(wallet_path_t *wallet_path)
     return true;
 }
 /**
- * @functionname: mason_verify_menonic
+ * @functionname: mason_verify_mnemonic
  * @description: 
  * @para: 
  * @return: 
  */
-bool mason_verify_menonic(char *menonic_str, uint16_t len)
+emRetType mason_verify_mnemonic(char *mnemonic_str, uint16_t len)
 {
-    mnemonic_t menonic;
+    emRetType emRet = ERT_Verify_Init;
+    mnemonic_t mnemonic = {0};
     bool is_succeed = false;
-    is_succeed = (mason_storage_read((uint8_t *)&menonic, sizeof(menonic), FLASH_ADDR_MNOMONIC_512B) == ERT_OK);
-    if (!is_succeed)
-    {
-        return false;
-    }
 
-    if (len != menonic.size)
+    do
     {
-        return false;
-    }
+        is_succeed = (mason_storage_read((uint8_t *)&mnemonic, sizeof(mnemonic), FLASH_ADDR_MNOMONIC_512B) == ERT_OK);
+        if (!is_succeed)
+        {
+            emRet = ERT_VerifyValueFail;
+            break;
+        }
 
-    if (memcmp_ATA((uint8_t *)menonic_str, menonic.data, len))
-    {
-        return false;
-    }
+        if (len != mnemonic.size)
+        {
+            emRet = ERT_VerifyLenFail;
+            break;
+        }
 
-    return true;
+        if (memcmp_ATA((uint8_t *)mnemonic_str, mnemonic.data, len))
+        {
+            emRet = ERT_VerifyValueFail;
+            break;
+        }
+
+        emRet = ERT_Verify_Success;
+    } while (0);
+
+    memset(&mnemonic, 0, sizeof(mnemonic_t));
+    return emRet;
 }
 /**
  * @functionname: mason_bip32_generate_master_key_from_root_seed
@@ -386,7 +403,7 @@ bool mason_bip32_generate_master_key_from_root_seed(
     uint8_t ed25519_key[] = "ed25519 seed";
     uint16_t key_len;
     uint8_t *key;
-    wallet_seed_t seed;
+    wallet_seed_t seed = {0};
 
     switch (curve_type)
     {
@@ -427,6 +444,7 @@ bool mason_bip32_generate_master_key_from_root_seed(
         }
     }
 
+    memset(&seed, 0, sizeof(wallet_seed_t));
     return true;
 }
 /**
@@ -509,8 +527,7 @@ bool mason_bip32_derive_keys(
     memcpy(extended_key->fingerprint, fingerprint, sizeof(fingerprint));
     u32_to_buf(extended_key->child_number, wallet_path->segments[wallet_path->num_of_segments - 1]);
     memcpy(extended_key->chaincode, chaincode, CHAINCODE_LEN);
-    if (wallet_path->version == KEY_VERSION_MAINNET_PUBLIC 
-     || wallet_path->version == KEY_VERSION_TESTNET_PUBLIC)
+    if (wallet_path->version == KEY_VERSION_MAINNET_PUBLIC || wallet_path->version == KEY_VERSION_TESTNET_PUBLIC)
     {
         private_key_to_compressed_public_key(curve, &child_private_key, &child_compressed_public_key);
         memcpy(extended_key->key, child_compressed_public_key.data, COMPRESSED_PUBLIC_KEY_LEN);
@@ -524,6 +541,10 @@ bool mason_bip32_derive_keys(
     sha256sha256((uint8_t *)extended_key, sizeof(extended_key_t) - sizeof(extended_key->checksum), checksum);
     memcpy(extended_key->checksum, checksum, 4);
 
+    memset(&parent_private_key, 0, sizeof(private_key_t));
+    memset(&parent_chaincode, 0, sizeof(chaincode_t));
+    memset(&child_private_key, 0, sizeof(private_key_t));
+    memset(&child_chaincode, 0, sizeof(chaincode_t));
     return true;
 }
 /**
@@ -546,5 +567,7 @@ bool mason_bip32_derive_master_key_fingerprint(crypto_curve_t curve, uint8_t *fi
 
     private_key_to_fingerprint(curve, &master_private_key, fingerprint, fingerprint_len);
 
+    memset(&master_private_key, 0, sizeof(private_key_t));
+    memset(&master_chaincode, 0, sizeof(chaincode_t));
     return true;
 }

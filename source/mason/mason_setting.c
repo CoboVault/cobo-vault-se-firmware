@@ -360,7 +360,6 @@ emRetType mason_usrfing_verify(uint8_t *sign, uint16_t sign_len)
         if (!mason_usrfing_read(cur_fing, &cur_fing_len))
         {
             emRet = ERT_VerifyValueFail;
-            ;
             break;
         }
 

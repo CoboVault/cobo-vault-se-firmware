@@ -20,7 +20,12 @@ You can also follow [@CoboVault](https://twitter.com/CoboVault) on Twitter.
 
 ## Build
     Currently, the source can only be compiled on Windows.
-    You can build with ARM IDEs like "RealView MDK V4.x".    
+    You can build with ARM IDEs like "Keil MDK V4.x".
+1. Download Keil MDK4.x [here](https://www.keil.com/demo/eval/armv4.htm).
+2. Install MDK and register license.
+3. Run MDK, and add firmware project. Open the dialog `Project - Open Project`, select `mason.uvproj` [here](./mason.uvproj).
+4. Build the firmware project. Select the dialog `Project - Rebuild all target files` to compile the source files.
+5. Find the firmware image `mason_app.hex` and `mason_app.bin` in directory `cobo-vault-se-firmware/`.
 
 ## Code Structure
 Modules:

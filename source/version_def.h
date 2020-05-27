@@ -39,12 +39,12 @@ extern "C"
 #endif /* __cplusplus */
 
 /** Macro definitions*/
-#define VER_REL 0 // 0 -- develop mode , 1 -- release mode
+#define VER_REL 1 // 0 -- develop mode , 1 -- release mode
 
 #define VER_Major			0
 #define VER_Minor			3
-#define VER_Release			5
-#define VER_Build			00003
+#define VER_Release			6
+#define VER_Build			00000
 
 #if VER_Major>0x9 || VER_Minor>0x9 || VER_Release>0x9 || VER_Build>0x0FFFFF
 #if defined _WIN32 || _WIN64

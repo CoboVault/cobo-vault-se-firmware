@@ -327,12 +327,10 @@ emRetType mason_verify_mnemonic(char *mnemonic_str, uint16_t len)
 {
     emRetType emRet = ERT_Verify_Init;
     mnemonic_t mnemonic = {0};
-    bool is_succeed = false;
 
     do
     {
-        is_succeed = (mason_storage_read((uint8_t *)&mnemonic, sizeof(mnemonic), FLASH_ADDR_MNOMONIC_512B) == ERT_OK);
-        if (!is_succeed)
+        if (ERT_OK != mason_storage_read((uint8_t *)&mnemonic, sizeof(mnemonic), FLASH_ADDR_MNOMONIC_512B))
         {
             emRet = ERT_VerifyValueFail;
             break;

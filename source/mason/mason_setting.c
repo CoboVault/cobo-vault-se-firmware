@@ -360,7 +360,6 @@ emRetType mason_usrfing_verify(uint8_t *sign, uint16_t sign_len)
         if (!mason_usrfing_read(cur_fing, &cur_fing_len))
         {
             emRet = ERT_VerifyValueFail;
-            ;
             break;
         }
 
@@ -378,7 +377,6 @@ emRetType mason_usrfing_verify(uint8_t *sign, uint16_t sign_len)
         emRet = ERT_Verify_Success;
     } while (0);
 
-    mason_message_delete();
     memset(&cur_fing, 0, SETTING_USRFING_LEN);
     memset(&hash_message, 0, SHA256_LEN);
     return emRet;

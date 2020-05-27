@@ -1135,6 +1135,7 @@ emRetType mason_cmd_verify_fing(pstStackType pstStack, stackElementType *pelemen
 		emRet = ERT_Verify_Success;
 	} while (0);
 
+	mason_message_delete();
 	if (message_sign)
 	{
 		memset(message_sign, 0, message_sign_len);
@@ -1800,7 +1801,7 @@ static void mason_cmd0307_sign_ECDSA(void *pContext)
 }
 /**
  * @functionname: mason_cmd0308_get_masterkey_fingerprint
- * @description: command for get specific extended public key by given hdpath and algorithm
+ * @description: 
  * @para: 
  * @return: 
  */

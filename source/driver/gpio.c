@@ -20,8 +20,6 @@ void GPIO_IRQHandler(void)
 
     //status = REG_GPIO_RIS;
 
-    //printf("REG_GPIO_MIS=%08X\r\n", status);
-
     bIsOnSleeping = false;
 
     if (status & BIT_DET0)

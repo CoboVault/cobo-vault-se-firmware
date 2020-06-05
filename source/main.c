@@ -167,7 +167,7 @@ void enter_sleep(void)
 	mason_get_mode(&status);
 	delay(0x80000);
 	//printf("REG_SCU_PSCR2 = %08X\r\n", REG_SCU_PSCR2);
-	printf("Sleep now!\r\n");
+	//printf("Sleep now!\r\n");
 	backup_PSCR1 = REG_SCU_PSCR1;
 	backup_PSCR2 = REG_SCU_PSCR2;
 	backup_PSCR3 = REG_SCU_PSCR3;
@@ -212,7 +212,7 @@ void enter_sleep(void)
 
 	delay(10000);
 	enable_module(BIT_TIMER | BIT_WDT); //enable timer and WDT module
-	printf("Wake up!!!\r\n");
+	//printf("Wake up!!!\r\n");
 	//printf("REG_SCU_PSCR2 = %08X\r\n", REG_SCU_PSCR2);
 
 	bIsOnSleeping = false;
@@ -251,33 +251,33 @@ void tamper_check(void)
 
 	if (flag_active_defense_trigger)
 	{
-		printf("Defense trigger active!\r\n");
+		//printf("Defense trigger active!\r\n");
 		REG_GPIO_IEN |= BIT_DET0; //enable irq
 		flag_active_defense_trigger = false;
 	}
 
 	if (flag_passtive_defense_trigger)
 	{
-		printf("Defense trigger passtive!\r\n");
+		//printf("Defense trigger passtive!\r\n");
 		REG_GPIO_IEN |= (BIT_DET1 | BIT_DET2 | BIT_DET3); //enable irq
 		flag_passtive_defense_trigger = false;
 	}
 
 	if (gpio_low(BIT_DET0, 500))
 	{
-		printf("Active defense !\r\n");
+		//printf("Active defense !\r\n");
 		defense_trig_flag = true;
 	}
 
 	if (gpio_high(BIT_DET1, 500)||gpio_high(BIT_DET2, 500)||gpio_high(BIT_DET3, 500))
 	{
-		printf("Passive defense !\r\n");
+		//printf("Passive defense !\r\n");
 		defense_trig_flag = true;
 	}
 
 	if (E_HDWS_ATTACK == status.emHDWStatus)
 	{
-		printf("Status in ATTCK!\r\n");
+		//printf("Status in ATTCK!\r\n");
 		defense_trig_flag = true;
 	}
 
@@ -304,7 +304,7 @@ void tamper_check(void)
  */
 void timer_handler(void)
 {
-	printf("Timer time out!\r\n");
+	//printf("Timer time out!\r\n");
 }
 /**
  * @functionname: mason_init

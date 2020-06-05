@@ -9,7 +9,6 @@ volatile UINT8 flag_wdt_int = 0;
  ************************************************************************/
 void WDT_IRQHandler(void)
 {
-    printf("APP wdt int!\n");
     REG_WDT_FEED = 0xAA55A55A; //feed wdt and clear int
     flag_wdt_int = 1;
 }

@@ -351,7 +351,7 @@ bool secp256k1_ecdsa_sign(
             ecc_signature_r,
             ecc_signature_s))
     {
-        printf("SIGNED FAILED\n");
+        //printf("SIGNED FAILED\n");
         return false;
     }
 
@@ -425,7 +425,7 @@ bool secp256r1_ecdsa_sign(
             ecc_signature_r,
             ecc_signature_s))
     {
-        printf("SIGNED FAILED\n");
+        //printf("SIGNED FAILED\n");
         return false;
     }
 

@@ -754,7 +754,7 @@ emRetType mason_cmd_append_to_outputTLVArray(pstStackType pstStack, uint16_t tag
 
 	if (pstTLV == NULL)
 	{
-		printf("Calloc failed %02X %u\n", tag, (uint32_t)sizeof(stTLVType));
+		//printf("Calloc failed %02X %u\n", tag, (uint32_t)sizeof(stTLVType));
 		return ERT_MallocFail;
 	}
 
@@ -782,7 +782,8 @@ emRetType mason_cmd_append_ele_to_outputTLVArray(pstStackType pstStack, stackEle
 
 	if (pstTLV == NULL)
 	{
-		printf("Calloc failed\n");
+		//printf("Calloc failed\n");
+		return ERT_MallocFail;
 	}
 
 	pstTLV->T = element->T;
@@ -1373,7 +1374,7 @@ static void mason_cmd0203_iap_verify(void *pContext)
 	if ((ERT_OK == emRet) && (E_PACK_HDR == emFwPackType) && (ERT_Verify_Success == verify_emRet))
 	{
 		_delay_ms(500);
-		printf("\nClean App && Rebooting..\n");
+		//printf("\nClean App && Rebooting..\n");
 		(void)mason_iap_set_app_not_exist();
 		wdt_stop();
 		REG_SCU_RCR &= 0x7FFF; //Soft Reset

@@ -944,15 +944,22 @@ emRetType mason_cmd_verify_passwd(pstStackType pstStack, stackElementType *pelem
 			emRet = ERT_needUsrPass;
 			break;
 		}
+
+		if(!mason_usrcount_increment())
+		{
+			emRet = ERT_UsrPassFAIL;
+			break;
+		}
+
 		cur_pwd = (uint8_t *)(*pelement)->pV;
 		cur_pwd_len = (*pelement)->L;
 		if (ERT_Verify_Success != mason_usrpwd_verify(cur_pwd, cur_pwd_len))
 		{
-			mason_usrcount();
+			mason_usrcount_check();
 			emRet = ERT_UsrPassVerifyFail;
 			break;
 		}
-
+		mason_usrcount_ara();
 		//sleep
 		gen_random(&time, 8);
 		_delay_us(time * 2);
@@ -968,11 +975,11 @@ emRetType mason_cmd_verify_passwd(pstStackType pstStack, stackElementType *pelem
 		cur_pwd_len = (*pelement)->L;
 		if (ERT_Verify_Success != mason_usrpwd_verify(cur_pwd, cur_pwd_len))
 		{
-			mason_usrcount();
+			mason_usrcount_check();
 			emRet = ERT_UsrPassVerifyFail;
 			break;
 		}
-
+		mason_usrcount_ara();
 		mason_usrcount_reset();
 		emRet = ERT_Verify_Success;
 	} while (0);

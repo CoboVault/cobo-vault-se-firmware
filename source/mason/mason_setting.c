@@ -259,27 +259,65 @@ bool mason_usrcount_reset(void)
     return is_succeed;
 }
 /**
- * @functionname: mason_usrcount
- * @description: 
+ * @functionname: mason_usrcount_ara
+ * @description: anti repeated attacks
  * @para: 
  * @return: 
  */
-void mason_usrcount(void)
+void mason_usrcount_ara(void)
 {
     uint32_t usrpwd_count = 0;
     if (!mason_usrcount_read(&usrpwd_count))
     {
         mason_usrcount_reset();
     }
-    usrpwd_count++;
-    mason_usrcount_write(&usrpwd_count);
+}
+/**
+ * @functionname: mason_usrcount_check
+ * @description: 
+ * @para: 
+ * @return: 
+ */
+void mason_usrcount_check(void)
+{
+    uint32_t usrpwd_count = 0;
+    if (!mason_usrcount_read(&usrpwd_count))
+    {
+        mason_usrcount_reset();
+    }
 
     if (usrpwd_count >= SETTING_COUNT_ERR_MAX)
     {
-        mason_set_mode(HDW_STATUS_EMPTY);
         mason_delete_wallet();
+        mason_set_mode(HDW_STATUS_EMPTY);
         mason_setting_delete();
     }
+}
+/**
+ * @functionname: mason_usrcount_increment
+ * @description: 
+ * @para: 
+ * @return: 
+ */
+bool mason_usrcount_increment(void)
+{
+    uint32_t usrpwd_count = 0;
+    if (!mason_usrcount_read(&usrpwd_count))
+    {
+        mason_usrcount_reset();
+    }
+
+    if (usrpwd_count >= SETTING_COUNT_ERR_MAX)
+    {
+        mason_delete_wallet();
+        mason_set_mode(HDW_STATUS_EMPTY);
+        mason_setting_delete();
+        return false;
+    }
+
+    usrpwd_count++;
+    mason_usrcount_write(&usrpwd_count);
+	return true;
 }
 
 /*user fingerprint interface*/

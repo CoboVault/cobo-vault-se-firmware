@@ -489,10 +489,6 @@ bool mason_bip32_derive_keys(
     {
         return false;
     }
-    /*
-    debug_key("MASTER_PRIVATE_KEY", parent_private_key.data, PRIVATE_KEY_LEN);
-    debug_key("MASTER_CHAINCODE", parent_chaincode.data, CHAINCODE_LEN);
-    */
 
     for (i = 0; i < wallet_path->num_of_segments; i++)
     {
@@ -508,13 +504,6 @@ bool mason_bip32_derive_keys(
         private_key_to_public_key(curve, &child_private_key, &child_public_key);
         parent_private_key = child_private_key;
         parent_chaincode = child_chaincode;
-        /*
-        printf("Derived %d ------\n", i);
-        debug_key("PRIVATE_KEY", child_private_key.data, PRIVATE_KEY_LEN);
-        debug_key("CHAINCODE", child_chaincode.data, CHAINCODE_LEN);
-        debug_key("DERIVED_PUBLIC_KEY", child_public_key.data, PUBLIC_KEY_LEN);
-        debug_key("Fingerprint", fingerprint, 4);
-        */
     }
 
     *private_key = child_private_key;

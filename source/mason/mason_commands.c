@@ -1713,8 +1713,6 @@ static void mason_cmd0307_sign_ECDSA(void *pContext)
 	uint16_t signature_len;
 	public_key_t derived_public_key = {0};
 	crypto_curve_t curve_type = CRYPTO_CURVE_SECP256K1;
-	char base58_ext_key[256];
-	size_t base58_ext_key_len = 256;
 	emRetType verify_emRet = ERT_Verify_Init;
 
 	mason_cmd_init_outputTLVArray(&stStack);
@@ -1793,6 +1791,7 @@ static void mason_cmd0307_sign_ECDSA(void *pContext)
 		mason_cmd_append_to_outputTLVArray(&stStack, TLV_T_SIGNATURE, signature_len, signature);
 	} while (0);
 
+	memset(&extended_public_key, 0, sizeof(extended_public_key));
 	memset(&derived_private_key, 0, sizeof(private_key_t));
 	memset(&derived_chaincode, 0, sizeof(chaincode_t));
 	MASON_CMD_RESP_OUTPUT()

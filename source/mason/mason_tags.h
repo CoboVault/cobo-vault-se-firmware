@@ -99,6 +99,7 @@ extern "C"
 #define TLV_T_PUBKEYC					0x030C
 #define TLV_T_CURVE_TYPE                0x030D
 #define TLV_T_NEXT_SIGN                 0x030E
+#define TLV_T_HASH_FUNC                 0x030F
 
 #define TLV_T_USRPWD_NEW                0x0401
 #define TLV_T_USRPWD_CUR                0x0402

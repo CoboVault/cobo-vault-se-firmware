@@ -43,7 +43,7 @@ extern "C"
 #define PROT_STX                0x02
 #define PROT_ETX                0x03
 
-#define CMD_H_MAX               9
+#define CMD_H_MAX               10
 #define CMD_L_MAX               8
 
 #define USER_CHIP               0x01

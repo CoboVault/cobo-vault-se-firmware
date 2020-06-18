@@ -92,6 +92,9 @@ static void mason_cmd0905_message_gen(void *pContext);
 static void mason_cmd0906_usrfing_create(void *pContext);
 static void mason_cmd0907_usrfing_verify(void *pContext);
 static void mason_cmd0908_token_delete(void *pContext);
+static void mason_cmd0A01_ecdsa_sign_test(void *pContext);
+static void mason_cmd0A02_ecdsa_verify_test(void *pContext);
+static void mason_cmd0A06_hash_test(void *pContext);
 
 MASON_COMMANDS_EXT volatile stCmdHandlerType gstCmdHandlers[CMD_H_MAX][CMD_L_MAX] =
 	{
@@ -196,7 +199,7 @@ MASON_COMMANDS_EXT volatile stCmdHandlerType gstCmdHandlers[CMD_H_MAX][CMD_L_MAX
 		 }},
 		{//04 XX
 		 {
-			 USER_EMPTY | USER_WALLET,
+			 USER_ALL,
 			 mason_cmd0401_generate_public_key_from_private_key,
 		 },
 		 {
@@ -391,6 +394,39 @@ MASON_COMMANDS_EXT volatile stCmdHandlerType gstCmdHandlers[CMD_H_MAX][CMD_L_MAX
 		 {
 			 USER_CHIP | USER_FACTORY | USER_EMPTY | USER_WALLET,
 			 mason_cmd0908_token_delete,
+		 }},
+		{//0A XX
+		 {
+			 USER_ALL,
+			 mason_cmd0A01_ecdsa_sign_test,
+		 },
+		 {
+			 USER_ALL,
+			 mason_cmd0A02_ecdsa_verify_test,
+		 },
+		 {
+			 USER_ALL,
+			 mason_cmd_invalid,
+		 },
+		 {
+			 USER_ALL,
+			 mason_cmd_invalid,
+		 },
+		 {
+			 USER_ALL,
+			 mason_cmd_invalid,
+		 },
+		 {
+			 USER_ALL,
+			 mason_cmd0A06_hash_test,
+		 },
+		 {
+			 USER_ALL,
+			 mason_cmd_invalid,
+		 },
+		 {
+			 USER_ALL,
+			 mason_cmd_invalid,
 		 }}};
 
 /** Function implementations */
@@ -1866,8 +1902,14 @@ static void mason_cmd0401_generate_public_key_from_private_key(void *pContext)
 			break;
 		}
 		memcpy(private_key.data, pstTLV->pV, PRIVATE_KEY_LEN);
+
+		if (stack_search_by_tag(pstS, &pstTLV, TLV_T_CURVE_TYPE) && ((1 == pstTLV->L)))
+		{
+			curve_type = (crypto_curve_t)(*(uint8_t *)pstTLV->pV);
+		}
+
 		private_key_to_public_key(curve_type, &private_key, &public_key);
-		mason_cmd_append_to_outputTLVArray(&stStack, TLV_T_PUBKEY, PUBLIC_KEY_LEN, public_key.data);
+		mason_cmd_append_to_outputTLVArray(&stStack, TLV_T_PUBKEY, public_key.len, public_key.data);
 	} while (0);
 
 	MASON_CMD_RESP_OUTPUT()
@@ -2408,6 +2450,226 @@ static void mason_cmd0908_token_delete(void *pContext)
 		mason_cmd_append_ele_to_outputTLVArray(&stStack, pstTLV);
 
 		mason_token_delete();
+	} while (0);
+
+	MASON_CMD_RESP_OUTPUT()
+}
+/**
+ * @functionname: mason_cmd0A01_ecdsa_sign_test
+ * @description: 
+ * @para: 
+ * @return: 
+ */
+static void mason_cmd0A01_ecdsa_sign_test(void *pContext)
+{
+	MASON_CMD_DECLARE_VARIABLE(ERT_OK)
+
+	uint8_t prikey[128] = {0};
+	uint8_t signature[128];
+	uint16_t signature_len;
+	uint8_t hash[SHA512_LEN];
+	uint16_t hash_len = SHA512_LEN;
+	crypto_curve_t curve_type = CRYPTO_CURVE_SECP256K1;
+
+	mason_cmd_init_outputTLVArray(&stStack);
+
+	do
+	{
+		if (!stack_search_by_tag(pstS, &pstTLV, TLV_T_CMD))
+		{
+			emRet = ERT_CommFailParam;
+			break;
+		}
+		mason_cmd_append_ele_to_outputTLVArray(&stStack, pstTLV);
+
+		if (!stack_search_by_tag(pstS, &pstTLV, TLV_T_PRVKEY) || (pstTLV->L > 128))
+		{
+			emRet = ERT_CommFailParam;
+			break;
+		}
+		memcpy(prikey, pstTLV->pV, pstTLV->L);
+
+		if (!stack_search_by_tag(pstS, &pstTLV, TLV_T_HASH))
+		{
+			emRet = ERT_CommFailParam;
+			break;
+		}
+		hash_len = pstTLV->L;
+		if ((0 == hash_len) || (hash_len > SHA512_LEN))
+		{
+			emRet = ERT_CommFailParam;
+			break;
+		}
+		memcpy(hash, pstTLV->pV, hash_len);
+
+		if (stack_search_by_tag(pstS, &pstTLV, TLV_T_CURVE_TYPE) && ((1 == pstTLV->L)))
+		{
+			curve_type = (crypto_curve_t)(*(uint8_t *)pstTLV->pV);
+		}
+
+		if (!ecdsa_sign(curve_type, hash, hash_len, prikey, signature, &signature_len))
+		{
+			emRet = ERT_ECDSASignFail;
+			break;
+		}
+		mason_cmd_append_to_outputTLVArray(&stStack, TLV_T_SIGNATURE, signature_len, signature);
+
+	} while (0);
+
+	memset(prikey, 0, sizeof(prikey));
+	MASON_CMD_RESP_OUTPUT()
+}
+/**
+ * @functionname: mason_cmd0A02_ecdsa_verify_test
+ * @description: 
+ * @para: 
+ * @return: 
+ */
+static void mason_cmd0A02_ecdsa_verify_test(void *pContext)
+{
+	MASON_CMD_DECLARE_VARIABLE(ERT_CommFailParam)
+
+	public_key_t pub_key;
+	uint8_t signature[128];
+	uint16_t signature_len = 128;
+	uint8_t plaintext[512];
+	uint16_t plaintext_len = 0;
+	uint8_t hash[SHA512_LEN];
+	crypto_curve_t curve_type = CRYPTO_CURVE_SECP256K1;
+
+	mason_cmd_init_outputTLVArray(&stStack);
+
+	do
+	{
+		if (!stack_search_by_tag(pstS, &pstTLV, TLV_T_CMD))
+		{
+			emRet = ERT_CommFailParam;
+			break;
+		}
+		mason_cmd_append_ele_to_outputTLVArray(&stStack, pstTLV);
+
+		if (!stack_search_by_tag(pstS, &pstTLV, TLV_T_PUBKEY) || (pstTLV->L > PUBLIC_KEY_LEN))
+		{
+			emRet = ERT_CommFailParam;
+			break;
+		}
+		memcpy(pub_key.data, pstTLV->pV, pstTLV->L);
+		pub_key.len = PUBLIC_KEY_LEN;
+
+		if (!stack_search_by_tag(pstS, &pstTLV, TLV_T_PLAIN_MSG))
+		{
+			emRet = ERT_CommFailParam;
+			break;
+		}
+		plaintext_len = pstTLV->L;
+		if ((0 == plaintext_len) || (plaintext_len > 512))
+		{
+			emRet = ERT_CommFailParam;
+			break;
+		}
+		memcpy(plaintext, pstTLV->pV, plaintext_len);
+		sha256_api(plaintext, plaintext_len, hash);
+
+		if (!stack_search_by_tag(pstS, &pstTLV, TLV_T_SIGNATURE) || (pstTLV->L > signature_len))
+		{
+			emRet = ERT_CommFailParam;
+			break;
+		}
+		memcpy(signature, (uint8_t *)pstTLV->pV, pstTLV->L);
+
+		if (stack_search_by_tag(pstS, &pstTLV, TLV_T_CURVE_TYPE) && ((1 == pstTLV->L)))
+		{
+			curve_type = (crypto_curve_t)(*(uint8_t *)pstTLV->pV);
+		}
+
+		if(CRYPTO_CURVE_ED25519 == curve_type)
+		{
+			if (!ed25519_verify(signature, plaintext, plaintext_len, pub_key.data))
+			{
+				emRet = ERT_ED25519VerifyFail;
+				break;
+			}
+		}
+		else
+		{
+			if (!ecdsa_verify(curve_type, hash, pub_key.data, signature))
+			{
+			emRet = ERT_ECDSAVerifyFail;
+			break;
+			}
+		}
+		emRet = ERT_OK;
+	} while (0);
+
+	MASON_CMD_RESP_OUTPUT()
+}
+/**
+ * @functionname: mason_cmd0A06_hash_test
+ * @description: 
+ * @para: 
+ * @return: 
+ */
+static void mason_cmd0A06_hash_test(void *pContext)
+{
+	MASON_CMD_DECLARE_VARIABLE(ERT_CommFailParam)
+
+	uint8_t plaintext[512];
+	uint16_t plaintext_len = 0;
+	uint8_t hash[SHA512_LEN];
+	uint16_t hash_len = 0;
+	uint8_t hashfunc = 0;
+
+	mason_cmd_init_outputTLVArray(&stStack);
+
+	do
+	{
+		if (!stack_search_by_tag(pstS, &pstTLV, TLV_T_CMD))
+		{
+			emRet = ERT_CommFailParam;
+			break;
+		}
+		mason_cmd_append_ele_to_outputTLVArray(&stStack, pstTLV);
+
+		if (!stack_search_by_tag(pstS, &pstTLV, TLV_T_PLAIN_MSG))
+		{
+			emRet = ERT_CommFailParam;
+			break;
+		}
+		plaintext_len = pstTLV->L;
+		if ((0 == plaintext_len) || (plaintext_len > 512))
+		{
+			emRet = ERT_CommFailParam;
+			break;
+		}
+		memcpy(plaintext, pstTLV->pV, plaintext_len);
+
+		sha256_api(plaintext, plaintext_len, hash);
+
+		if (!stack_search_by_tag(pstS, &pstTLV, TLV_T_HASH_FUNC) || (1 != pstTLV->L))
+		{
+			emRet = ERT_CommFailParam;
+			break;
+		}
+		hashfunc =(*(uint8_t *)pstTLV->pV);
+		switch(hashfunc)
+		{
+			case 0:
+			{
+				sha256_api(plaintext, plaintext_len, hash);
+				hash_len = SHA256_LEN;
+			}
+			break;
+			case 1:
+			{
+				sha512_api(plaintext, plaintext_len, hash);
+				hash_len = SHA512_LEN;
+			}
+			break;
+			default:
+				break;
+		}
+		mason_cmd_append_to_outputTLVArray(&stStack, TLV_T_HASH, hash_len, hash);
+		emRet = ERT_OK;
 	} while (0);
 
 	MASON_CMD_RESP_OUTPUT()

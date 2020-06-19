@@ -71,8 +71,10 @@ typedef struct setting_token_s
 /** Function declarations */
 emRetType mason_usrpwd_verify(uint8_t *passwd, uint16_t passwd_len);
 bool mason_usrpwd_store(uint8_t *passwd, uint16_t passwd_len);
-void mason_usrcount(void);
+void mason_usrcount_check(void);
 bool mason_usrcount_reset(void);
+void mason_usrcount_ara(void);
+bool mason_usrcount_increment(void);
 emRetType mason_usrfing_verify(uint8_t *sign, uint16_t sign_len);
 bool mason_usrfing_store(uint8_t *fing, uint16_t fing_len);
 bool mason_message_gen(void);

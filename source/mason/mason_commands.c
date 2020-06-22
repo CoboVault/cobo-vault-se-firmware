@@ -1629,13 +1629,13 @@ static void mason_cmd0305_get_extpubkey(void *pContext)
 
 	uint8_t *path = NULL;
 	uint16_t path_len = 0;
-	wallet_path_t wallet_path;
+	wallet_path_t wallet_path = {0};
 	char path_string[MAX_HDPATH_SIZE + 1] = {0};
-	private_key_t derived_private_key;
-	chaincode_t derived_chaincode;
-	extended_key_t extended_public_key;
+	private_key_t derived_private_key = {0};
+	chaincode_t derived_chaincode = {0};
+	extended_key_t extended_key = {0};
 	crypto_curve_t curve_type = CRYPTO_CURVE_SECP256K1;
-	char base58_ext_key[256];
+	char base58_ext_key[256] = {0};
 	size_t base58_ext_key_len = 256;
 
 	mason_cmd_init_outputTLVArray(&stStack);

@@ -183,7 +183,7 @@ void public_key_to_compressed_public_key(
     }
     else
     {
-        compressed_public_key->data[0] = 0x02;
+        compressed_public_key->data[0] = 0x00;
     }
     memcpy(compressed_public_key->data + 1, public_key->data, PUBLIC_KEY_LEN / 2);
 }

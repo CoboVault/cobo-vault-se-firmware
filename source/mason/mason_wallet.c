@@ -470,14 +470,14 @@ bool mason_bip32_derive_keys(
     chaincode_t *chaincode,
     extended_key_t *extended_key)
 {
-    private_key_t parent_private_key;
-    chaincode_t parent_chaincode;
+    private_key_t parent_private_key = {0};
+    chaincode_t parent_chaincode = {0};
     private_key_t child_private_key;
-    public_key_t child_public_key;
+    public_key_t child_public_key = {0};
     chaincode_t child_chaincode;
-    compressed_public_key_t child_compressed_public_key;
+    compressed_public_key_t child_compressed_public_key = {0};
     uint8_t fingerprint[4] = {0x00};
-    uint8_t checksum[SHA256_LEN];
+    uint8_t checksum[SHA256_LEN] = {0};
     uint8_t i = 0;
 
     memset(extended_key->fingerprint, 0x00, 4);
@@ -490,6 +490,8 @@ bool mason_bip32_derive_keys(
         return false;
     }
 
+    child_private_key = parent_private_key;
+    child_chaincode = parent_chaincode;
     for (i = 0; i < wallet_path->num_of_segments; i++)
     {
         private_key_to_fingerprint(curve, &parent_private_key, fingerprint, sizeof(fingerprint));
@@ -512,7 +514,10 @@ bool mason_bip32_derive_keys(
     u32_to_buf(extended_key->version, wallet_path->version);
     extended_key->depth = wallet_path->num_of_segments;
     memcpy(extended_key->fingerprint, fingerprint, sizeof(fingerprint));
-    u32_to_buf(extended_key->child_number, wallet_path->segments[wallet_path->num_of_segments - 1]);
+    if(wallet_path->num_of_segments)
+    {
+        u32_to_buf(extended_key->child_number, wallet_path->segments[wallet_path->num_of_segments - 1]);
+    }
     memcpy(extended_key->chaincode, chaincode, CHAINCODE_LEN);
     if (wallet_path->version == KEY_VERSION_MAINNET_PUBLIC || wallet_path->version == KEY_VERSION_TESTNET_PUBLIC)
     {

@@ -912,17 +912,17 @@ void mason_cmd_end_outputTLVArray(pstStackType pstStack, emEncryptType eEnc)
  */
 emCmdFSMType mason_command_manage_error(void)
 {
-	emRetType emRet = ERT_OK;
+	emRetType emRet = ERT_CommInvalidCMD;
 	uint8_t bufRet[2] = {0x00, 0x00};
 	stStackType stStack = {{NULL}, -1};
 
 	mason_cmd_init_outputTLVArray(&stStack);
-	mason_cmd_append_to_outputTLVArray(&stStack, TLV_T_ERR_MSG, 4, (uint8_t *)"test");
+	mason_cmd_append_to_outputTLVArray(&stStack, TLV_T_ERR_MSG, 4, (uint8_t *)"err!");
 	u16_to_buf(bufRet, (uint16_t)emRet);
 	mason_cmd_append_to_outputTLVArray(&stStack, TLV_T_RESPONSE, sizeof(bufRet), bufRet);
 	mason_cmd_end_outputTLVArray(&stStack, PLAIN);
 	stack_destroy(&stStack);
-
+	UART_reset(UARTA);
 	return E_CMD_FSM_WAIT_CMD;
 }
 /**

@@ -76,6 +76,20 @@ void uart_send_bytes(UINT32 uart_index, UINT8 *buff, UINT32 length);
 
 void wait_uart_TX_done(UINT32 uart_index);
 
+/************************************************************************
+ * function   :UART_ReceByte
+ * Description: 
+ * input :
+ * return: none
+ ************************************************************************/
 UINT8 UART_ReceByte(UINT8 UARTx, UINT8 *pData);
+
+/************************************************************************
+ * function   :UART_reset
+ * Description: 
+ * input :
+ * return: none
+ ************************************************************************/
+void UART_reset(UINT8 UARTx);
 
 #endif

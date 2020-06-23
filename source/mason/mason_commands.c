@@ -41,6 +41,9 @@ in the file COPYING.  If not, see <http://www.gnu.org/licenses/>.
 #include "base58.h"
 #include "crypto_api.h"
 #include <mason_setting.h>
+#if (1 != VER_REL)
+#define MASON_TEST
+#endif
 
 /** Macro definitions*/
 #define MASON_CMD_DECLARE_VARIABLE(ret)         \
@@ -200,7 +203,11 @@ MASON_COMMANDS_EXT volatile stCmdHandlerType gstCmdHandlers[CMD_H_MAX][CMD_L_MAX
 		{//04 XX
 		 {
 			 USER_ALL,
+#ifdef MASON_TEST
 			 mason_cmd0401_generate_public_key_from_private_key,
+#else
+			 mason_cmd_invalid,
+#endif
 		 },
 		 {
 			 USER_ALL,
@@ -398,11 +405,19 @@ MASON_COMMANDS_EXT volatile stCmdHandlerType gstCmdHandlers[CMD_H_MAX][CMD_L_MAX
 		{//0A XX
 		 {
 			 USER_ALL,
+#ifdef MASON_TEST
 			 mason_cmd0A01_ecdsa_sign_test,
+#else
+			 mason_cmd_invalid,
+#endif
 		 },
 		 {
 			 USER_ALL,
+#ifdef MASON_TEST
 			 mason_cmd0A02_ecdsa_verify_test,
+#else
+			 mason_cmd_invalid,
+#endif
 		 },
 		 {
 			 USER_ALL,
@@ -418,7 +433,11 @@ MASON_COMMANDS_EXT volatile stCmdHandlerType gstCmdHandlers[CMD_H_MAX][CMD_L_MAX
 		 },
 		 {
 			 USER_ALL,
+#ifdef MASON_TEST
 			 mason_cmd0A06_hash_test,
+#else
+			 mason_cmd_invalid,
+#endif
 		 },
 		 {
 			 USER_ALL,
@@ -893,17 +912,17 @@ void mason_cmd_end_outputTLVArray(pstStackType pstStack, emEncryptType eEnc)
  */
 emCmdFSMType mason_command_manage_error(void)
 {
-	emRetType emRet = ERT_OK;
+	emRetType emRet = ERT_CommInvalidCMD;
 	uint8_t bufRet[2] = {0x00, 0x00};
 	stStackType stStack = {{NULL}, -1};
 
 	mason_cmd_init_outputTLVArray(&stStack);
-	mason_cmd_append_to_outputTLVArray(&stStack, TLV_T_ERR_MSG, 4, (uint8_t *)"test");
+	mason_cmd_append_to_outputTLVArray(&stStack, TLV_T_ERR_MSG, 4, (uint8_t *)"err!");
 	u16_to_buf(bufRet, (uint16_t)emRet);
 	mason_cmd_append_to_outputTLVArray(&stStack, TLV_T_RESPONSE, sizeof(bufRet), bufRet);
 	mason_cmd_end_outputTLVArray(&stStack, PLAIN);
 	stack_destroy(&stStack);
-
+	UART_reset(UARTA);
 	return E_CMD_FSM_WAIT_CMD;
 }
 /**
@@ -945,7 +964,7 @@ emRetType mason_cmd_verify_passwd(pstStackType pstStack, stackElementType *pelem
 			break;
 		}
 
-		if(!mason_usrcount_increment())
+		if (!mason_usrcount_increment())
 		{
 			emRet = ERT_UsrPassFAIL;
 			break;
@@ -1633,7 +1652,7 @@ static void mason_cmd0305_get_extpubkey(void *pContext)
 	char path_string[MAX_HDPATH_SIZE + 1] = {0};
 	private_key_t derived_private_key = {0};
 	chaincode_t derived_chaincode = {0};
-	extended_key_t extended_key = {0};
+	extended_key_t extended_public_key = {0};
 	crypto_curve_t curve_type = CRYPTO_CURVE_SECP256K1;
 	char base58_ext_key[256] = {0};
 	size_t base58_ext_key_len = 256;
@@ -2589,7 +2608,7 @@ static void mason_cmd0A02_ecdsa_verify_test(void *pContext)
 			curve_type = (crypto_curve_t)(*(uint8_t *)pstTLV->pV);
 		}
 
-		if(CRYPTO_CURVE_ED25519 == curve_type)
+		if (CRYPTO_CURVE_ED25519 == curve_type)
 		{
 			if (!ed25519_verify(signature, plaintext, plaintext_len, pub_key.data))
 			{
@@ -2601,8 +2620,8 @@ static void mason_cmd0A02_ecdsa_verify_test(void *pContext)
 		{
 			if (!ecdsa_verify(curve_type, hash, pub_key.data, signature))
 			{
-			emRet = ERT_ECDSAVerifyFail;
-			break;
+				emRet = ERT_ECDSAVerifyFail;
+				break;
 			}
 		}
 		emRet = ERT_OK;
@@ -2657,23 +2676,23 @@ static void mason_cmd0A06_hash_test(void *pContext)
 			emRet = ERT_CommFailParam;
 			break;
 		}
-		hashfunc =(*(uint8_t *)pstTLV->pV);
-		switch(hashfunc)
+		hashfunc = (*(uint8_t *)pstTLV->pV);
+		switch (hashfunc)
 		{
-			case 0:
-			{
-				sha256_api(plaintext, plaintext_len, hash);
-				hash_len = SHA256_LEN;
-			}
+		case 0:
+		{
+			sha256_api(plaintext, plaintext_len, hash);
+			hash_len = SHA256_LEN;
+		}
+		break;
+		case 1:
+		{
+			sha512_api(plaintext, plaintext_len, hash);
+			hash_len = SHA512_LEN;
+		}
+		break;
+		default:
 			break;
-			case 1:
-			{
-				sha512_api(plaintext, plaintext_len, hash);
-				hash_len = SHA512_LEN;
-			}
-			break;
-			default:
-				break;
 		}
 		mason_cmd_append_to_outputTLVArray(&stStack, TLV_T_HASH, hash_len, hash);
 		emRet = ERT_OK;

@@ -380,3 +380,14 @@ int fputc(int ch, FILE *f)
 	outbyte(UARTA, ch); //debug uart: UARTA or UARTB
 	return ch;
 }
+/************************************************************************
+ * function   :UART_reset
+ * Description: 
+ * input :
+ * return: none
+ ************************************************************************/
+void UART_reset(UINT8 UARTx)
+{
+	circular_buf_reset(cbuf_handle);
+}
+

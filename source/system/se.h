@@ -121,6 +121,17 @@ typedef enum IRQn
 #define REG_EFC_INTSTATUS                (*(volatile UINT32 *)(EFC_REG_BASE_ADDR + 0x18))
 #define REG_EFC_INEN    	             (*(volatile UINT32 *)(EFC_REG_BASE_ADDR + 0x1c))
 
+///*----------------------UAC------------------------*/
+#define UAC_BASE_ADDR                    0x40010000
+#define REG_UAC_CTRL                     (*(volatile unsigned long *)(UAC_BASE_ADDR+0x00))
+#define REG_UAC_STATUS                   (*(volatile unsigned long *)(UAC_BASE_ADDR+0x14))
+ 
+///*----------------------HRNG------------------------*/
+#define HRNG_BASE_ADDR                   0x40018000
+#define REG_HRNG_CTRL                    (*(volatile UINT32 *)(HRNG_BASE_ADDR + 0x00))
+#define REG_HRNG_LFSR                    (*(volatile UINT32 *)(HRNG_BASE_ADDR + 0x04))
+#define REG_HRNG_CMPRES                  (*(volatile UINT32 *)(HRNG_BASE_ADDR + 0x08))
+#define REG_HRNG_STATUS                  (*(volatile UINT32 *)(HRNG_BASE_ADDR + 0x0C))
 
 ///*------------------------MPU----------------------*/
 #define MPU_BASE_ADDR	                 0x40060000

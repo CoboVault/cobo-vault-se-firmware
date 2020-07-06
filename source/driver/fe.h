@@ -3,7 +3,6 @@
 
 #include "fixedint.h"
 
-
 /*
     fe means field element.
     Here the field is \Z/(2^255-19).
@@ -12,14 +11,12 @@
     Bounds on each t[i] vary depending on context.
 */
 
-#define int32_t  int
-	
+#define int32_t int
+
 typedef int32_t fe[10];
 
-//#define uint64_t unsigned long int
-//#define int64_t long int
-        typedef __int64 int64_t;
-        typedef unsigned __int64 uint64_t;
+typedef __int64 int64_t;
+typedef unsigned __int64 uint64_t;
 
 void fe_0(fe h);
 void fe_1(fe h);
@@ -44,5 +41,3 @@ void fe_pow22523(fe out, const fe z);
 void fe_sub(fe h, const fe f, const fe g);
 
 #endif
-
-

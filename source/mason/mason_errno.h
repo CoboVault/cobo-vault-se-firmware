@@ -113,6 +113,9 @@ extern "C"
 		ERT_needMessageSign,
 		ERT_needToken,
 		ERT_TokenVerifyFail,
+		ERT_UsrSettingsLoadFail,
+		ERT_UsrSettingsStoreFail,
+		ERT_UsrSettingsNotAllow,
 
 		ERT_Verify_Init    = 0x0800,
 		ERT_VerifyValueFail,

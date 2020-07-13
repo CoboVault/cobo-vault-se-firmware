@@ -28,15 +28,26 @@ in the file COPYING.  If not, see <http://www.gnu.org/licenses/>.
 #define SETTING_STORE_PASS_SUFFIX "PASS"
 #define SETTING_STORE_CONT_SUFFIX "CONT"
 #define SETTING_STORE_FING_SUFFIX "FING"
+#define SETTING_STORE_SETT_SUFFIX "SETT"
 
 #define SETTING_COUNT_ERR_MAX 5
 // userpwd store have prefix and suffix
 #define SETTING_USRPWD_LEN (32)
 #define SETTING_COUNT_LEN (4)
 #define SETTING_USRFING_LEN (64)
+#define SETTING_SETTS_LEN (32)
 #define SETTING_PRESUF_LEN (8)
 #define SETTING_MESSAGE_LEN (32)
 #define SETTING_TOKEN_LEN (32)
+
+// user settings mask define
+#define SETTING_USRSETTINGS_SIGNFP (1 << 0)
+
+typedef enum
+{
+    E_USRSETTINGS_SIGNFP = 0x00,
+    E_USRSETTINGS_ERR,
+} emUsrSettingsType;
 
 /** Variable declarations */
 typedef struct usrpwd_s
@@ -55,6 +66,12 @@ typedef struct usrfing_s
     uint32_t length;
     uint8_t fing[SETTING_USRFING_LEN + SETTING_PRESUF_LEN];
 } usrfing_t;
+
+typedef struct usrsettings_s
+{
+    uint32_t mask;
+    uint8_t sett[SETTING_SETTS_LEN + SETTING_PRESUF_LEN];
+} usrsettings_t;
 
 typedef struct setting_message_s
 {
@@ -77,6 +94,8 @@ void mason_usrcount_ara(void);
 bool mason_usrcount_increment(void);
 emRetType mason_usrfing_verify(uint8_t *sign, uint16_t sign_len);
 bool mason_usrfing_store(uint8_t *fing, uint16_t fing_len);
+bool mason_usrsettings_element_load(emUsrSettingsType type, uint8_t *value);
+bool mason_usrsettings_element_store(emUsrSettingsType type, uint8_t value);
 bool mason_message_gen(void);
 setting_message_t *mason_message_get(void);
 void mason_message_delete(void);

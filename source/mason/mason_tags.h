@@ -108,6 +108,8 @@ extern "C"
 #define TLV_T_RETURN_TOKEN              0x0405
 #define TLV_T_MESSAGE                   0x0406
 #define TLV_T_MESSAGE_SIGN              0x0407
+#define TLV_T_SETTINGS_TYPE             0x0408
+#define TLV_T_SETTINGS_VALUE            0x0409
 
 #define TLV_T_WR_RD						0x0701	//0:write; non-0:read
 #define TLV_T_UPDATE_KEY				0x0702

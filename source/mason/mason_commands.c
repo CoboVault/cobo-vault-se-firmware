@@ -91,6 +91,7 @@ static void mason_cmd0802_tamper_test(void *pContext);
 static void mason_cmd0901_usrpwd_modify(void *pContext);
 static void mason_cmd0902_usrpwd_reset(void *pContext);
 static void mason_cmd0903_usrpwd_verify(void *pContext);
+static void mason_cmd0904_usrsettings(void *pContext);
 static void mason_cmd0905_message_gen(void *pContext);
 static void mason_cmd0906_usrfing_create(void *pContext);
 static void mason_cmd0907_usrfing_verify(void *pContext);
@@ -383,8 +384,8 @@ MASON_COMMANDS_EXT volatile stCmdHandlerType gstCmdHandlers[CMD_H_MAX][CMD_L_MAX
 			 mason_cmd0903_usrpwd_verify,
 		 },
 		 {
-			 USER_ALL,
-			 mason_cmd_invalid,
+			 USER_CHIP | USER_FACTORY | USER_EMPTY | USER_WALLET,
+			 mason_cmd0904_usrsettings,
 		 },
 		 {
 			 USER_CHIP | USER_FACTORY | USER_EMPTY | USER_WALLET,
@@ -2315,6 +2316,92 @@ static void mason_cmd0903_usrpwd_verify(void *pContext)
 	MASON_CMD_RESP_OUTPUT()
 }
 /**
+ * @functionname: mason_cmd0904_usrsettings
+ * @description: 
+ * @para: 
+ * @return: 
+ */
+static void mason_cmd0904_usrsettings(void *pContext)
+{
+	MASON_CMD_DECLARE_VARIABLE(ERT_CommFailParam)
+
+	emRetType verify_emRet = ERT_Verify_Init;
+	uint8_t is_read = 0;
+	uint8_t type = 0;
+	uint8_t value = 0;
+
+	mason_cmd_init_outputTLVArray(&stStack);
+
+	do
+	{
+		if (!stack_search_by_tag(pstS, &pstTLV, TLV_T_CMD))
+		{
+			emRet = ERT_CommFailParam;
+			break;
+		}
+		mason_cmd_append_ele_to_outputTLVArray(&stStack, pstTLV);
+
+		if (!stack_search_by_tag(pstS, &pstTLV, TLV_T_SETTINGS_TYPE) || (1 != pstTLV->L))
+		{
+			emRet = ERT_CommFailParam;
+			break;
+		}
+		type = *(uint8_t *)pstTLV->pV;
+
+		if (!stack_search_by_tag(pstS, &pstTLV, TLV_T_WR_RD) || (1 != pstTLV->L))
+		{
+			emRet = ERT_CommFailParam;
+			break;
+		}
+		is_read = *(uint8_t *)pstTLV->pV;
+
+		if (is_read)
+		{
+			if (mason_usrsettings_element_load((emUsrSettingsType)type, &value))
+			{
+				mason_cmd_append_to_outputTLVArray(&stStack, TLV_T_SETTINGS_VALUE, 1, &value);
+			}
+			else
+			{
+				emRet = ERT_UsrSettingsLoadFail;
+				break;
+			}
+		}
+		else
+		{
+			if (ERT_Verify_Success != (emRet = mason_cmd_verify_passwd(pstS, &pstTLV)))
+			{
+				break;
+			}
+			verify_emRet = emRet;
+
+			if (!stack_search_by_tag(pstS, &pstTLV, TLV_T_SETTINGS_VALUE) || (1 != pstTLV->L))
+			{
+				emRet = ERT_CommFailParam;
+				break;
+			}
+			value = *(uint8_t *)pstTLV->pV;
+
+			if (!mason_usrsettings_element_store((emUsrSettingsType)type, value))
+			{
+				emRet = ERT_UsrSettingsStoreFail;
+				break;
+			}
+		}
+
+		if ((!is_read) && (ERT_Verify_Success == verify_emRet))
+		{
+			emRet = ERT_OK;
+		}
+		else if (is_read)
+		{
+			emRet = ERT_OK;
+		}
+	} while (0);
+
+	MASON_CMD_RESP_OUTPUT()
+}
+/**
  * @functionname: mason_cmd0905_message_gen
  * @description: 
  * @para: 
@@ -2440,6 +2527,13 @@ static void mason_cmd0907_usrfing_verify(void *pContext)
 			if (1 == return_token_len && (*return_token))
 			{
 				setting_token_t *token;
+				uint8_t value = 0;
+				mason_usrsettings_element_load(E_USRSETTINGS_SIGNFP, &value);
+				if (!value)
+				{
+					emRet = ERT_UsrSettingsNotAllow;
+					break;
+				}
 				mason_token_gen();
 				token = mason_token_get();
 				mason_cmd_append_to_outputTLVArray(&stStack, TLV_T_TOKEN, token->length, token->token);

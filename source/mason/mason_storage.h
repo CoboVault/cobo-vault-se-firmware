@@ -93,6 +93,9 @@ extern "C"
 #define FLASH_ADDR_USRPWD_COUNT             (FLASH_ADDR_USRFING+USRFING_SIZE)
 #define USRPWD_COUNT_SIZE                   12
 
+#define FLASH_ADDR_USRSETTINGS              (FLASH_ADDR_USRPWD_COUNT+USRPWD_COUNT_SIZE)
+#define USRSETTINGS_SIZE                    44
+
 #define FLASH_ADDR_PU_CNT_4B				(FLASH_ADDR_MAX-4)
 
     /** Function declarations */

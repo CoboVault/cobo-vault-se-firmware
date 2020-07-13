@@ -317,7 +317,7 @@ bool mason_usrcount_increment(void)
 
     usrpwd_count++;
     mason_usrcount_write(&usrpwd_count);
-	return true;
+    return true;
 }
 
 /*user fingerprint interface*/
@@ -457,6 +457,128 @@ bool mason_usrfing_delete(void)
     is_succeed = mason_storage_write_buffer((uint8_t *)&fingerprint, sizeof(usrfing_t), FLASH_ADDR_USRFING);
     return is_succeed;
 }
+
+/*user settings interface*/
+/**
+ * @functionname: mason_usrsettings_read
+ * @description: 
+ * @para: 
+ * @return: 
+ */
+bool mason_usrsettings_read(uint8_t *sett, uint32_t *mask)
+{
+    bool is_succeed = false;
+    usrsettings_t usrsettings = {0};
+
+    if (ERT_OK == mason_storage_read((uint8_t *)&usrsettings, sizeof(usrsettings_t), FLASH_ADDR_USRSETTINGS))
+    {
+        uint8_t pre[5] = {0};
+        uint8_t suf[5] = {0};
+        memcpy(pre, &usrsettings.sett[0], 4);
+        memcpy(suf, &usrsettings.sett[SETTING_SETTS_LEN + 4], 4);
+        if (!strcmp((char *)pre, SETTING_STORE_PREFIX) && !strcmp((char *)suf, SETTING_STORE_SETT_SUFFIX))
+        {
+            memcpy(sett, &usrsettings.sett[4], SETTING_SETTS_LEN);
+            *mask = usrsettings.mask;
+            is_succeed = true;
+        }
+    }
+    memset(&usrsettings, 0, sizeof(usrsettings_t));
+    return is_succeed;
+}
+/**
+ * @functionname: mason_usrsettings_write
+ * @description: 
+ * @para: 
+ * @return: 
+ */
+bool mason_usrsettings_write(uint8_t *sett, uint32_t mask)
+{
+    bool is_succeed = false;
+    usrsettings_t usrsettings = {0};
+
+    usrsettings.mask = mask;
+    memcpy(&usrsettings.sett[0], SETTING_STORE_PREFIX, 4);
+    memcpy(&usrsettings.sett[4], sett, SETTING_SETTS_LEN);
+    memcpy(&usrsettings.sett[SETTING_SETTS_LEN + 4], SETTING_STORE_SETT_SUFFIX, 4);
+
+    is_succeed = mason_storage_write_buffer((uint8_t *)&usrsettings, sizeof(usrsettings_t), FLASH_ADDR_USRSETTINGS);
+    memset(&usrsettings, 0, sizeof(usrsettings_t));
+    return is_succeed;
+}
+/**
+ * @functionname: mason_usrsettings_delete
+ * @description: 
+ * @para: 
+ * @return: 
+ */
+bool mason_usrsettings_delete(void)
+{
+    bool is_succeed = false;
+    usrsettings_t sett = {0};
+    is_succeed = mason_storage_write_buffer((uint8_t *)&sett, sizeof(usrsettings_t), FLASH_ADDR_USRSETTINGS);
+    return is_succeed;
+}
+/**
+ * @functionname: mason_usrsettings_element_load
+ * @description: 
+ * @para: 
+ * @return: 
+ */
+bool mason_usrsettings_element_load(emUsrSettingsType type, uint8_t *value)
+{
+    bool is_succeed = false;
+    uint8_t settings[SETTING_SETTS_LEN] = {0};
+    uint32_t mask = 0;
+
+    is_succeed = mason_usrsettings_read(settings, &mask);
+    if (!is_succeed)
+    {
+        return false;
+    }
+
+    switch (type)
+    {
+    case E_USRSETTINGS_SIGNFP:
+    {
+        if (mask & SETTING_USRSETTINGS_SIGNFP)
+        {
+            *value = settings[type];
+            return true;
+        }
+    }
+    break;
+    default:
+        return false;
+    }
+    return is_succeed;
+}
+/**
+ * @functionname: mason_usrsettings_element_store
+ * @description: 
+ * @para: 
+ * @return: 
+ */
+bool mason_usrsettings_element_store(emUsrSettingsType type, uint8_t value)
+{
+    bool is_succeed = false;
+    uint8_t settings[SETTING_SETTS_LEN] = {0};
+    uint32_t mask = 0;
+
+    mason_usrsettings_read(settings, &mask);
+    switch (type)
+    {
+    case E_USRSETTINGS_SIGNFP:
+        mask = mask | SETTING_USRSETTINGS_SIGNFP;
+        settings[type] = value;
+        break;
+
+    default:
+        return false;
+    }
+    is_succeed = mason_usrsettings_write(settings, mask);
+    return is_succeed;
+}
 /**
  * @functionname: mason_message_gen
  * @description: 
@@ -563,4 +685,5 @@ void mason_setting_delete(void)
     mason_message_delete();
     mason_token_delete();
     mason_usrcount_reset();
+    mason_usrsettings_delete();
 }

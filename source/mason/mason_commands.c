@@ -550,6 +550,7 @@ emCmdFSMType mason_command_handler(void)
 			gpstCMD = (pstCMDType)calloc(1, sizeof(stCMDType));
 			if (NULL == gpstCMD)
 			{
+				gemProtFSM = E_PROT_FSM_STX;
 				return E_CMD_FSM_MANAGE_ERR;
 			}
 			gpstCMD->unFlag.flag = dat;
@@ -572,6 +573,7 @@ emCmdFSMType mason_command_handler(void)
 				gpstCMD->pV = (uint8_t *)calloc(gpstCMD->len, sizeof(uint8_t));
 				if (NULL == gpstCMD->pV)
 				{
+					gemProtFSM = E_PROT_FSM_STX;
 					return E_CMD_FSM_MANAGE_ERR;
 				}
 			}
@@ -623,7 +625,7 @@ emCmdFSMType mason_command_handler(void)
 		default:
 		{
 			gemProtFSM = E_PROT_FSM_STX;
-			break;
+			return E_CMD_FSM_MANAGE_ERR;
 		}
 		}
 	}
@@ -655,18 +657,18 @@ emCmdFSMType mason_command_manager(void)
 
 		stack_destroy(&stStack);
 
-		if (NULL != pstCMD->pV)
+		UART_reset(UARTA);
+		if (pstCMD)
 		{
-			free(pstCMD->pV);
-			pstCMD->pV = NULL;
-		}
-		if (NULL != pstCMD)
-		{
+			if (pstCMD->pV)
+			{
+				free(pstCMD->pV);
+				pstCMD->pV = NULL;
+			}
 			free(pstCMD);
 			pstCMD = NULL;
 		}
 	}
-
 	return E_CMD_FSM_WAIT_CMD;
 }
 /**
@@ -924,6 +926,16 @@ emCmdFSMType mason_command_manage_error(void)
 	mason_cmd_end_outputTLVArray(&stStack, PLAIN);
 	stack_destroy(&stStack);
 	UART_reset(UARTA);
+    if (gpstCMD)
+    {
+        if(gpstCMD->pV)
+        {
+            free(gpstCMD->pV);
+            gpstCMD->pV = NULL;
+        }
+        free(gpstCMD);
+        gpstCMD = NULL;
+    }
 	return E_CMD_FSM_WAIT_CMD;
 }
 /**

@@ -58,7 +58,7 @@ void UARTA_IRQHandler(void)
 		REG_UART_ICR(UARTA) = 0xfff; //clear int
 	}
 
-	NVIC_ClearPendingIRQ(UARTA_IRQn); 
+	NVIC_ClearPendingIRQ(UARTA_IRQn);
 }
 /************************************************************************
  * function   :UARTB_IRQHandler
@@ -84,7 +84,6 @@ void UARTB_IRQHandler(void)
 	else if (temp & 0x20) // Tx int
 	{
 		REG_UART_ICR(UARTB) |= (1 << 5);
-
 	}
 	else if (temp & 0x40) //Rx timeout int
 	{
@@ -99,7 +98,7 @@ void UARTB_IRQHandler(void)
 	{
 		REG_UART_ICR(UARTB) = 0xfff; //clear int
 	}
-	NVIC_ClearPendingIRQ(UARTB_IRQn); 
+	NVIC_ClearPendingIRQ(UARTB_IRQn);
 }
 
 /************************************************************************
@@ -140,17 +139,17 @@ void uart_init(UINT32 uart_index, UINT32 baud_rate)
 
 	enable_module(BIT_UARTA);
 	uart_clk_hz = PClock;
-	if(uart_index == UARTA) // uspport CTS RTS
+	if (uart_index == UARTA) // uspport CTS RTS
 	{
 		reset_module(RESET_UARTA);
-		REG_SCU_PSCR1 = (REG_SCU_PSCR1 &( ~(0x0f << 22))) | (0x05 << 22); //select UARTA func PIN
+		REG_SCU_PSCR1 = (REG_SCU_PSCR1 & (~(0x0f << 22))) | (0x05 << 22); //select UARTA func PIN
 
 #ifdef UARTA_USE_RTSMODE
 		REG_SCU_PSCR1 = (REG_SCU_PSCR1 & (~(0x03 << 26))) | (0x01 << 26); //confing RTS IO reuse
 		REG_UART_CR(UARTA) |= (1 << 14);
 #endif
 #ifdef UARTA_USE_CTSMODE
-		REG_SCU_PSCR1 = (REG_SCU_PSCR1 & (~(0x03 << 28))) | (0x01 << 28); //config CTS IO reuse 
+		REG_SCU_PSCR1 = (REG_SCU_PSCR1 & (~(0x03 << 28))) | (0x01 << 28); //config CTS IO reuse
 		REG_UART_CR(UARTA) |= (1 << 15);
 #endif
 		NVIC_ClearPendingIRQ(UARTA_IRQn);
@@ -160,7 +159,7 @@ void uart_init(UINT32 uart_index, UINT32 baud_rate)
 	{
 		reset_module(RESET_UARTB);
 		{
-			REG_SCU_PSCR3 &= ~0x01; //GPIO20 input											
+			REG_SCU_PSCR3 &= ~0x01;											//GPIO20 input
 			REG_SCU_PSCR2 = (REG_SCU_PSCR2 & (~(0x0f << 6))) | (0x05 << 6); //select UARTB func PIN GPIO19,GPIO20
 		}
 
@@ -172,12 +171,12 @@ void uart_init(UINT32 uart_index, UINT32 baud_rate)
 	uart_set_baud_rate(uart_index, uart_clk_hz, baud_rate);
 
 #ifdef UART_ENABLE_FIFO_MODE
-	REG_UART_LCRH(uart_index) = 0x70; //8 databit 1 stopbit none verifybit open FIFO func 
-	REG_UART_IFLS(uart_index) = 0x12; //FIFO send and rev irq trigger num 8 
+	REG_UART_LCRH(uart_index) = 0x70; //8 databit 1 stopbit none verifybit open FIFO func
+	REG_UART_IFLS(uart_index) = 0x12; //FIFO send and rev irq trigger num 8
 	REG_UART_IMSC(uart_index) = 0x50; //open Rx_INT , Rx_TIMEOUT_INT
 #else
-	REG_UART_LCRH(uart_index) = 0x60;  //8 databit 1 stopbit none verifybit close FIFO func 
-	REG_UART_IMSC(uart_index) = 0x10; // open Rx_INT 
+	REG_UART_LCRH(uart_index) = 0x60; //8 databit 1 stopbit none verifybit close FIFO func
+	REG_UART_IMSC(uart_index) = 0x10; // open Rx_INT
 #endif
 
 	cbuf_handle = circular_buf_init(uart_rx_buf, sizeof(uart_rx_buf));
@@ -198,7 +197,8 @@ void outbyte(UINT32 uart_index, char c)
 {
 	REG_UART_DR(uart_index) = c;
 
-	while (REG_UART_FR(uart_index) & 0x08); //wait for idle
+	while (REG_UART_FR(uart_index) & 0x08)
+		; //wait for idle
 }
 
 /************************************************************************
@@ -265,4 +265,3 @@ void UART_reset(UINT8 UARTx)
 {
 	circular_buf_reset(cbuf_handle);
 }
-

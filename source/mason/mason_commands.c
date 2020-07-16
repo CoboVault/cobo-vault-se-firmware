@@ -926,16 +926,16 @@ emCmdFSMType mason_command_manage_error(void)
 	mason_cmd_end_outputTLVArray(&stStack, PLAIN);
 	stack_destroy(&stStack);
 	UART_reset(UARTA);
-    if (gpstCMD)
-    {
-        if(gpstCMD->pV)
-        {
-            free(gpstCMD->pV);
-            gpstCMD->pV = NULL;
-        }
-        free(gpstCMD);
-        gpstCMD = NULL;
-    }
+	if (gpstCMD)
+	{
+		if (gpstCMD->pV)
+		{
+			free(gpstCMD->pV);
+			gpstCMD->pV = NULL;
+		}
+		free(gpstCMD);
+		gpstCMD = NULL;
+	}
 	return E_CMD_FSM_WAIT_CMD;
 }
 /**

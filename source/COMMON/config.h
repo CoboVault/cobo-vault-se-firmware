@@ -25,6 +25,6 @@
 //#define UARTA_USE_RTSMODE
 //#define UARTA_USE_CTSMODE
 
-#define UART_RX_BUF_MAX 2048
+#define UART_RX_BUF_MAX 1024
 
 #endif

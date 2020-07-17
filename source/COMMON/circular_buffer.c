@@ -63,6 +63,7 @@ void circular_buf_reset(cbuf_handle_t cbuf)
     cbuf->head = 0;
     cbuf->tail = 0;
     cbuf->full = false;
+    memset(cbuf->buffer, 0, cbuf->max);
 }
 /**
  * @functionname: circular_buf_free

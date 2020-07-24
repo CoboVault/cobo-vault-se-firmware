@@ -1690,14 +1690,14 @@ static void mason_cmd0305_get_extpubkey(void *pContext)
 		path = (uint8_t *)pstTLV->pV;
 		if ((0 == path_len) || (path_len > MAX_HDPATH_SIZE))
 		{
-			emRet = ERT_CommFailParam;
+			emRet = ERT_HDPathIllegal;
 			break;
 		}
 		memcpy((uint8_t *)path_string, path, path_len);
 		path_string[path_len] = 0;
-		if (!mason_wallet_path_is_pub(path_string, path_len + 1) || !mason_parse_wallet_path_from_string(path_string, path_len + 1, &wallet_path))
+		if (!mason_wallet_path_is_pub(path_string, path_len) || !mason_parse_wallet_path_from_string(path_string, path_len, &wallet_path))
 		{
-			emRet = ERT_CommFailParam;
+			emRet = ERT_HDPathIllegal;
 			break;
 		}
 
@@ -1834,7 +1834,7 @@ static void mason_cmd0307_sign_ECDSA(void *pContext)
 		}
 		memcpy((uint8_t *)path_string, path, path_len);
 		path_string[path_len] = 0;
-		if (!mason_parse_wallet_path_from_string(path_string, path_len + 1, &wallet_path))
+		if (!mason_parse_wallet_path_from_string(path_string, path_len, &wallet_path))
 		{
 			emRet = ERT_HDPathIllegal;
 			break;

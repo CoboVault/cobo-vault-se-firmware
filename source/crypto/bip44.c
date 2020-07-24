@@ -36,7 +36,7 @@ BIP44_EXT bool bip44_str_to_hdpath(uint8_t *pStr, uint32_t strLen, stHDPathType 
 	uint8_t *pStrTmp = NULL;
 
 	/*HDPath "m/2147483647'/2147483647'/2147483647'/2147483647'/2147483647'...*/
-	if ((NULL == pStr) || (('m' != pStr[0]) && ('M' != pStr[0])) || (0 == strLen) || (strLen > 61))
+	if ((NULL == pStr) || (('m' != pStr[0]) && ('M' != pStr[0])) || (0 == strLen) || (strLen > 121))
 	{
 		return false;
 	}
@@ -63,7 +63,14 @@ BIP44_EXT bool bip44_str_to_hdpath(uint8_t *pStr, uint32_t strLen, stHDPathType 
 	while ((index < strLen) && (cSlash == pStrTmp[index++])) // m/*********
 	{
 		uint32_t count = 0;
-		while (!isdigit(pStrTmp[index]))
+		uint32_t path_index = 0;
+		if(pstHDPath->depth >= HDPATH_DEPTH)
+		{
+			free(pStrTmp);
+			return false;
+		}
+
+		while ((index < strLen) && !isdigit(pStrTmp[index]))
 		{
 			index++;
 		} /* non-digit should be skipped */
@@ -72,7 +79,7 @@ BIP44_EXT bool bip44_str_to_hdpath(uint8_t *pStr, uint32_t strLen, stHDPathType 
 			free(pStrTmp);
 			return false;
 		}
-		pstHDPath->value[pstHDPath->depth] = myatoui((const char *)pStrTmp + index);
+		path_index = index;
 		while (isdigit(pStrTmp[index])) /* non-digit should be skipped */
 		{
 			index++;
@@ -81,7 +88,8 @@ BIP44_EXT bool bip44_str_to_hdpath(uint8_t *pStr, uint32_t strLen, stHDPathType 
 				free(pStrTmp);
 				return false;
 			}
-		}
+		}		
+		pstHDPath->value[pstHDPath->depth] = myatoui((const char *)pStrTmp + path_index);
 		if (cApostrophe == pStrTmp[index])
 		{
 			index++;

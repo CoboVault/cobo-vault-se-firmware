@@ -262,7 +262,7 @@ bool mason_update_key_save(const update_key_t *update_key)
  */
 bool mason_wallet_path_is_pub(char *string, uint16_t len)
 {
-	if ((NULL == string) || ('M' != string[0]) || (0 == len) || (len > 61))
+	if ((NULL == string) || ('M' != string[0]) || (0 == len) || (len > MAX_HDPATH_SIZE))
 	{
 		return false;
 	}
@@ -277,7 +277,7 @@ bool mason_wallet_path_is_pub(char *string, uint16_t len)
  */
 bool mason_wallet_path_is_priv(char *string, uint16_t len)
 {
-	if ((NULL == string) || ('m' != string[0]) || (0 == len) || (len > 61))
+	if ((NULL == string) || ('m' != string[0]) || (0 == len) || (len > MAX_HDPATH_SIZE))
 	{
 		return false;
 	}
@@ -292,11 +292,11 @@ bool mason_wallet_path_is_priv(char *string, uint16_t len)
  */
 bool mason_parse_wallet_path_from_string(char *string, uint16_t len, wallet_path_t *wallet_path)
 {
-    stHDPathType hd_path;
+    stHDPathType hd_path = {0};
     bool is_succeed = false;
     int i = 0;
 
-    if (len > (MAX_HDPATH_SIZE + 1))
+    if (len > MAX_HDPATH_SIZE)
     {
         return false;
     }

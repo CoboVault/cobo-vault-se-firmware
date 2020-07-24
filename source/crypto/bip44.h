@@ -49,11 +49,13 @@ extern "C"
 #define SF_VB_BUF_TNET_PUB (0x04, 0x35, 0x87, 0xCF)
 #define SF_VB_BUF_TNET_PRV (0x04, 0x35, 0x83, 0x94)
 
+#define HDPATH_DEPTH 10
+
 	/** Variable declarations */
 	typedef struct
 	{
 		uint32_t verBytes;
-		uint32_t value[5];
+		uint32_t value[HDPATH_DEPTH];
 		uint8_t depth;
 	} stHDPathType;
 

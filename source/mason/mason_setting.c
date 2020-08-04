@@ -548,10 +548,19 @@ bool mason_usrsettings_element_load(emUsrSettingsType type, uint8_t *value)
         }
     }
     break;
+    case E_USRSETTINGS_PHRASEFP:
+    {
+        if (mask & SETTING_USRSETTINGS_PHRASEFP)
+        {
+            *value = settings[type];
+            return true;
+        }
+    }
+    break;
     default:
         return false;
     }
-    return is_succeed;
+    return false;
 }
 /**
  * @functionname: mason_usrsettings_element_store
@@ -569,13 +578,21 @@ bool mason_usrsettings_element_store(emUsrSettingsType type, uint8_t value)
     switch (type)
     {
     case E_USRSETTINGS_SIGNFP:
+    {
         mask = mask | SETTING_USRSETTINGS_SIGNFP;
         settings[type] = value;
-        break;
-
+    }
+    break;
+    case E_USRSETTINGS_PHRASEFP:
+    {
+        mask = mask | SETTING_USRSETTINGS_PHRASEFP;
+        settings[type] = value;
+    }
+    break;
     default:
         return false;
     }
+
     is_succeed = mason_usrsettings_write(settings, mask);
     return is_succeed;
 }

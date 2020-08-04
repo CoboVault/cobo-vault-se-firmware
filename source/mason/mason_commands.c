@@ -1609,11 +1609,34 @@ static void mason_cmd0303_change_wallet_passphrase(void *pContext)
 		}
 		mason_cmd_append_ele_to_outputTLVArray(&stStack, pstTLV);
 
-		if (ERT_Verify_Success != (emRet = mason_cmd_verify_passwd(pstS, &pstTLV)))
+		if (stack_search_by_tag(pstS, &pstTLV, TLV_T_USRPWD_CUR))
 		{
+			if (ERT_Verify_Success != (emRet = mason_cmd_verify_passwd(pstS, &pstTLV)))
+			{
+				break;
+			}
+			verify_emRet = emRet;
+		}
+		else if (stack_search_by_tag(pstS, &pstTLV, TLV_T_MESSAGE_SIGN))
+		{
+			uint8_t value = 0;
+			mason_usrsettings_element_load(E_USRSETTINGS_PHRASEFP, &value);
+			if (!value)
+			{
+				emRet = ERT_UsrSettingsNotAllow;
+				break;
+			}
+			if (ERT_Verify_Success != (emRet = mason_cmd_verify_fing(pstS, &pstTLV)))
+			{
+				break;
+			}
+			verify_emRet = emRet;
+		}
+		else
+		{
+			emRet = ERT_needUsrPass;
 			break;
 		}
-		verify_emRet = emRet;
 
 		mason_get_mode(&status);
 		if (status.emHDWStatus != E_HDWS_WALLET)

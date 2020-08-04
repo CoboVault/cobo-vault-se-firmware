@@ -42,10 +42,12 @@ in the file COPYING.  If not, see <http://www.gnu.org/licenses/>.
 
 // user settings mask define
 #define SETTING_USRSETTINGS_SIGNFP (1 << 0)
+#define SETTING_USRSETTINGS_PHRASEFP (1 << 1)
 
 typedef enum
 {
     E_USRSETTINGS_SIGNFP = 0x00,
+    E_USRSETTINGS_PHRASEFP = 0x01,
     E_USRSETTINGS_ERR,
 } emUsrSettingsType;
 

@@ -43,7 +43,7 @@ extern "C"
 
 #define VER_Major			0
 #define VER_Minor			3
-#define VER_Release			6
+#define VER_Release			8
 #define VER_Build			00000
 
 #if VER_Major>0x9 || VER_Minor>0x9 || VER_Release>0x9 || VER_Build>0x0FFFFF

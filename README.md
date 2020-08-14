@@ -10,7 +10,7 @@ You can also follow [@CoboVault](https://twitter.com/CoboVault) on Twitter.
 
 - [Clone](#clone)
 - [Build](#build)
-- [Code Structure](#code-Structure)
+- [Code Structure](#code-structure)
 - [Issues and PRs](#issues-and-prs)
 - [License](#license)
 
@@ -25,7 +25,7 @@ You can also follow [@CoboVault](https://twitter.com/CoboVault) on Twitter.
 2. Install MDK and register license.
 3. Run MDK, and add firmware project. Open the dialog `Project - Open Project`, select `mason.uvproj` [here](./mason.uvproj).
 4. Build the firmware project. Select the dialog `Project - Rebuild all target files` to compile the source files.
-5. Find the firmware image `mason_app.hex` and `mason_app.bin` in directory `cobo-vault-se-firmware/`.    
+5. Find the firmware image `mason_app.hex` and `mason_app.bin` in directory `./`.
 
 ## Code Structure
 Modules:
@@ -39,7 +39,7 @@ Modules:
 `uvproj`: Project files for MDK IDE
 
 ## Issues and PRs
-Please submit any issues  [here](https://github.com/CoboVault/cobo-vault-SE-firmware/issues). PRs are also welcome!
+Please submit any issues  [here](https://github.com/CoboVault/cobo-vault-se-firmware/issues). PRs are also welcome!
 
 ## License
 [![GPLv3 License](https://img.shields.io/badge/License-GPL%20v3-green.svg)](https://opensource.org/licenses/)

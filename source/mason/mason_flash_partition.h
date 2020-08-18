@@ -15,14 +15,14 @@ You should have received a copy of the GNU General Public License
 in the file COPYING.  If not, see <http://www.gnu.org/licenses/>.
 **************************************************************************************************/
 /** Avoid duplicate definitions */
-#ifndef STONE_FLASH_PARTTITION_H
-#define STONE_FLASH_PARTTITION_H
+#ifndef MASON_FLASH_PARTTITION_H
+#define MASON_FLASH_PARTTITION_H
 
 /** Avoid duplicate definitions */
-#ifdef STONE_FLASH_PARTTITION_GLOBAL
-#define STONE_FLASH_PARTTITION_EXT
+#ifdef MASON_FLASH_PARTTITION_GLOBAL
+#define MASON_FLASH_PARTTITION_EXT
 #else
-#define STONE_FLASH_PARTTITION_EXT extern
+#define MASON_FLASH_PARTTITION_EXT extern
 #endif
 
 /** Header file reference */

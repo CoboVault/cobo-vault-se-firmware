@@ -15,14 +15,14 @@ You should have received a copy of the GNU General Public License
 in the file COPYING.  If not, see <http://www.gnu.org/licenses/>.
 **************************************************************************************************/
 /** Avoid duplicate definitions */
-#ifndef STONE_DEBUG_H
-#define STONE_DEBUG_H
+#ifndef MASON_DEBUG_H
+#define MASON_DEBUG_H
 
 /** Avoid duplicate definitions */
-#ifdef STONE_DEBUG_GLOBAL
-#define STONE_DEBUG_EXT
+#ifdef MASON_DEBUG_GLOBAL
+#define MASON_DEBUG_EXT
 #else
-#define STONE_DEBUG_EXT extern
+#define MASON_DEBUG_EXT extern
 #endif
 
 /** Header file reference */

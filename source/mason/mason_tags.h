@@ -15,14 +15,14 @@ You should have received a copy of the GNU General Public License
 in the file COPYING.  If not, see <http://www.gnu.org/licenses/>.
 **************************************************************************************************/
 /** Avoid duplicate definitions */
-#ifndef STONE_TAGS_H
-#define STONE_TAGS_H
+#ifndef MASON_TAGS_H
+#define MASON_TAGS_H
 
 /** Avoid duplicate definitions */
-#ifdef STONE_TAGS_GLOBAL
-#define STONE_TAGS_EXT
+#ifdef MASON_TAGS_GLOBAL
+#define MASON_TAGS_EXT
 #else
-#define STONE_TAGS_EXT extern
+#define MASON_TAGS_EXT extern
 #endif
 
 /** Header file reference */

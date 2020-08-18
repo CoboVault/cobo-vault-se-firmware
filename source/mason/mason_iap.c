@@ -15,7 +15,7 @@ You should have received a copy of the GNU General Public License
 in the file COPYING.  If not, see <http://www.gnu.org/licenses/>.
 **************************************************************************************************/
 /** Avoid duplicate definitions */
-#define STONE_ISP_GLOBAL
+#define MASON_ISP_GLOBAL
 
 /** Header file reference */
 #include "mason_iap.h"
@@ -80,7 +80,7 @@ static void mason_iap_run(uint32_t addr)
  * @para: 
  * @return: 
  */
-STONE_ISP_EXT void mason_iap_run_app(void)
+MASON_ISP_EXT void mason_iap_run_app(void)
 {
 	mason_iap_run(FLASH_ADDR_APP_START);
 }
@@ -90,7 +90,7 @@ STONE_ISP_EXT void mason_iap_run_app(void)
  * @para: 
  * @return: 
  */
-STONE_ISP_EXT void mason_iap_run_boot(void)
+MASON_ISP_EXT void mason_iap_run_boot(void)
 {
 	mason_iap_run(OFF_MASK(eflash_read_word(FLASH_ADDR_BOOT_ADDR_4B)));
 }

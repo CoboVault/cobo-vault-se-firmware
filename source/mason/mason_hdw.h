@@ -15,14 +15,14 @@ You should have received a copy of the GNU General Public License
 in the file COPYING.  If not, see <http://www.gnu.org/licenses/>.
 **************************************************************************************************/
 /** Avoid duplicate definitions */
-#ifndef STONE_HDW_H
-#define STONE_HDW_H
+#ifndef MASON_HDW_H
+#define MASON_HDW_H
 
 /** Avoid duplicate definitions */
-#ifdef STONE_HDW_GLOBAL
-#define STONE_HDW_EXT
+#ifdef MASON_HDW_GLOBAL
+#define MASON_HDW_EXT
 #else
-#define STONE_HDW_EXT extern
+#define MASON_HDW_EXT extern
 #endif
 
 /** Header file reference */
@@ -69,7 +69,7 @@ extern "C"
 #define HDW_STATUS_SYMBOL_
 
 	/** Variable definitions */
-	STONE_HDW_EXT volatile uint8_t gDebugSwitchOn;
+	MASON_HDW_EXT volatile uint8_t gDebugSwitchOn;
 	typedef enum
 	{
 		E_HDWS_CHIP = 0x00,
@@ -79,17 +79,17 @@ extern "C"
 		E_HDWS_WALLET = 0x88,
 		E_HDWS_MAX = 0x7FFFFFFF
 	} emHDWStatusType;
-	STONE_HDW_EXT volatile emHDWStatusType gemHDWStatus;
+	MASON_HDW_EXT volatile emHDWStatusType gemHDWStatus;
 
 	typedef struct
 	{
 		emHDWStatusType emHDWStatus;
 		char pSymbol[4];
 	} stHDWStatusType;
-	STONE_HDW_EXT const volatile stHDWStatusType gstHDWStatus[];
+	MASON_HDW_EXT const volatile stHDWStatusType gstHDWStatus[];
 
 	/** Function declarations */
-	STONE_HDW_EXT emRetType mason_HDW_set_status(const volatile stHDWStatusType stHDWStatus);
+	MASON_HDW_EXT emRetType mason_HDW_set_status(const volatile stHDWStatusType stHDWStatus);
 	void mason_HDW_gen_sha256(uint8_t *pText, uint32_t textLen, uint8_t *pCheckSum, uint8_t checkSumLen);
 	bool mason_HDW_check_sha256(uint8_t *pText, uint32_t textLen, uint8_t *pCheckSum);
 	void mason_HDW_gen_sha256sha256(uint8_t *pText, uint32_t textLen, uint8_t *pCheckSum, uint8_t checkSumLen);

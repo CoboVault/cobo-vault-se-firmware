@@ -74,6 +74,7 @@ emRetType mason_cmd_verify_token(pstStackType pstStack, stackElementType *peleme
 emRetType mason_cmd_verify_fing(pstStackType pstStack, stackElementType *pelement);
 static void mason_cmd0102_get_information(void *pContext);
 static void mason_cmd0107_factory_activate(void *pContext);
+static void mason_cmd0108_reboot(void *pContext);
 static void mason_cmd0201_iap_request(void *pContext);
 static void mason_cmd0203_iap_verify(void *pContext);
 static void mason_cmd0301_get_entropy(void *pContext);
@@ -133,7 +134,7 @@ MASON_COMMANDS_EXT volatile stCmdHandlerType gstCmdHandlers[CMD_H_MAX][CMD_L_MAX
 		 },
 		 {
 			 USER_ALL,
-			 mason_cmd_invalid,
+			 mason_cmd0108_reboot,
 		 }},
 		{//02 XX
 		 {
@@ -1235,6 +1236,7 @@ static void mason_cmd0102_get_information(void *pContext)
 	uint8_t boot_type = 1;
 	uint8_t status_buf[4];
 	stHDWStatusType status;
+	uint8_t switchtype = (uint8_t)gemHDWSwitch;
 
 	mason_cmd_init_outputTLVArray(&stStack);
 
@@ -1256,6 +1258,7 @@ static void mason_cmd0102_get_information(void *pContext)
 		mason_get_mode(&status);
 		u32_to_buf(status_buf, status.emHDWStatus);
 		mason_cmd_append_to_outputTLVArray(&stStack, TLV_T_FW_STATUS, sizeof(status.emHDWStatus), status_buf);
+		mason_cmd_append_to_outputTLVArray(&stStack, TLV_T_HDW_SWITCH, 1, &switchtype);
 	} while (0);
 
 	MASON_CMD_RESP_OUTPUT()
@@ -1296,6 +1299,37 @@ static void mason_cmd0107_factory_activate(void *pContext)
 	} while (0);
 
 	MASON_CMD_RESP_OUTPUT()
+}
+/**
+ * @functionname: mason_cmd0108_reboot
+ * @description: 
+ * @para: 
+ * @return: 
+ */
+static void mason_cmd0108_reboot(void *pContext)
+{
+	MASON_CMD_DECLARE_VARIABLE(ERT_OK)
+
+	mason_cmd_init_outputTLVArray(&stStack);
+
+	do
+	{
+		if (!stack_search_by_tag(pstS, &pstTLV, TLV_T_CMD))
+		{
+			emRet = ERT_CommFailParam;
+			break;
+		}
+		mason_cmd_append_ele_to_outputTLVArray(&stStack, pstTLV);
+
+	} while (0);
+
+	MASON_CMD_RESP_OUTPUT()
+	if (ERT_OK == emRet)
+	{
+		_delay_ms(100);
+		wdt_stop();
+		REG_SCU_RCR &= 0x7FFF; //Soft Reset
+	}
 }
 /**
  * @functionname: mason_cmd0201_iap_request

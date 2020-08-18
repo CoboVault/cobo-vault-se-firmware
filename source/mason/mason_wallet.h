@@ -68,7 +68,6 @@ typedef struct update_key_s
 
 /** Function declarations */
 bool mason_generate_entropy(uint8_t *output_entropy, uint16_t bits, bool need_checksum);
-bool mason_wallet_setup(mnemonic_t *mnemonic, uint8_t *passphrase, uint16_t passphrase_len);
 bool mason_create_wallet(uint8_t *mnemonic, uint16_t mnemonic_len);
 bool mason_change_wallet_passphrase(uint8_t *passphrase, uint16_t passphrase_len);
 bool mason_delete_wallet(void);
@@ -82,11 +81,6 @@ bool mason_parse_wallet_path_from_string(char *string, uint16_t len, wallet_path
 bool mason_valid_wallet_path(wallet_path_t *wallet_path);
 
 emRetType mason_verify_mnemonic(char *mnemonic_str, uint16_t len);
-
-bool mason_mnemonic_read(mnemonic_t *mnemonic);
-bool mason_mnemonic_write(mnemonic_t *mnemonic);
-bool mason_seed_read(wallet_seed_t *seed);
-bool mason_seed_write(wallet_seed_t *seed);
 
 bool mason_bip32_generate_master_key_from_root_seed(
     crypto_curve_t curve_type,

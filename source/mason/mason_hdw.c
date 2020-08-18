@@ -36,6 +36,8 @@ MASON_HDW_EXT const volatile stHDWStatusType gstHDWStatus[] =
 };
 MASON_HDW_EXT volatile uint8_t gDebugSwitchOn = 0;
 
+MASON_HDW_EXT volatile emHDWSwitchType gemHDWSwitch = E_HDWM_MNEMONIC;
+
 /** Function implementations */
 /**
  * @functionname: mason_HDW_set_status

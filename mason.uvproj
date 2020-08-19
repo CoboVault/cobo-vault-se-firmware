@@ -159,7 +159,7 @@
             <RunIndependent>0</RunIndependent>
             <UpdateFlashBeforeDebugging>1</UpdateFlashBeforeDebugging>
             <Capability>1</Capability>
-            <DriverSelection>4100</DriverSelection>
+            <DriverSelection>4098</DriverSelection>
           </Flash1>
           <Flash2>Segger\JL2CM3.dll</Flash2>
           <Flash3>"" ()</Flash3>
@@ -213,7 +213,7 @@
             <RoSelD>3</RoSelD>
             <RwSelD>0</RwSelD>
             <CodeSel>0</CodeSel>
-            <OptFeed>0</OptFeed>
+            <OptFeed>1</OptFeed>
             <NoZi1>0</NoZi1>
             <NoZi2>0</NoZi2>
             <NoZi3>0</NoZi3>
@@ -331,9 +331,9 @@
           <Cads>
             <interw>1</interw>
             <Optim>0</Optim>
-            <oTime>1</oTime>
+            <oTime>0</oTime>
             <SplitLS>0</SplitLS>
-            <OneElfS>1</OneElfS>
+            <OneElfS>0</OneElfS>
             <Strict>0</Strict>
             <EnumInt>0</EnumInt>
             <PlainCh>0</PlainCh>
@@ -429,11 +429,6 @@
               <FileName>sm2sm3_v1.lib</FileName>
               <FileType>4</FileType>
               <FilePath>.\source\driver\sm2sm3_v1.lib</FilePath>
-            </File>
-            <File>
-              <FileName>sha1_v1.lib</FileName>
-              <FileType>4</FileType>
-              <FilePath>.\source\driver\sha1_v1.lib</FilePath>
             </File>
             <File>
               <FileName>rsa_v1.lib</FileName>

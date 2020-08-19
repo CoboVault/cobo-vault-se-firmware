@@ -431,11 +431,6 @@
               <FilePath>.\source\driver\sm2sm3_v1.lib</FilePath>
             </File>
             <File>
-              <FileName>sha1_v1.lib</FileName>
-              <FileType>4</FileType>
-              <FilePath>.\source\driver\sha1_v1.lib</FilePath>
-            </File>
-            <File>
               <FileName>rsa_v1.lib</FileName>
               <FileType>4</FileType>
               <FilePath>.\source\driver\rsa_v1.lib</FilePath>

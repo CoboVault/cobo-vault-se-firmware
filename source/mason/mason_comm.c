@@ -29,7 +29,6 @@ in the file COPYING.  If not, see <http://www.gnu.org/licenses/>.
 
 /** Function declarations */
 extern void enter_sleep(void);
-extern void timer_handler(void);
 
 /** Variable definitions */
 bool bIsOnSleeping = false;

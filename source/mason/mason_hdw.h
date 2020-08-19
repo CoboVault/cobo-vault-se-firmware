@@ -96,7 +96,6 @@ extern "C"
 	MASON_HDW_EXT volatile emHDWSwitchType gemHDWSwitch;
 
 	/** Function declarations */
-	MASON_HDW_EXT emRetType mason_HDW_set_status(const volatile stHDWStatusType stHDWStatus);
 	void mason_HDW_gen_sha256(uint8_t *pText, uint32_t textLen, uint8_t *pCheckSum, uint8_t checkSumLen);
 	bool mason_HDW_check_sha256(uint8_t *pText, uint32_t textLen, uint8_t *pCheckSum);
 	void mason_HDW_gen_sha256sha256(uint8_t *pText, uint32_t textLen, uint8_t *pCheckSum, uint8_t checkSumLen);

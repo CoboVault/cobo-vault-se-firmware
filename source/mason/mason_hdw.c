@@ -40,18 +40,6 @@ MASON_HDW_EXT volatile emHDWSwitchType gemHDWSwitch = E_HDWM_MNEMONIC;
 
 /** Function implementations */
 /**
- * @functionname: mason_HDW_set_status
- * @description: 
- * @para: 
- * @return: 
- */
-MASON_HDW_EXT emRetType mason_HDW_set_status(const volatile stHDWStatusType stHDWStatus)
-{
-	emRetType emRet = ERT_OK;
-
-	return emRet;
-}
-/**
  * @functionname: mason_get_mode
  * @description: 
  * @para: 

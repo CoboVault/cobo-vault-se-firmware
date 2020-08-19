@@ -62,13 +62,8 @@ extern "C"
 		E_PACK_HDR,
 		E_PACK_ERR
 	} emFwPackTypeType;
-	//MASON_HDW_EXT volatile emFwPackTypeType emFwPackType;
 
 	/** Function declarations */
-	MASON_ISP_EXT bool mason_iap_check_app_exsit(void);
-	MASON_ISP_EXT void mason_iap_run_app(void);
-	MASON_ISP_EXT void mason_iap_run_boot(void);
-
 	__inline emRetType
 	mason_iap_set_app_not_exist(void)
 	{

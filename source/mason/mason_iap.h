@@ -15,14 +15,14 @@ You should have received a copy of the GNU General Public License
 in the file COPYING.  If not, see <http://www.gnu.org/licenses/>.
 **************************************************************************************************/
 /** Avoid duplicate definitions */
-#ifndef STONE_ISP_H
-#define STONE_ISP_H
+#ifndef MASON_ISP_H
+#define MASON_ISP_H
 
 /** Avoid duplicate definitions */
-#ifdef STONE_ISP_GLOBAL
-#define STONE_ISP_EXT
+#ifdef MASON_ISP_GLOBAL
+#define MASON_ISP_EXT
 #else
-#define STONE_ISP_EXT extern
+#define MASON_ISP_EXT extern
 #endif
 
 /** Header file reference */
@@ -62,13 +62,8 @@ extern "C"
 		E_PACK_HDR,
 		E_PACK_ERR
 	} emFwPackTypeType;
-	//STONE_HDW_EXT volatile emFwPackTypeType emFwPackType;
 
 	/** Function declarations */
-	STONE_ISP_EXT bool mason_iap_check_app_exsit(void);
-	STONE_ISP_EXT void mason_iap_run_app(void);
-	STONE_ISP_EXT void mason_iap_run_boot(void);
-
 	__inline emRetType
 	mason_iap_set_app_not_exist(void)
 	{

@@ -15,7 +15,7 @@ You should have received a copy of the GNU General Public License
 in the file COPYING.  If not, see <http://www.gnu.org/licenses/>.
 **************************************************************************************************/
 /** Avoid duplicate definitions */
-#define STONE_HDW_GLOBAL
+#define MASON_HDW_GLOBAL
 
 /** Header file reference */
 #include "mason_hdw.h"
@@ -24,9 +24,9 @@ in the file COPYING.  If not, see <http://www.gnu.org/licenses/>.
 #include "mason_util.h"
 
 /** Variable definitions */
-STONE_HDW_EXT volatile emHDWStatusType gemHDWStatus = E_HDWS_CHIP;
+MASON_HDW_EXT volatile emHDWStatusType gemHDWStatus = E_HDWS_CHIP;
 
-STONE_HDW_EXT const volatile stHDWStatusType gstHDWStatus[] =
+MASON_HDW_EXT const volatile stHDWStatusType gstHDWStatus[] =
 	{
 		{E_HDWS_CHIP, "\xFF\xFF\xFF\xFF"},
 		{E_HDWS_FACTORY, "FATY"},
@@ -34,21 +34,11 @@ STONE_HDW_EXT const volatile stHDWStatusType gstHDWStatus[] =
 		{E_HDWS_EMPTY, "COBO"},
 		{E_HDWS_WALLET, "WLET"},
 };
-STONE_HDW_EXT volatile uint8_t gDebugSwitchOn = 0;
+MASON_HDW_EXT volatile uint8_t gDebugSwitchOn = 0;
+
+MASON_HDW_EXT volatile emHDWSwitchType gemHDWSwitch = E_HDWM_MNEMONIC;
 
 /** Function implementations */
-/**
- * @functionname: mason_HDW_set_status
- * @description: 
- * @para: 
- * @return: 
- */
-STONE_HDW_EXT emRetType mason_HDW_set_status(const volatile stHDWStatusType stHDWStatus)
-{
-	emRetType emRet = ERT_OK;
-
-	return emRet;
-}
 /**
  * @functionname: mason_get_mode
  * @description: 

@@ -297,16 +297,6 @@ void tamper_check(void)
 	}
 }
 /**
- * @functionname: timer_handler
- * @description: 
- * @para: 
- * @return: 
- */
-void timer_handler(void)
-{
-	//printf("Timer time out!\r\n");
-}
-/**
  * @functionname: mason_init
  * @description: 
  * @para: 

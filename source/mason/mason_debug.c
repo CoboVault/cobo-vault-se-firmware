@@ -15,7 +15,7 @@ You should have received a copy of the GNU General Public License
 in the file COPYING.  If not, see <http://www.gnu.org/licenses/>.
 **************************************************************************************************/
 /** Avoid duplicate definitions */
-#define STONE_DEBUG_GLOBAL
+#define MASON_DEBUG_GLOBAL
 
 /** Header file reference */
 #include "mason_debug.h"

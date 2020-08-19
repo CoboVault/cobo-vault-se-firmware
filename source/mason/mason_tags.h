@@ -15,14 +15,14 @@ You should have received a copy of the GNU General Public License
 in the file COPYING.  If not, see <http://www.gnu.org/licenses/>.
 **************************************************************************************************/
 /** Avoid duplicate definitions */
-#ifndef STONE_TAGS_H
-#define STONE_TAGS_H
+#ifndef MASON_TAGS_H
+#define MASON_TAGS_H
 
 /** Avoid duplicate definitions */
-#ifdef STONE_TAGS_GLOBAL
-#define STONE_TAGS_EXT
+#ifdef MASON_TAGS_GLOBAL
+#define MASON_TAGS_EXT
 #else
-#define STONE_TAGS_EXT extern
+#define MASON_TAGS_EXT extern
 #endif
 
 /** Header file reference */
@@ -84,6 +84,7 @@ extern "C"
 #define TLV_T_EXT_KEY					0x020A
 #define TLV_T_MASTER_KEY_FP				0x020B
 #define TLV_T_SECURITY_SWITCH			0x020F
+#define TLV_T_HDW_SWITCH			    0x0210
 
 #define TLV_T_DES_KEY					0x0301
 #define TLV_T_PRVKEY					0x0302

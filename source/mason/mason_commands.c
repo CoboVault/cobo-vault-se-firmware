@@ -1729,6 +1729,7 @@ static void mason_cmd0305_get_extpubkey(void *pContext)
 	crypto_curve_t curve_type = CRYPTO_CURVE_SECP256K1;
 	char base58_ext_key[256] = {0};
 	size_t base58_ext_key_len = 256;
+	uint8_t switchtype = (uint8_t)gemHDWSwitch;
 
 	mason_cmd_init_outputTLVArray(&stStack);
 
@@ -1740,6 +1741,17 @@ static void mason_cmd0305_get_extpubkey(void *pContext)
 			break;
 		}
 		mason_cmd_append_ele_to_outputTLVArray(&stStack, pstTLV);
+
+		if (!stack_search_by_tag(pstS, &pstTLV, TLV_T_HDW_SWITCH) || (1 != pstTLV->L))
+		{
+			emRet = ERT_HDWalletSwitchNeed;
+			break;
+		}
+		if (switchtype != *(uint8_t *)pstTLV->pV)
+		{
+			emRet = ERT_HDWalletSwitchNotMatch;
+			break;
+		}
 
 		if (!stack_search_by_tag(pstS, &pstTLV, TLV_T_HD_PATH))
 		{
@@ -1849,6 +1861,7 @@ static void mason_cmd0307_sign_ECDSA(void *pContext)
 	public_key_t derived_public_key = {0};
 	crypto_curve_t curve_type = CRYPTO_CURVE_SECP256K1;
 	emRetType verify_emRet = ERT_Verify_Init;
+	uint8_t switchtype = (uint8_t)gemHDWSwitch;
 
 	mason_cmd_init_outputTLVArray(&stStack);
 
@@ -1860,6 +1873,17 @@ static void mason_cmd0307_sign_ECDSA(void *pContext)
 			break;
 		}
 		mason_cmd_append_ele_to_outputTLVArray(&stStack, pstTLV);
+
+		if (!stack_search_by_tag(pstS, &pstTLV, TLV_T_HDW_SWITCH) || (1 != pstTLV->L))
+		{
+			emRet = ERT_HDWalletSwitchNeed;
+			break;
+		}
+		if (switchtype != *(uint8_t *)pstTLV->pV)
+		{
+			emRet = ERT_HDWalletSwitchNotMatch;
+			break;
+		}
 
 		if (ERT_Verify_Success != (emRet = mason_cmd_verify_token(pstS, &pstTLV)))
 		{
@@ -1943,6 +1967,7 @@ static void mason_cmd0308_get_masterkey_fingerprint(void *pContext)
 
 	crypto_curve_t curve_type = CRYPTO_CURVE_SECP256K1;
 	uint8_t fingerprint[4] = {0};
+	uint8_t switchtype = (uint8_t)gemHDWSwitch;
 
 	mason_cmd_init_outputTLVArray(&stStack);
 
@@ -1954,6 +1979,17 @@ static void mason_cmd0308_get_masterkey_fingerprint(void *pContext)
 			break;
 		}
 		mason_cmd_append_ele_to_outputTLVArray(&stStack, pstTLV);
+
+		if (!stack_search_by_tag(pstS, &pstTLV, TLV_T_HDW_SWITCH) || (1 != pstTLV->L))
+		{
+			emRet = ERT_HDWalletSwitchNeed;
+			break;
+		}
+		if (switchtype != *(uint8_t *)pstTLV->pV)
+		{
+			emRet = ERT_HDWalletSwitchNotMatch;
+			break;
+		}
 
 		if (stack_search_by_tag(pstS, &pstTLV, TLV_T_CURVE_TYPE) && ((1 == pstTLV->L)))
 		{

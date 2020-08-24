@@ -144,7 +144,7 @@ static bool mason_mnemonic_read(mnemonic_t *mnemonic)
         return false;
     }
 
-    if (mnemonic->size > sizeof(mnemonic->data))
+    if ((0 == mnemonic->size) || (mnemonic->size > sizeof(mnemonic->data)))
     {
         memset(mnemonic, 0, sizeof(mnemonic_t));
         return false;
@@ -172,9 +172,18 @@ static bool mason_mnemonic_write(mnemonic_t *mnemonic)
  */
 static bool mason_seed_read(wallet_seed_t *seed)
 {
-    bool is_succeed = false;
-    is_succeed = (ERT_OK == mason_storage_read((uint8_t *)seed, sizeof(wallet_seed_t), FLASH_ADDR_SEED_72B));
-    return is_succeed;
+    if (ERT_OK != mason_storage_read((uint8_t *)seed, sizeof(wallet_seed_t), FLASH_ADDR_SEED_72B))
+    {
+        return false;
+    }
+
+    if ((0 == seed->length) || (seed->length > sizeof(seed->data)))
+    {
+        memset(seed, 0, sizeof(wallet_seed_t));
+        return false;
+    }
+
+    return true;
 }
 /**
  * @functionname: mason_seed_write
@@ -212,11 +221,31 @@ bool mason_change_wallet_passphrase(uint8_t *passphrase, uint16_t passphrase_len
     }
 
     is_succeed = mason_wallet_setup(&mnemonic, passphrase, passphrase_len, &seed);
-    if (is_succeed)
+    if (!is_succeed)
+    {
+        memset(&seed, 0, sizeof(wallet_seed_t));
+        memset(&mnemonic, 0, sizeof(mnemonic_t));
+        return false;
+    }
+
+    if (0 == passphrase_len || NULL == passphrase)
+    {
+        is_succeed = mason_seed_write(&seed);
+        if (!is_succeed)
+        {
+            memset(&seed, 0, sizeof(wallet_seed_t));
+            memset(&mnemonic, 0, sizeof(mnemonic_t));
+            return false;
+        }
+        memset(&passphrase_seed, 0, sizeof(wallet_seed_t));
+        gemHDWSwitch = E_HDWM_MNEMONIC;
+    }
+    else
     {
         memcpy(&passphrase_seed, &seed, sizeof(wallet_seed_t));
         gemHDWSwitch = E_HDWM_PASSPHRASE;
     }
+
     memset(&seed, 0, sizeof(wallet_seed_t));
     memset(&mnemonic, 0, sizeof(mnemonic_t));
     return is_succeed;

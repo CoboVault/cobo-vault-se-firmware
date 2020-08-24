@@ -76,6 +76,8 @@ extern "C"
 		ERT_tlvArray_to_buf,
 		ERT_HDPathIllegal,
 		ERT_VerConflict,
+		ERT_HDWalletSwitchNeed,
+		ERT_HDWalletSwitchNotMatch,
 
 		ERT_CHIP_FAIL = 0x0500,
 		ERT_RngFail,

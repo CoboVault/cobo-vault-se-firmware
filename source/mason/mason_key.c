@@ -156,7 +156,7 @@ void private_key_to_public_key(
     }
     else if (curve == CRYPTO_CURVE_ED25519)
     {
-        ed25519_public_key(private_key->data, public_key->data);
+        ed25519_private_key_to_public_key(private_key->data, public_key->data);
         public_key->len = PUBLIC_KEY_LEN / 2;
     }
 }

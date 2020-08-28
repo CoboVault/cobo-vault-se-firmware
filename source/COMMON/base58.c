@@ -20,8 +20,8 @@
 #include <stdlib.h>
 
 #include "base58.h"
-
-#include  "sha256.h"
+#include "common.h"
+#include  "sha2.h"
 
 static bool sha256(void *pDigest, const void *pDataIn, size_t DataLen);
 
@@ -47,7 +47,7 @@ static const b58_almostmaxint_t b58_almostmaxint_mask = ((((b58_maxint_t)1) << b
 
 static bool sha256(void *pDigest, const void *pDataIn, size_t DataLen)
 {
-	SHA256_hash((UINT8 *)pDataIn, (UINT32)DataLen, (UINT8 *)pDigest);
+	sha256_Raw((UINT8 *)pDataIn, (UINT32)DataLen, (UINT8 *)pDigest);
 	return true;
 }
 

@@ -19,14 +19,12 @@ in the file COPYING.  If not, see <http://www.gnu.org/licenses/>.
 
 /** Header file reference */
 #include "crypto_api.h"
-#include "sha256.h"
-#include "sha384.h"
+#include "sha2.h"
 #include "RipeMD160.h"
 #include "hmac.h"
 #include "sm2.h"
-#include "ge.h"
 #include "mason_util.h"
-
+#include "ed25519.h"
 /** Function implementations */
 /**
  * @functionname: crypto_init
@@ -38,7 +36,6 @@ bool crypto_init()
 {
 	secp256k1_init();
 	secp256r1_init();
-	ed25519_init();
 	crypto_api_sm2_init();
 	return true;
 }
@@ -100,7 +97,7 @@ CRYPTO_API_EXT void ripeMD160_api(uint8_t *pData, uint32_t len, uint8_t *pDigest
  */
 CRYPTO_API_EXT void sha256_api(uint8_t *pData, uint32_t len, uint8_t *pDigest)
 {
-	SHA256_hash((UINT8 *)pData, (UINT32)len, (UINT8 *)pDigest);
+	sha256_Raw((UINT8 *)pData, (UINT32)len, (UINT8 *)pDigest);
 }
 /**
  * @functionname: sha512_api
@@ -110,7 +107,7 @@ CRYPTO_API_EXT void sha256_api(uint8_t *pData, uint32_t len, uint8_t *pDigest)
  */
 CRYPTO_API_EXT void sha512_api(uint8_t *pData, uint32_t len, uint8_t *pDigest)
 {
-	SHA512_hash((UINT8 *)pData, (UINT32)len, (UINT8 *)pDigest);
+	sha512_Raw((UINT8 *)pData, (UINT32)len, (UINT8 *)pDigest);
 }
 /**
  * @functionname: hmac_sha512_api
@@ -210,13 +207,10 @@ bool ecdsa_sign_once(crypto_curve_t curve, uint8_t *hash, uint16_t hash_len, uin
 	}
 	case CRYPTO_CURVE_ED25519:
 	{
-		uint8_t fake_private_key[64];
 		uint8_t public_key[32];
 		*signature_len = 64;
-		enable_module(BIT_PKI);
-		ed25519_create_keypair(public_key, fake_private_key, private_key);
-		enable_module(BIT_PKI);
-		ed25519_sign(signature, hash, hash_len, public_key, fake_private_key);
+		ed25519_publickey(private_key, public_key);
+		ed25519_sign(hash, hash_len, private_key, public_key, signature);
 		return true;
 	}
 	default:
@@ -381,24 +375,13 @@ bool crypto_api_sm2_decrypt(uint8_t *private_key, uint8_t *encrypted_data, uint3
 	return is_succeed;
 }
 /**
- * @functionname: ed25519_public_key
+ * @functionname: ed25519_private_key_to_public_key
  * @description: 
  * @para: 
  * @return: 
  */
-bool ed25519_public_key(uint8_t *private_key, uint8_t *public_key)
+void ed25519_private_key_to_public_key(uint8_t *private_key, uint8_t *public_key)
 {
-	uint8_t hash[SHA512_LEN] = {0};
-	ge_p3 A;
-
-	sha512_api(private_key, 32, hash);
-
-	hash[0] &= 248;
-	hash[31] &= 63;
-	hash[31] |= 64;
-
-	ge_scalarmult_base(&A, hash);
-	ge_p3_tobytes(public_key, &A);
-
-	return true;
+	ed25519_publickey(private_key, public_key);
 }
+

@@ -34,7 +34,6 @@ in the file COPYING.  If not, see <http://www.gnu.org/licenses/>.
 #include <limits.h>
 #include <ctype.h>
 #include <secp256.h>
-#include <ed25519.h>
 
 /** Compatibility with the cplusplus*/
 #ifdef __cplusplus
@@ -81,7 +80,7 @@ extern "C"
     bool is_valid_private_key(crypto_curve_t curve, uint8_t *private_key);
 
     bool crypto_init(void);
-    bool ed25519_public_key(uint8_t *private_key, uint8_t *public_key);
+    void ed25519_private_key_to_public_key(uint8_t *private_key, uint8_t *public_key);
 
     void u32_to_buff(uint32_t u32, uint8_t *buf);
     unsigned int myatoui(const char *str);

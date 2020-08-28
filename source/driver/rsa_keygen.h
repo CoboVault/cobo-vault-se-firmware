@@ -5,7 +5,6 @@
 *	include files
 **********************************************************/
 #include "common.h"
-#include "divider.h"
 #include "ecc.h"
 #include "hrng.h"
 /**********************************************************

@@ -99,8 +99,8 @@ static void mason_cmd0906_usrfing_create(void *pContext);
 static void mason_cmd0907_usrfing_verify(void *pContext);
 static void mason_cmd0908_token_delete(void *pContext);
 #ifdef MASON_TEST
-static void mason_cmd0A01_ecdsa_sign_test(void *pContext);
-static void mason_cmd0A02_ecdsa_verify_test(void *pContext);
+static void mason_cmd0A01_crypto_sign_test(void *pContext);
+static void mason_cmd0A02_crypto_verify_test(void *pContext);
 static void mason_cmd0A06_hash_test(void *pContext);
 #endif
 
@@ -411,7 +411,7 @@ MASON_COMMANDS_EXT volatile stCmdHandlerType gstCmdHandlers[CMD_H_MAX][CMD_L_MAX
 		 {
 			 USER_ALL,
 #ifdef MASON_TEST
-			 mason_cmd0A01_ecdsa_sign_test,
+			 mason_cmd0A01_crypto_sign_test,
 #else
 			 mason_cmd_invalid,
 #endif
@@ -419,7 +419,7 @@ MASON_COMMANDS_EXT volatile stCmdHandlerType gstCmdHandlers[CMD_H_MAX][CMD_L_MAX
 		 {
 			 USER_ALL,
 #ifdef MASON_TEST
-			 mason_cmd0A02_ecdsa_verify_test,
+			 mason_cmd0A02_crypto_verify_test,
 #else
 			 mason_cmd_invalid,
 #endif
@@ -2686,12 +2686,12 @@ static void mason_cmd0908_token_delete(void *pContext)
 }
 #ifdef MASON_TEST
 /**
- * @functionname: mason_cmd0A01_ecdsa_sign_test
+ * @functionname: mason_cmd0A01_crypto_sign_test
  * @description: 
  * @para: 
  * @return: 
  */
-static void mason_cmd0A01_ecdsa_sign_test(void *pContext)
+static void mason_cmd0A01_crypto_sign_test(void *pContext)
 {
 	MASON_CMD_DECLARE_VARIABLE(ERT_OK)
 
@@ -2751,12 +2751,12 @@ static void mason_cmd0A01_ecdsa_sign_test(void *pContext)
 	MASON_CMD_RESP_OUTPUT()
 }
 /**
- * @functionname: mason_cmd0A02_ecdsa_verify_test
+ * @functionname: mason_cmd0A02_crypto_verify_test
  * @description: 
  * @para: 
  * @return: 
  */
-static void mason_cmd0A02_ecdsa_verify_test(void *pContext)
+static void mason_cmd0A02_crypto_verify_test(void *pContext)
 {
 	MASON_CMD_DECLARE_VARIABLE(ERT_CommFailParam)
 
@@ -2815,11 +2815,8 @@ static void mason_cmd0A02_ecdsa_verify_test(void *pContext)
 
 		if (CRYPTO_CURVE_ED25519 == curve_type)
 		{
-			if (!ed25519_verify(signature, plaintext, plaintext_len, pub_key.data))
-			{
-				emRet = ERT_ED25519VerifyFail;
-				break;
-			}
+			emRet = ERT_ED25519VerifyFail;
+			break;
 		}
 		else
 		{

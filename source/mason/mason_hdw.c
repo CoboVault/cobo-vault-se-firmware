@@ -20,8 +20,8 @@ in the file COPYING.  If not, see <http://www.gnu.org/licenses/>.
 /** Header file reference */
 #include "mason_hdw.h"
 #include "version_def.h"
-#include "sha256.h"
 #include "mason_util.h"
+#include "crypto_api.h"
 
 /** Variable definitions */
 MASON_HDW_EXT volatile emHDWStatusType gemHDWStatus = E_HDWS_CHIP;
@@ -107,7 +107,7 @@ void mason_HDW_gen_sha256(uint8_t *pText, uint32_t textLen, uint8_t *pCheckSum, 
 {
 	UINT8 bufSHA256[SHA256_LEN] = {0};
 
-	SHA256_hash(pText, textLen, bufSHA256);
+	sha256_api(pText, textLen, bufSHA256);
 
 	if (checkSumLen > SHA256_LEN)
 	{
@@ -148,8 +148,8 @@ void mason_HDW_gen_sha256sha256(uint8_t *pText, uint32_t textLen,
 {
 	UINT8 bufSHA256[SHA256_LEN] = {0};
 
-	SHA256_hash(pText, textLen, bufSHA256);
-	SHA256_hash(bufSHA256, SHA256_LEN, bufSHA256);
+	sha256_api(pText, textLen, bufSHA256);
+	sha256_api(bufSHA256, SHA256_LEN, bufSHA256);
 
 	if (checkSumLen > SHA256_LEN)
 	{

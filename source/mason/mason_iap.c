@@ -22,7 +22,7 @@ in the file COPYING.  If not, see <http://www.gnu.org/licenses/>.
 #include "common.h"
 #include "mason_util.h"
 #include "eflash.h"
-#include "sha256.h"
+#include "sha2.h"
 #include "mason_hdw.h"
 #include "crypto_api.h"
 
@@ -43,7 +43,7 @@ emRetType mason_iap_pack_verify_process(emFwPackTypeType emFwPackType, uint8_t *
 	{
 	case E_PACK_FIRST:
 	{
-		SHA256_init(&sha256ctx);
+		sha256_Init(&sha256ctx);
 	}
 	case E_PACK_CONTINUE:
 	case E_PACK_LAST:
@@ -57,13 +57,13 @@ emRetType mason_iap_pack_verify_process(emFwPackTypeType emFwPackType, uint8_t *
 			return ERT_IAP_fileDigest;
 		}
 
-		SHA256_update(&sha256ctx, pBin, binLen);
+		sha256_Update(&sha256ctx, pBin, binLen);
 		break;
 	}
 	case E_PACK_HDR:
 	{
 		uint8_t bufSHA256[SHA256_LEN] = {0};
-		SHA256_final(bufSHA256, &sha256ctx);
+		sha256_Final(&sha256ctx, bufSHA256);
 
 		PckHash = pBin + 32;
 		if (memcmp_ATA(PckHash, bufSHA256, SHA256_LEN))

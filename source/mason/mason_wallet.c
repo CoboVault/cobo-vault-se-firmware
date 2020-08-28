@@ -18,7 +18,6 @@ in the file COPYING.  If not, see <http://www.gnu.org/licenses/>.
 #include <mason_wallet.h>
 #include <hrng.h>
 #include <stdint.h>
-#include <sha256.h>
 #include <crypto_api.h>
 #include <bip39.h>
 #include <mason_storage.h>
@@ -77,7 +76,7 @@ bool mason_generate_entropy(uint8_t *output_entropy, uint16_t bits, bool need_ch
         return true;
     }
 
-    SHA256_hash(output_entropy, bytes, sha256_buf);
+    sha256_api(output_entropy, bytes, sha256_buf);
 
     output_entropy[bytes] = sha256_buf[0];
 

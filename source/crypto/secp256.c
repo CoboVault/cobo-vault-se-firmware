@@ -21,22 +21,11 @@ UINT32 SECP256R1_N[8] = {0xfc632551, 0xf3b9cac2, 0xa7179e84, 0xbce6faad, 0xfffff
 UINT32 SECP256R1_G_BaseX[8] = {0xd898c296, 0xf4a13945, 0x2deb33a0, 0x77037d81, 0x63a440f2, 0xf8bce6e5, 0xe12c4247, 0x6b17d1f2};
 UINT32 SECP256R1_G_BaseY[8] = {0x37bf51f5, 0xcbb64068, 0x6b315ece, 0x2bce3357, 0x7c0f9e16, 0x8ee7eb4a, 0xfe1a7f9b, 0x4fe342e2};
 
-const UINT32 ED25519_CURVE_LENGTH = 8;
-UINT32 ED25519_P[8] = {0xFFFFFFED, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0x7FFFFFFF};
-UINT32 ED25519_a[8] = {0x4914A144, 0xAAAAAA98, 0xAAAAAAAA, 0xAAAAAAAA, 0xAAAAAAAA, 0xAAAAAAAA, 0xAAAAAAAA, 0x2AAAAAAA};
-UINT32 ED25519_b[8] = {0x7710C864, 0x260B5E9C, 0x5ED097B4, 0xED097B42, 0xD097B425, 0x097B425E, 0x97B425ED, 0x7B425ED0};
-UINT32 ED25519_N[8] = {0x5CF5D3ED, 0x5812631A, 0xA2F79CD6, 0x14DEF9DE, 0x00000000, 0x00000000, 0x00000000, 0x10000000};
-// UINT32 ED25519_N[8] = { 0x10000000, 0x00000000, 0x00000000, 0x00000000, 0x14def9de, 0xa2f79cd6, 0x5812631a, 0x5cf5d3ed };
-//UINT32 ED25519_G_BaseX[8] = { 0xAAAD245A, 0xAAAAAAAA, 0xAAAAAAAA, 0xAAAAAAAA, 0xAAAAAAAA, 0xAAAAAAAA, 0xAAAAAAAA, 0x2AAAAAAA };
-UINT32 ED25519_G_BaseX[8] = {0x00000008, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000};
-UINT32 ED25519_G_BaseY[8] = {0x7ECED3D9, 0x29E9C5A2, 0x6D7C61B2, 0x923D4D7E, 0x7748D14C, 0xE01EDD2C, 0xB8A086B4, 0x20AE19A1};
-
 static ECC_G_STR secp256k1_ecc_g_str;
 static MATH_G_STR secp256k1_math_g_str;
 static ECC_G_STR secp256r1_ecc_g_str;
 static MATH_G_STR secp256r1_math_g_str;
-static ECC_G_STR ed25519_ecc_g_str;
-//static MATH_G_STR ed25519_math_g_str;
+
 /**
  * @functionname: secp256k1_init
  * @description: 
@@ -72,24 +61,6 @@ void secp256r1_init()
         SECP256R1_N,
         SECP256R1_G_BaseX,
         SECP256R1_G_BaseY);
-}
-/**
- * @functionname: ed25519_init
- * @description: 
- * @para: 
- * @return: 
- */
-void ed25519_init()
-{
-    ECC_para_initial(
-        &ed25519_ecc_g_str,
-        ED25519_CURVE_LENGTH,
-        ED25519_P,
-        ED25519_a,
-        ED25519_b,
-        ED25519_N,
-        ED25519_G_BaseX,
-        ED25519_G_BaseY);
 }
 /**
  * @functionname: ecc_utils_buffer_to_ecc_array
@@ -173,35 +144,6 @@ bool secp256r1_private_key_to_public_key(uint8_t *private_key, uint8_t *public_k
                            ecc_private_key,
                            SECP256R1_G_BaseX,
                            SECP256R1_G_BaseY,
-                           ecc_public_key_x,
-                           ecc_public_key_y));
-
-    ecc_utils_ecc_array_to_buffer(ecc_public_key_x, 8, public_key_x);
-    ecc_utils_ecc_array_to_buffer(ecc_public_key_y, 8, public_key_y);
-    return is_succeed;
-}
-/**
- * @functionname: ed25519_private_key_to_public_key
- * @description: 
- * @para: 
- * @return: 
- */
-bool ed25519_private_key_to_public_key(uint8_t *private_key, uint8_t *public_key_x, uint8_t *public_key_y)
-{
-    bool is_succeed = false;
-    uint32_t ecc_private_key[8] = {0};
-    uint32_t ecc_public_key_x[8] = {0};
-    uint32_t ecc_public_key_y[8] = {0};
-
-    ecc_utils_buffer_to_ecc_array(private_key, ecc_private_key, 8);
-
-    enable_module(BIT_PKI);
-    is_succeed = (0 == ECC_PM(
-                           &ed25519_ecc_g_str,
-                           // private_key,
-                           ecc_private_key,
-                           ED25519_G_BaseX,
-                           ED25519_G_BaseY,
                            ecc_public_key_x,
                            ecc_public_key_y));
 

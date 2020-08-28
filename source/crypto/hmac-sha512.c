@@ -16,8 +16,8 @@ in the file COPYING.  If not, see <http://www.gnu.org/licenses/>.
 **************************************************************************************************/
 #include <string.h>
 #include "hmac.h"
-#include "sha256.h"
-#include "sha384.h"
+#include "sha2.h"
+#include "common.h"
 
 void hmac_sha256(const unsigned char *data, size_t len, const unsigned char *key, int len_key, unsigned char *out)
 {
@@ -37,7 +37,7 @@ void hmac_sha256(const unsigned char *data, size_t len, const unsigned char *key
     if (len_key > block_size)
     {
         key_size = hash_size;
-        SHA256_hash((UINT8 *)data, len, buf);
+        sha256_Raw((UINT8 *)data, len, buf);
         memcpy(buf2, buf, key_size);
     }
     else
@@ -60,10 +60,10 @@ void hmac_sha256(const unsigned char *data, size_t len, const unsigned char *key
     memcpy(hash_buf, buf2, key_size);
     memcpy(hash_buf + key_size, data, len);
 
-    SHA256_hash(hash_buf, key_size + len, hash_out);
+    sha256_Raw(hash_buf, key_size + len, hash_out);
     memcpy(hash_buf, buf, key_size);
     memcpy(hash_buf + key_size, hash_out, hash_size);
-    SHA256_hash(hash_buf, key_size + hash_size, out);
+    sha256_Raw(hash_buf, key_size + hash_size, out);
 
     free(hash_buf);
 }
@@ -86,7 +86,7 @@ void hmac_sha512(const unsigned char *data, size_t len, const unsigned char *key
     if (len_key > block_size)
     {
         key_size = hash_size;
-        SHA512_hash((UINT8 *)data, len, buf);
+        sha512_Raw((UINT8 *)data, len, buf);
         memcpy(buf2, buf, key_size);
     }
     else
@@ -110,10 +110,10 @@ void hmac_sha512(const unsigned char *data, size_t len, const unsigned char *key
     memcpy(hash_buf + key_size, data, len);
 
     // printf("hash buf size %d %d %d %d\n", hash_buf_size, key_size, len, hash_size);
-    SHA512_hash(hash_buf, key_size + len, hash_out);
+    sha512_Raw(hash_buf, key_size + len, hash_out);
     memcpy(hash_buf, buf, key_size);
     memcpy(hash_buf + key_size, hash_out, hash_size);
-    SHA512_hash(hash_buf, key_size + hash_size, out);
+    sha512_Raw(hash_buf, key_size + hash_size, out);
 
     free(hash_buf);
 }

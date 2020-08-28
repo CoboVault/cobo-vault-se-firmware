@@ -342,10 +342,10 @@
             <wLevel>2</wLevel>
             <uThumb>0</uThumb>
             <VariousControls>
-              <MiscControls>-Ospace</MiscControls>
+              <MiscControls>-Ospace --c99</MiscControls>
               <Define></Define>
               <Undefine></Undefine>
-              <IncludePath>.\source\CMSIS\Include;.\source\system;.\source\driver;.\source\mason;.\source\COMMON;.\source\crypto;.\source</IncludePath>
+              <IncludePath>.\source\CMSIS\Include;.\source\system;.\source\driver;.\source\mason;.\source\COMMON;.\source\crypto;.\source;.\source\driver\ed25519-donna</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -436,19 +436,9 @@
               <FilePath>.\source\driver\rsa_v1.lib</FilePath>
             </File>
             <File>
-              <FileName>pki_v1.lib</FileName>
-              <FileType>4</FileType>
-              <FilePath>.\source\driver\pki_v1.lib</FilePath>
-            </File>
-            <File>
               <FileName>ecdsa_v2.lib</FileName>
               <FileType>4</FileType>
               <FilePath>.\source\driver\ecdsa_v2.lib</FilePath>
-            </File>
-            <File>
-              <FileName>ed25519_v2.lib</FileName>
-              <FileType>4</FileType>
-              <FilePath>.\source\driver\ed25519_v2.lib</FilePath>
             </File>
             <File>
               <FileName>hrng_v2.lib</FileName>
@@ -456,14 +446,19 @@
               <FilePath>.\source\driver\hrng_v2.lib</FilePath>
             </File>
             <File>
-              <FileName>sha256_v2.lib</FileName>
-              <FileType>4</FileType>
-              <FilePath>.\source\driver\sha256_v2.lib</FilePath>
+              <FileName>sha2.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\source\driver\sha2.c</FilePath>
             </File>
             <File>
-              <FileName>sha384_512_v2.lib</FileName>
+              <FileName>ed25519.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\source\driver\ed25519-donna\ed25519.c</FilePath>
+            </File>
+            <File>
+              <FileName>pki_v1.lib</FileName>
               <FileType>4</FileType>
-              <FilePath>.\source\driver\sha384_512_v2.lib</FilePath>
+              <FilePath>.\source\driver\pki_v1.lib</FilePath>
             </File>
           </Files>
         </Group>

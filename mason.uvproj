@@ -471,16 +471,6 @@
               <FilePath>.\source\COMMON\common.c</FilePath>
             </File>
             <File>
-              <FileName>base58.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\source\COMMON\base58.c</FilePath>
-            </File>
-            <File>
-              <FileName>RipeMD160.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\source\COMMON\RipeMD160.c</FilePath>
-            </File>
-            <File>
               <FileName>circular_buffer.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\source\COMMON\circular_buffer.c</FilePath>
@@ -499,11 +489,6 @@
               <FileName>stack.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\source\COMMON\stack.c</FilePath>
-            </File>
-            <File>
-              <FileName>hmac-sha512.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\source\COMMON\hmac-sha512.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -529,6 +514,21 @@
               <FileName>secp256.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\source\crypto\secp256.c</FilePath>
+            </File>
+            <File>
+              <FileName>base58.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\source\crypto\base58.c</FilePath>
+            </File>
+            <File>
+              <FileName>hmac-sha512.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\source\crypto\hmac-sha512.c</FilePath>
+            </File>
+            <File>
+              <FileName>RipeMD160.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\source\crypto\RipeMD160.c</FilePath>
             </File>
           </Files>
         </Group>

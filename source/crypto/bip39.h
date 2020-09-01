@@ -42,10 +42,12 @@ extern "C"
 #define PASSPHRASE_PREFIX ("mnemonic") //BIP39
 
 	/** Function declarations */
-	void bip39_gen_seed_with_mnomonic(uint8_t *pMnemonic, uint32_t mnemonicLen,
+	void bip39_gen_seed_with_mnemonic(uint8_t *pMnemonic, uint32_t mnemonicLen,
 									  uint8_t *pPassphrase, uint32_t passphraseLen,
 									  uint8_t *pSeed, int32_t seedLen);
-
+	void bip39_gen_seed_with_entropy(uint8_t *pEntropy, uint32_t entropyLen,
+									 uint8_t *pPassphrase, uint32_t passphraseLen,
+									 uint8_t *pSeed, int32_t seedLen);
 /** Compatibility with the cplusplus*/
 #ifdef __cplusplus
 } /* Extern C */

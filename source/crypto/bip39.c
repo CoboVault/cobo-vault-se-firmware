@@ -25,7 +25,7 @@ in the file COPYING.  If not, see <http://www.gnu.org/licenses/>.
 
 /** Function implementations */
 /**
-* @functionname: 
+* @functionname: PBKDF2_HMAC_SHA512
 * @description: 
 * @para:
 * @return:
@@ -111,17 +111,36 @@ void PBKDF2_HMAC_SHA512(uint8_t *pPassword, uint32_t passwordLen,
 }
 
 /**
-* @functionname: 
+* @functionname: bip39_gen_seed_with_mnemonic
 * @description: 
 * @para:
 * @return:
 * @notice: pMnemonic -> password;pPassphrase -> salt
 * @notice: seed output from BIP39 is BIP32 input seed
 */
-void bip39_gen_seed_with_mnomonic(uint8_t *pMnemonic, uint32_t mnemonicLen,
+void bip39_gen_seed_with_mnemonic(uint8_t *pMnemonic, uint32_t mnemonicLen,
 								  uint8_t *pPassphrase, uint32_t passphraseLen,
 								  uint8_t *pSeed, int32_t seedLen)
 {
 	PBKDF2_HMAC_SHA512(pMnemonic, mnemonicLen, pPassphrase, passphraseLen,
+					   2048, pSeed, seedLen);
+}
+/**
+* @functionname: bip39_gen_seed_with_entropy
+* @description: 
+* @para:
+* @return:
+* @notice: pEntropy -> password;pPassphrase -> salt
+* @notice: seed output from BIP39 is BIP32 input seed
+*/
+void bip39_gen_seed_with_entropy(uint8_t *pEntropy, uint32_t entropyLen,
+								 uint8_t *pPassphrase, uint32_t passphraseLen,
+								 uint8_t *pSeed, int32_t seedLen)
+{
+	if ((entropyLen < 16) || (entropyLen > 32) || (0 != entropyLen % 4))
+	{
+		return;
+	}
+	PBKDF2_HMAC_SHA512(pEntropy, entropyLen, pPassphrase, passphraseLen,
 					   2048, pSeed, seedLen);
 }

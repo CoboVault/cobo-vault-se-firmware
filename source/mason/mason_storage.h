@@ -41,6 +41,7 @@ extern "C"
 #endif /* __cplusplus */
 
 /** Macro definitions*/
+// 0x38000 para area, program data -- 1 page
 #define FLASH_ADDR_PARAM_BASE				FLASH_ADDR_PARAM_START
 #define FLASH_ADDR_BOOT_ADDR_4B				FLASH_ADDR_PARAM_BASE
 #define FLASH_ADDR_APP_EXIST_4B				(FLASH_ADDR_BOOT_ADDR_4B+4)
@@ -61,26 +62,33 @@ extern "C"
 #define FLASH_ADDR_APP_VERCODE_4B           (FLASH_ADDR_CHIP_MODE_WITH_CHECKSUM_12B + CHIP_MODE_SIZE)
 #define APP_VERCODE_SIZE                    4
 
-// 0x38200 fac data area
+// 0x38200 mnemonic, entropy -- 1 page
 #define FLASH_ADDR_WALLET_START             (FLASH_ADDR_PARAM_START + PAGE_SIZE)
-#define FLASH_ADDR_MNOMONIC_512B            (FLASH_ADDR_WALLET_START)
-#define MNOMONIC_SIZE                       PAGE_SIZE
+#define FLASH_ADDR_MNEMONIC                 (FLASH_ADDR_WALLET_START)
+#define MNEMONIC_SIZE                       256
 
-#define FLASH_ADDR_SEED_72B                 (FLASH_ADDR_MNOMONIC_512B + MNOMONIC_SIZE)
+#define FLASH_ADDR_ENTROPY                  (FLASH_ADDR_MNEMONIC + MNEMONIC_SIZE)
+#define ENTROPY_SIZE                        40
+
+// 0x38400 seed, update-key, web-auth-keys -- 1 page
+#define FLASH_ADDR_SEED_72B                 (FLASH_ADDR_MNEMONIC + PAGE_SIZE)
 #define SEED_SIZE                           72
 
 #define FLASH_ADDR_UPDATE_KEY_258B          (FLASH_ADDR_SEED_72B + SEED_SIZE)
 #define UPDATE_KEY_SIZE                     258
 
-//add web auth pri/pub key
 #define FLASH_ADDR_WEB_AUTH_PRI_KEY_32B     (FLASH_ADDR_UPDATE_KEY_258B + UPDATE_KEY_SIZE+2)
 #define WEB_AUTH_PRI_KEY_SIZE               32
 #define FLASH_ADDR_WEB_AUTH_PUB_KEY_64B     (FLASH_ADDR_WEB_AUTH_PRI_KEY_32B + WEB_AUTH_PRI_KEY_SIZE)
 #define WEB_AUTH_PUB_KEY_SIZE               64
 
-//add update key 512B
+// 0x38600 update-key-512B -- 1 page
 #define FLASH_ADDR_UPDATE_KEY_512B          (FLASH_ADDR_SEED_72B + PAGE_SIZE)
 #define UPDATE_KEY_512B_SIZE                PAGE_SIZE
+
+// 0x38800 seedFromEntropy -- 1 page
+#define FLASH_ADDR_SEED_FROM_ENTROPY        (FLASH_ADDR_UPDATE_KEY_512B + PAGE_SIZE)
+#define SEED_FROM_ENTROPY_SIZE              72
 
 // 0x39200 usr data area
 #define FLASH_ADDR_USRDATA_START            (FLASH_ADDR_PARAM_START + PAGE_SIZE*9)

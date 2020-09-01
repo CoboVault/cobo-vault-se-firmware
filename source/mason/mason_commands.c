@@ -1569,6 +1569,8 @@ static void mason_cmd0302_create_wallet(void *pContext)
 
 	uint8_t *mnemonic = NULL;
 	uint16_t mnemonic_len = 0;
+	uint8_t *entropy = NULL;
+	uint16_t entropy_len = 0;
 	emRetType verify_emRet = ERT_Verify_Init;
 
 	mason_cmd_init_outputTLVArray(&stStack);
@@ -1595,7 +1597,16 @@ static void mason_cmd0302_create_wallet(void *pContext)
 		}
 		mnemonic = (uint8_t *)pstTLV->pV;
 		mnemonic_len = pstTLV->L;
-		if (!mason_create_wallet(mnemonic, mnemonic_len))
+
+		if (!stack_search_by_tag(pstS, &pstTLV, TLV_T_ENTROPY))
+		{
+			emRet = ERT_needEntropy;
+			break;
+		}
+		entropy = (uint8_t *)pstTLV->pV;
+		entropy_len = pstTLV->L;
+
+		if (!mason_create_wallet(mnemonic, mnemonic_len, entropy, entropy_len))
 		{
 			emRet = ERT_CommFailParam;
 			break;

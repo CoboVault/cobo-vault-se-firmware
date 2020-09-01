@@ -78,6 +78,7 @@ extern "C"
 		ERT_VerConflict,
 		ERT_HDWalletSwitchNeed,
 		ERT_HDWalletSwitchNotMatch,
+		ERT_needEntropy,
 
 		ERT_CHIP_FAIL = 0x0500,
 		ERT_RngFail,
@@ -119,7 +120,7 @@ extern "C"
 		ERT_UsrSettingsStoreFail,
 		ERT_UsrSettingsNotAllow,
 
-		ERT_Verify_Init    = 0x0800,
+		ERT_Verify_Init = 0x0800,
 		ERT_VerifyValueFail,
 		ERT_VerifyLenFail,
 

@@ -34,6 +34,7 @@ enum SupportEntropyBits
 };
 
 #define MAX_MNEMONIC_SIZE 240
+#define MAX_ENTROPY_SIZE 32
 #define MAX_HDPATH_SIZE 121
 #define MAX_PASSPHRASE_SIZE (128 * 4)
 
@@ -42,6 +43,12 @@ typedef struct mnemonic_s
     uint32_t size;
     uint8_t data[MAX_MNEMONIC_SIZE];
 } mnemonic_t;
+
+typedef struct entropy_s
+{
+    uint32_t size;
+    uint8_t data[MAX_ENTROPY_SIZE];
+} entropy_t;
 
 typedef struct wallet_seed_s
 {
@@ -68,7 +75,7 @@ typedef struct update_key_s
 
 /** Function declarations */
 bool mason_generate_entropy(uint8_t *output_entropy, uint16_t bits, bool need_checksum);
-bool mason_create_wallet(uint8_t *mnemonic, uint16_t mnemonic_len);
+bool mason_create_wallet(uint8_t *mnemonic, uint16_t mnemonic_len, uint8_t *entropy, uint16_t entropy_len);
 bool mason_change_wallet_passphrase(uint8_t *passphrase, uint16_t passphrase_len);
 bool mason_delete_wallet(void);
 

@@ -88,78 +88,6 @@ bool mason_generate_entropy(uint8_t *output_entropy, uint16_t bits, bool need_ch
     return true;
 }
 /**
- * @functionname: mason_create_wallet
- * @description: 
- * @para: 
- * @return: 
- */
-bool mason_create_wallet(uint8_t *mnemonic, uint16_t mnemonic_len, uint8_t *entropy, uint16_t entropy_len)
-{
-    mnemonic_t mnemonic_data = {0};
-    entropy_t entropy_data = {0};
-    wallet_seed_t seed = {0};
-    wallet_seed_t seedFromEntropy = {0};
-    bool is_succeed = false;
-
-    if ((0 == mnemonic_len) || (mnemonic_len > MAX_MNEMONIC_SIZE))
-    {
-        return false;
-    }
-    if ((0 == entropy_len) || (entropy_len > MAX_ENTROPY_SIZE) || !is_entropy_bits_support(entropy_len << 3))
-    {
-        return false;
-    }
-
-    mnemonic_data.size = mnemonic_len;
-    memcpy(mnemonic_data.data, mnemonic, mnemonic_len);
-
-    entropy_data.size = entropy_len;
-    memcpy(entropy_data.data, entropy, entropy_len);
-
-    do
-    {
-        is_succeed = mason_wallet_setup(&mnemonic_data, &entropy_data, NULL, 0, &seed, &seedFromEntropy);
-        if (!is_succeed)
-        {
-            break;
-        }
-
-        is_succeed = mason_seed_write(&seed);
-        if (!is_succeed)
-        {
-            break;
-        }
-
-        is_succeed = mason_seedFromEntropy_write(&seedFromEntropy);
-        if (!is_succeed)
-        {
-            break;
-        }
-
-        memset(&passphrase_seed, 0, sizeof(wallet_seed_t));
-        memset(&passphrase_seedFromEntropy, 0, sizeof(wallet_seed_t));
-        gemHDWSwitch = E_HDWM_MNEMONIC;
-
-        is_succeed = mason_mnemonic_write(&mnemonic_data);
-        if (!is_succeed)
-        {
-            break;
-        }
-
-        is_succeed = mason_entropy_write(&entropy_data);
-        if (!is_succeed)
-        {
-            break;
-        }
-    } while (0);
-
-    memset(&seed, 0, sizeof(wallet_seed_t));
-    memset(&seedFromEntropy, 0, sizeof(wallet_seed_t));
-    memset(&mnemonic_data, 0, sizeof(mnemonic_t));
-    memset(&entropy_data, 0, sizeof(entropy_t));
-    return is_succeed;
-}
-/**
  * @functionname: mason_mnemonic_read
  * @description: 
  * @para: 
@@ -289,6 +217,78 @@ static bool mason_seedFromEntropy_write(wallet_seed_t *seed)
 {
     bool is_succeed = false;
     is_succeed = mason_storage_write_buffer((uint8_t *)seed, sizeof(wallet_seed_t), FLASH_ADDR_SEED_FROM_ENTROPY);
+    return is_succeed;
+}
+/**
+ * @functionname: mason_create_wallet
+ * @description: 
+ * @para: 
+ * @return: 
+ */
+bool mason_create_wallet(uint8_t *mnemonic, uint16_t mnemonic_len, uint8_t *entropy, uint16_t entropy_len)
+{
+    mnemonic_t mnemonic_data = {0};
+    entropy_t entropy_data = {0};
+    wallet_seed_t seed = {0};
+    wallet_seed_t seedFromEntropy = {0};
+    bool is_succeed = false;
+
+    if ((0 == mnemonic_len) || (mnemonic_len > MAX_MNEMONIC_SIZE))
+    {
+        return false;
+    }
+    if ((0 == entropy_len) || (entropy_len > MAX_ENTROPY_SIZE) || !is_entropy_bits_support(entropy_len << 3))
+    {
+        return false;
+    }
+
+    mnemonic_data.size = mnemonic_len;
+    memcpy(mnemonic_data.data, mnemonic, mnemonic_len);
+
+    entropy_data.size = entropy_len;
+    memcpy(entropy_data.data, entropy, entropy_len);
+
+    do
+    {
+        is_succeed = mason_wallet_setup(&mnemonic_data, &entropy_data, NULL, 0, &seed, &seedFromEntropy);
+        if (!is_succeed)
+        {
+            break;
+        }
+
+        is_succeed = mason_seed_write(&seed);
+        if (!is_succeed)
+        {
+            break;
+        }
+
+        is_succeed = mason_seedFromEntropy_write(&seedFromEntropy);
+        if (!is_succeed)
+        {
+            break;
+        }
+
+        memset(&passphrase_seed, 0, sizeof(wallet_seed_t));
+        memset(&passphrase_seedFromEntropy, 0, sizeof(wallet_seed_t));
+        gemHDWSwitch = E_HDWM_MNEMONIC;
+
+        is_succeed = mason_mnemonic_write(&mnemonic_data);
+        if (!is_succeed)
+        {
+            break;
+        }
+
+        is_succeed = mason_entropy_write(&entropy_data);
+        if (!is_succeed)
+        {
+            break;
+        }
+    } while (0);
+
+    memset(&seed, 0, sizeof(wallet_seed_t));
+    memset(&seedFromEntropy, 0, sizeof(wallet_seed_t));
+    memset(&mnemonic_data, 0, sizeof(mnemonic_t));
+    memset(&entropy_data, 0, sizeof(entropy_t));
     return is_succeed;
 }
 /**

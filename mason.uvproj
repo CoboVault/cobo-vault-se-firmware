@@ -602,6 +602,41 @@
             </File>
           </Files>
         </Group>
+        <Group>
+          <GroupName>sr25519</GroupName>
+          <Files>
+            <File>
+              <FileName>derive.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\source\driver\sr25519\derive.c</FilePath>
+            </File>
+            <File>
+              <FileName>keys.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\source\driver\sr25519\keys.c</FilePath>
+            </File>
+            <File>
+              <FileName>merlin.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\source\driver\sr25519\merlin.c</FilePath>
+            </File>
+            <File>
+              <FileName>ristretto-donna.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\source\driver\sr25519\ristretto-donna.c</FilePath>
+            </File>
+            <File>
+              <FileName>scalars.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\source\driver\sr25519\scalars.c</FilePath>
+            </File>
+            <File>
+              <FileName>sign_verify.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\source\driver\sr25519\sign_verify.c</FilePath>
+            </File>
+          </Files>
+        </Group>
       </Groups>
     </Target>
   </Targets>

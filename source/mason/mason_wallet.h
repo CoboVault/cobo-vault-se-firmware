@@ -73,11 +73,14 @@ typedef struct update_key_s
     uint8_t key[MAX_UPDATE_KEY_LEN];
 } update_key_t;
 
+extern wallet_seed_t passphrase_seedFromEntropy;
 /** Function declarations */
 bool mason_generate_entropy(uint8_t *output_entropy, uint16_t bits, bool need_checksum);
 bool mason_create_wallet(uint8_t *mnemonic, uint16_t mnemonic_len, uint8_t *entropy, uint16_t entropy_len);
 bool mason_change_wallet_passphrase(uint8_t *passphrase, uint16_t passphrase_len);
 bool mason_delete_wallet(void);
+
+bool mason_seedFromEntropy_read(wallet_seed_t *seed);
 
 bool mason_update_key_load(update_key_t *update_key);
 bool mason_update_key_save(const update_key_t *update_key);

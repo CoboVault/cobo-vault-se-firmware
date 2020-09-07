@@ -147,7 +147,7 @@ void sr25519_keypair_from_seed(sr25519_keypair keypair, sr25519_mini_secret_key 
     expand_ed25519(secret_key_key, secret_key_nonce, mini_secret_key);
     sr25519_public_key public_key = {0};
     private_key_to_publuc_key(public_key, secret_key_key);
-    //multiply_scalar_bytes_by_cofactor(secret_key_key, 32);
+    multiply_scalar_bytes_by_cofactor(secret_key_key, 32);
 
     memcpy(keypair, secret_key_key, 32);
     memcpy(keypair + 32, secret_key_nonce, 32);
@@ -188,7 +188,7 @@ void sr25519_derive_keypair_hard(sr25519_keypair keypair_out, const sr25519_keyp
 {
     sr25519_mini_secret_key key_in = {0};
     memcpy(key_in, keypair_in, 32);
-    //divide_scalar_bytes_by_cofactor(key_in, 32);
+    divide_scalar_bytes_by_cofactor(key_in, 32);
 
     sr25519_mini_secret_key key_out = {0};
     sr25519_chain_code chain_code_out = {0};
@@ -269,7 +269,7 @@ void sr25519_sign(sr25519_signature signature_out, const sr25519_public_key publ
     sr25519_secret_key_nonce secret_nonce = {0};
     memcpy(secret_key, secret, 32);
     memcpy(secret_nonce, secret + 32, 32);
-    //divide_scalar_bytes_by_cofactor(secret_key, 32);
+    divide_scalar_bytes_by_cofactor(secret_key, 32);
 
     merlin_transcript t = {0};
     merlin_transcript_init(&t, (uint8_t *)"SigningContext", 14);

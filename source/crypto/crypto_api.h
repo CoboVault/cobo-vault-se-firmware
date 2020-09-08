@@ -57,6 +57,7 @@ extern "C"
         CRYPTO_CURVE_SECP256K1 = 0,
         CRYPTO_CURVE_SECP256R1,
         CRYPTO_CURVE_ED25519,
+        CRYPTO_CURVE_SR25519,
     } crypto_curve_t;
 
     /** Function declarations */

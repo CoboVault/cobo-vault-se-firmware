@@ -19,7 +19,7 @@ in the file COPYING.  If not, see <http://www.gnu.org/licenses/>.
 #include "substrate_sign.h"
 #include "mason_wallet.h"
 #include "mason_hdw.h"
-#include "blake2b.h"
+//#include "blake2b.h"
 
 bool mini_secret_from_entropy(sr25519_mini_secret_key seed)
 {
@@ -86,16 +86,17 @@ bool using_encode(const uint8_t *in, uint32_t in_len, uint8_t *out, uint32_t *ou
 void cc_from_path_item_soft(const uint8_t *pItem, uint32_t itemlen, sr25519_chain_code cc_out)
 {
     sr25519_chain_code cc = {0};
-    uint8_t data[32 + 4] = {0};
+    uint8_t data[MAX_SURI_PATH_LEN + 4] = {0};
     uint32_t data_len = 0;
 
     using_encode(pItem, itemlen, data, &data_len);
 
     if (data_len > 32)
     {
-        uint8_t hash[32] = {0};
-        blake2b(data, data_len, hash, 32);
-        memcpy(cc, hash, 32);
+        //uint8_t hash[32] = {0};
+        //blake2b(data, data_len, hash, 32);
+        //memcpy(cc, hash, 32);
+        return;
     }
     else
     {
@@ -208,7 +209,7 @@ bool derive_from_suri(uint8_t *path, uint32_t pathlen, sr25519_keypair keypair)
     return true;
 }
 
-bool substrate_sign(uint8_t *suri, uint32_t suri_len, uint8_t *message, uint32_t message_len, sr25519_signature signature)
+bool substrate_sign(uint8_t *suri, uint32_t suri_len, uint8_t *message, uint32_t message_len, sr25519_signature signature, uint16_t *sign_len)
 {
     sr25519_keypair keypair = {0};
     sr25519_public_key public = {0};
@@ -224,5 +225,6 @@ bool substrate_sign(uint8_t *suri, uint32_t suri_len, uint8_t *message, uint32_t
 
     sr25519_sign(signature, public, secret, message, message_len);
 
+    *sign_len = 64;
     return true;
 }

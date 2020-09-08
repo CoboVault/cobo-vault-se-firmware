@@ -34,4 +34,5 @@ typedef struct
     uint8_t depth;
 }suri_path_t;
 
+bool substrate_sign(uint8_t *suri, uint32_t suri_len, uint8_t *message, uint32_t message_len, sr25519_signature signature, uint16_t *sign_len);
 #endif

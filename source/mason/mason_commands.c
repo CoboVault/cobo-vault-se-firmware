@@ -41,6 +41,8 @@ in the file COPYING.  If not, see <http://www.gnu.org/licenses/>.
 #include "base58.h"
 #include "crypto_api.h"
 #include <mason_setting.h>
+#include "substrate_sign.h"
+
 #if (1 != VER_REL)
 #define MASON_TEST
 #endif
@@ -1927,30 +1929,42 @@ static void mason_cmd0307_sign_ECDSA(void *pContext)
 			emRet = ERT_HDPathIllegal;
 			break;
 		}
-		memcpy((uint8_t *)path_string, path, path_len);
-		path_string[path_len] = 0;
-		if (!mason_parse_wallet_path_from_string(path_string, path_len, &wallet_path))
-		{
-			emRet = ERT_HDPathIllegal;
-			break;
-		}
 
 		if (stack_search_by_tag(pstS, &pstTLV, TLV_T_CURVE_TYPE) && ((1 == pstTLV->L)))
 		{
 			curve_type = (crypto_curve_t)(*(uint8_t *)pstTLV->pV);
 		}
 
-		if (!mason_bip32_derive_keys(&wallet_path, curve_type, &derived_private_key, &derived_chaincode, &extended_public_key))
+		if (CRYPTO_CURVE_SR25519 == curve_type)
 		{
-			emRet = ERT_HDPathIllegal;
-			break;
+			if(!substrate_sign(path, path_len, hash, hash_len, signature, &signature_len))
+			{
+				emRet = ERT_SignFail;
+				break;
+			}
 		}
-
-		private_key_to_public_key(curve_type, &derived_private_key, &derived_public_key);
-		if (!ecdsa_sign(curve_type, hash, hash_len, derived_private_key.data, signature, &signature_len))
+		else
 		{
-			emRet = ERT_ECDSASignFail;
-			break;
+			memcpy((uint8_t *)path_string, path, path_len);
+			path_string[path_len] = 0;
+			if (!mason_parse_wallet_path_from_string(path_string, path_len, &wallet_path))
+			{
+				emRet = ERT_HDPathIllegal;
+				break;
+			}
+
+			if (!mason_bip32_derive_keys(&wallet_path, curve_type, &derived_private_key, &derived_chaincode, &extended_public_key))
+			{
+				emRet = ERT_HDPathIllegal;
+				break;
+			}
+
+			private_key_to_public_key(curve_type, &derived_private_key, &derived_public_key);
+			if (!ecdsa_sign(curve_type, hash, hash_len, derived_private_key.data, signature, &signature_len))
+			{
+				emRet = ERT_ECDSASignFail;
+				break;
+			}
 		}
 
 		if (ERT_Verify_Success == verify_emRet)

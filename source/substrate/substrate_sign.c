@@ -209,7 +209,8 @@ bool derive_from_suri(uint8_t *path, uint32_t pathlen, sr25519_keypair keypair)
     return true;
 }
 
-bool substrate_sign(uint8_t *suri, uint32_t suri_len, uint8_t *message, uint32_t message_len, sr25519_signature signature, uint16_t *sign_len)
+bool substrate_sign(uint8_t *suri, uint32_t suri_len, uint8_t *message, uint32_t message_len,
+                    sr25519_signature signature, uint16_t *sign_len, public_key_t *pubkey)
 {
     sr25519_keypair keypair = {0};
     sr25519_public_key public = {0};
@@ -225,6 +226,8 @@ bool substrate_sign(uint8_t *suri, uint32_t suri_len, uint8_t *message, uint32_t
 
     sr25519_sign(signature, public, secret, message, message_len);
 
+    memcpy(pubkey->data, public, 32);
+    pubkey->len = 32;
     *sign_len = 64;
     return true;
 }

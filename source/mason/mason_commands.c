@@ -1936,7 +1936,7 @@ static void mason_cmd0307_sign_ECDSA(void *pContext)
 
 		if (CRYPTO_CURVE_SR25519 == curve_type)
 		{
-			if(!substrate_sign(path, path_len, hash, hash_len, signature, &signature_len))
+			if(!substrate_sign(path, path_len, hash, hash_len, signature, &signature_len, &derived_public_key))
 			{
 				emRet = ERT_SignFail;
 				break;

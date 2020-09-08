@@ -18,6 +18,7 @@ in the file COPYING.  If not, see <http://www.gnu.org/licenses/>.
 #define SUBSTRATE_SIGN_H
 
 #include "sr25519.h"
+#include "mason_key.h"
 
 #define SURI_DEPTH 10
 #define MAX_SURI_PATH_LEN 120
@@ -26,13 +27,14 @@ typedef struct
 {
     sr25519_chain_code cc;
     bool is_hard;
-}suri_path_item_t;
+} suri_path_item_t;
 
 typedef struct
 {
     suri_path_item_t item[SURI_DEPTH];
     uint8_t depth;
-}suri_path_t;
+} suri_path_t;
 
-bool substrate_sign(uint8_t *suri, uint32_t suri_len, uint8_t *message, uint32_t message_len, sr25519_signature signature, uint16_t *sign_len);
+bool substrate_sign(uint8_t *suri, uint32_t suri_len, uint8_t *message, uint32_t message_len,
+                    sr25519_signature signature, uint16_t *sign_len, public_key_t *pubkey);
 #endif

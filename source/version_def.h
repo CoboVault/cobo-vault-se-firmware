@@ -68,7 +68,6 @@ extern "C"
     } while (0)
 
 
-extern uint8_t update_key_ex[422];
 /** Compatibility with the cplusplus*/
 #ifdef __cplusplus
 } /* Extern C */

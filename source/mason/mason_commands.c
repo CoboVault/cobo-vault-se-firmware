@@ -90,7 +90,6 @@ static void mason_cmd0401_generate_public_key_from_private_key(void *pContext);
 #endif
 static void mason_cmd0502_mnemonic_verify(void *pContext);
 static void mason_cmd0701_web_authentication(void *pContext);
-static void mason_cmd0702_update_key(void *pContext);
 static void mason_cmd0802_tamper_test(void *pContext);
 static void mason_cmd0901_usrpwd_modify(void *pContext);
 static void mason_cmd0902_usrpwd_reset(void *pContext);
@@ -316,8 +315,8 @@ MASON_COMMANDS_EXT volatile stCmdHandlerType gstCmdHandlers[CMD_H_MAX][CMD_L_MAX
 			 mason_cmd0701_web_authentication,
 		 },
 		 {
-			 USER_CHIP | USER_FACTORY | USER_EMPTY | USER_WALLET,
-			 mason_cmd0702_update_key,
+			 USER_ALL,
+			 mason_cmd_invalid,
 		 },
 		 {
 			 USER_ALL,
@@ -2186,46 +2185,6 @@ static void mason_cmd0701_web_authentication(void *pContext)
 
 	memset(web_auth_private_key, 0, PRIVATE_KEY_LEN);
 	memset(web_auth_public_key, 0, PUB_KEY_LEN);
-	MASON_CMD_RESP_OUTPUT()
-}
-/**
- * @functionname: mason_cmd0702_update_key
- * @description: 
- * @para: 
- * @return: 
- */
-static void mason_cmd0702_update_key(void *pContext)
-{
-	MASON_CMD_DECLARE_VARIABLE(ERT_OK)
-
-	uint8_t is_read = 0;
-
-	mason_cmd_init_outputTLVArray(&stStack);
-
-	do
-	{
-		if (!stack_search_by_tag(pstS, &pstTLV, TLV_T_CMD))
-		{
-			emRet = ERT_CommFailParam;
-			break;
-		}
-		mason_cmd_append_ele_to_outputTLVArray(&stStack, pstTLV);
-
-		if (!stack_search_by_tag(pstS, &pstTLV, TLV_T_WR_RD) || (1 != pstTLV->L))
-		{
-			emRet = ERT_CommFailParam;
-			break;
-		}
-
-		is_read = *(uint8_t *)pstTLV->pV;
-		if (!is_read)
-		{
-			emRet = ERT_CMD_FAIL;
-			break;
-		}
-		mason_cmd_append_to_outputTLVArray(&stStack, TLV_T_UPDATE_KEY, sizeof(update_key_ex), update_key_ex);
-	} while (0);
-
 	MASON_CMD_RESP_OUTPUT()
 }
 /**

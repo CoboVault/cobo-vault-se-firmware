@@ -22,7 +22,7 @@ in the file COPYING.  If not, see <http://www.gnu.org/licenses/>.
 #include "uart.h"
 #include "mason_comm.h"
 #include "queue.h"
-#include "mason_debug.h"
+
 #include "TLV.h"
 #include "stack.h"
 #include "mason_storage.h"

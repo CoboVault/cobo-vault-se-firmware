@@ -25,7 +25,6 @@ in the file COPYING.  If not, see <http://www.gnu.org/licenses/>.
 #include "gpio.h"
 #include "mason_errno.h"
 #include "base58.h"
-#include "mason_debug.h"
 #include "queue.h"
 #include "mason_comm.h"
 #include "mason_iap.h"

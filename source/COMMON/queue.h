@@ -70,11 +70,6 @@ extern "C"
 	QUEUE_EXT void enqueue_overwrite(volatile stQueueType *pstQueue, queueElementType element);
 	QUEUE_EXT void enqueue_safe(volatile stQueueType *pstQueue, queueElementType element);
 	QUEUE_EXT queueElementType dequeue(volatile stQueueType *pstQueue);
-	QUEUE_EXT void queue_display(volatile stQueueType *pstQueue, display_element_callback cb);
-	QUEUE_EXT void queue_display_detail(volatile stQueueType *pstQueue, display_element_callback cb);
-	QUEUE_EXT void queue_display_detail_by_order(volatile stQueueType *pstQueue, display_element_callback cb);
-
-	QUEUE_EXT void display_element(queueElementType *pElement);
 
 /** Compatibility with the cplusplus*/
 #ifdef __cplusplus

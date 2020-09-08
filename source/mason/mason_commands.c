@@ -1873,8 +1873,8 @@ static void mason_cmd0307_sign(void *pContext)
 	uint16_t path_len = 0;
 	wallet_path_t wallet_path;
 	char path_string[MAX_HDPATH_SIZE + 1] = {0};
-	uint8_t hash[SHA512_LEN];
-	uint16_t hash_len = SHA512_LEN;
+	uint8_t *hash = NULL;
+	uint16_t hash_len = 0;
 	private_key_t derived_private_key;
 	chaincode_t derived_chaincode;
 	extended_key_t extended_public_key;
@@ -1919,12 +1919,7 @@ static void mason_cmd0307_sign(void *pContext)
 			break;
 		}
 		hash_len = pstTLV->L;
-		if ((0 == hash_len) || (hash_len > SHA512_LEN))
-		{
-			emRet = ERT_CommFailParam;
-			break;
-		}
-		memcpy(hash, pstTLV->pV, hash_len);
+		hash = (uint8_t *)pstTLV->pV;
 
 		if (!stack_search_by_tag(pstS, &pstTLV, TLV_T_HD_PATH))
 		{

@@ -83,7 +83,7 @@ static void mason_cmd0302_create_wallet(void *pContext);
 static void mason_cmd0303_change_wallet_passphrase(void *pContext);
 static void mason_cmd0305_get_extpubkey(void *pContext);
 static void mason_cmd0306_delete_wallet(void *pContext);
-static void mason_cmd0307_sign_ECDSA(void *pContext);
+static void mason_cmd0307_sign(void *pContext);
 static void mason_cmd0308_get_masterkey_fingerprint(void *pContext);
 #ifdef MASON_TEST
 static void mason_cmd0401_generate_public_key_from_private_key(void *pContext);
@@ -200,7 +200,7 @@ MASON_COMMANDS_EXT volatile stCmdHandlerType gstCmdHandlers[CMD_H_MAX][CMD_L_MAX
 		 },
 		 {
 			 USER_WALLET,
-			 mason_cmd0307_sign_ECDSA,
+			 mason_cmd0307_sign,
 		 },
 		 {
 			 USER_WALLET,
@@ -1860,12 +1860,12 @@ static void mason_cmd0306_delete_wallet(void *pContext)
 	MASON_CMD_RESP_OUTPUT()
 }
 /**
- * @functionname: mason_cmd0307_sign_ECDSA
+ * @functionname: mason_cmd0307_sign
  * @description: 
  * @para: 
  * @return: 
  */
-static void mason_cmd0307_sign_ECDSA(void *pContext)
+static void mason_cmd0307_sign(void *pContext)
 {
 	MASON_CMD_DECLARE_VARIABLE(ERT_CommFailParam)
 
@@ -1946,7 +1946,7 @@ static void mason_cmd0307_sign_ECDSA(void *pContext)
 
 		if (CRYPTO_CURVE_SR25519 == curve_type)
 		{
-			if(!substrate_sign(path, path_len, hash, hash_len, signature, &signature_len, &derived_public_key))
+			if (!substrate_sign(path, path_len, hash, hash_len, signature, &signature_len, &derived_public_key))
 			{
 				emRet = ERT_SignFail;
 				break;

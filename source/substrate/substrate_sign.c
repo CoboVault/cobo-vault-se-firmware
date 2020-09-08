@@ -84,29 +84,33 @@ bool using_encode(const uint8_t *in, uint32_t in_len, uint8_t *out, uint32_t *ou
     return true;
 }
 
-void cc_from_path_item_soft(const uint8_t *pItem, uint32_t itemlen, sr25519_chain_code cc_out)
+bool cc_from_path_item_soft(const uint8_t *pItem, uint32_t itemlen, sr25519_chain_code cc_out)
 {
     sr25519_chain_code cc = {0};
     uint8_t data[MAX_SURI_PATH_LEN + 4] = {0};
     uint32_t data_len = 0;
 
-    using_encode(pItem, itemlen, data, &data_len);
+    if (!using_encode(pItem, itemlen, data, &data_len))
+    {
+        return false;
+    }
 
     if (data_len > 32)
     {
         //uint8_t hash[32] = {0};
         //blake2b(data, data_len, hash, 32);
         //memcpy(cc, hash, 32);
-        return;
+        return false;
     }
     else
     {
         memcpy(cc, data, data_len);
     }
     memcpy(cc_out, cc, 32);
+    return true;
 }
 
-void cc_from_path_item(const uint8_t *pItem, uint32_t itemlen, bool is_hard, sr25519_chain_code cc_out)
+bool cc_from_path_item(const uint8_t *pItem, uint32_t itemlen, bool is_hard, sr25519_chain_code cc_out)
 {
     if (0)
     {
@@ -116,13 +120,17 @@ void cc_from_path_item(const uint8_t *pItem, uint32_t itemlen, bool is_hard, sr2
     else
     {
         // something else
-        cc_from_path_item_soft(pItem, itemlen, cc_out);
+        if (!cc_from_path_item_soft(pItem, itemlen, cc_out))
+        {
+            return false;
+        }
     }
 
     if (is_hard)
     {
         //
     }
+    return true;
 }
 
 bool parse_suri_path(uint8_t *path, uint32_t pathlen, suri_path_t *suriPath)
@@ -162,8 +170,11 @@ bool parse_suri_path(uint8_t *path, uint32_t pathlen, suri_path_t *suriPath)
             index++;
         }
         suriPath->item[suriPath->depth].is_hard = (2 == cSlashCount);
-        cc_from_path_item((path + path_index), (index - path_index),
-                          suriPath->item[suriPath->depth].is_hard, suriPath->item[suriPath->depth].cc);
+        if (!cc_from_path_item((path + path_index), (index - path_index),
+                               suriPath->item[suriPath->depth].is_hard, suriPath->item[suriPath->depth].cc))
+        {
+            return false;
+        }
         suriPath->depth++;
         cSlashCount = 0;
     }

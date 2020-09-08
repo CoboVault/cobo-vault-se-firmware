@@ -1777,29 +1777,39 @@ static void mason_cmd0305_get_extpubkey(void *pContext)
 			emRet = ERT_HDPathIllegal;
 			break;
 		}
-		memcpy((uint8_t *)path_string, path, path_len);
-		path_string[path_len] = 0;
-		if (!mason_wallet_path_is_pub(path_string, path_len) || !mason_parse_wallet_path_from_string(path_string, path_len, &wallet_path))
-		{
-			emRet = ERT_HDPathIllegal;
-			break;
-		}
 
 		if (stack_search_by_tag(pstS, &pstTLV, TLV_T_CURVE_TYPE) && ((1 == pstTLV->L)))
 		{
 			curve_type = (crypto_curve_t)(*(uint8_t *)pstTLV->pV);
 		}
 
-		if (!mason_bip32_derive_keys(&wallet_path, curve_type, &derived_private_key, &derived_chaincode, &extended_public_key))
+		if (CRYPTO_CURVE_SR25519 == curve_type)
 		{
-			emRet = ERT_HDPathIllegal;
-			break;
+			if (!substrate_derive_extpubkey(path, path_len, &extended_public_key))
+			{
+				emRet = ERT_HDPathIllegal;
+				break;
+			}
+		}
+		else
+		{
+			memcpy((uint8_t *)path_string, path, path_len);
+			path_string[path_len] = 0;
+			if (!mason_wallet_path_is_pub(path_string, path_len) || !mason_parse_wallet_path_from_string(path_string, path_len, &wallet_path))
+			{
+				emRet = ERT_HDPathIllegal;
+				break;
+			}
+			if (!mason_bip32_derive_keys(&wallet_path, curve_type, &derived_private_key, &derived_chaincode, &extended_public_key))
+			{
+				emRet = ERT_HDPathIllegal;
+				break;
+			}
 		}
 
 		b58enc(base58_ext_key, &base58_ext_key_len, (uint8_t *)&extended_public_key, sizeof(extended_public_key));
 		base58_ext_key[base58_ext_key_len] = 0;
 		mason_cmd_append_to_outputTLVArray(&stStack, TLV_T_EXT_KEY, base58_ext_key_len - 1, (uint8_t *)base58_ext_key);
-		mason_cmd_append_to_outputTLVArray(&stStack, TLV_T_HDP_DEPTH, 1, &wallet_path.num_of_segments);
 	} while (0);
 
 	memset(&derived_private_key, 0, sizeof(private_key_t));

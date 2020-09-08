@@ -19,6 +19,7 @@ in the file COPYING.  If not, see <http://www.gnu.org/licenses/>.
 #include "substrate_sign.h"
 #include "mason_wallet.h"
 #include "mason_hdw.h"
+#include "bip44.h"
 //#include "blake2b.h"
 
 bool mini_secret_from_entropy(sr25519_mini_secret_key seed)
@@ -170,7 +171,22 @@ bool parse_suri_path(uint8_t *path, uint32_t pathlen, suri_path_t *suriPath)
     return true;
 }
 
-bool derive_from_suri(uint8_t *path, uint32_t pathlen, sr25519_keypair keypair)
+void public_key_to_fingerprint(public_key_t *public_key, uint8_t *fingerprint, uint16_t fingerprint_len)
+{
+    uint8_t hash256[SHA256_LEN] = {0};
+    uint8_t ripemd160_buf[RPMD160_LEN] = {0};
+    compressed_public_key_t compressed_public_key;
+
+    public_key_to_compressed_public_key(public_key, &compressed_public_key);
+
+    sha256_api(compressed_public_key.data, COMPRESSED_PUBLIC_KEY_LEN, hash256);
+
+    ripeMD160_api(hash256, SHA256_LEN, ripemd160_buf);
+
+    memcpy(fingerprint, ripemd160_buf, fingerprint_len);
+}
+
+bool derive_from_suri(uint8_t *path, uint32_t pathlen, sr25519_keypair keypair, extended_key_t *extended_key)
 {
     uint8_t depth = 0;
     suri_path_t suriPath = {0};
@@ -192,6 +208,10 @@ bool derive_from_suri(uint8_t *path, uint32_t pathlen, sr25519_keypair keypair)
     memcpy(child_pair, bip39_pair, 96);
     while (depth < suriPath.depth)
     {
+        public_key_t public_key = {0};
+        memcpy(public_key.data, parent_pair + 64, 32);
+        public_key.len = 32;
+        public_key_to_fingerprint(&public_key, extended_key->fingerprint, sizeof(extended_key->fingerprint));
         if (suriPath.item[depth].is_hard)
         {
             // hard derive
@@ -202,10 +222,31 @@ bool derive_from_suri(uint8_t *path, uint32_t pathlen, sr25519_keypair keypair)
             // soft derive
             sr25519_derive_keypair_soft(child_pair, parent_pair, suriPath.item[depth].cc);
         }
-        depth++;
+
         memcpy(parent_pair, child_pair, 96);
+        memcpy(extended_key->chaincode, suriPath.item[depth].cc, CHAINCODE_LEN);
+        depth++;
     }
     memcpy(keypair, child_pair, 96);
+
+    public_key_t public_key = {0};
+    compressed_public_key_t compressed_public_key = {0};
+    uint8_t checksum[SHA256_LEN] = {0};
+
+    u32_to_buf(extended_key->version, SF_VB_INT_MNET_PUB);
+
+    extended_key->depth = suriPath.depth;
+
+    u32_to_buf(extended_key->child_number, 0x00);
+
+    memcpy(public_key.data, keypair + 64, 32);
+    public_key.len = 32;
+    public_key_to_compressed_public_key(&public_key, &compressed_public_key);
+    memcpy(extended_key->key, compressed_public_key.data, COMPRESSED_PUBLIC_KEY_LEN);
+
+    mason_HDW_gen_sha256sha256((uint8_t *)extended_key, sizeof(extended_key_t) - sizeof(extended_key->checksum), checksum, SHA256_LEN);
+    memcpy(extended_key->checksum, checksum, 4);
+
     return true;
 }
 
@@ -215,8 +256,9 @@ bool substrate_sign(uint8_t *suri, uint32_t suri_len, uint8_t *message, uint32_t
     sr25519_keypair keypair = {0};
     sr25519_public_key public = {0};
     sr25519_secret_key secret = {0};
+    extended_key_t extkey = {0};
 
-    if (!derive_from_suri(suri, suri_len, keypair))
+    if (!derive_from_suri(suri, suri_len, keypair, &extkey))
     {
         return false;
     }
@@ -230,4 +272,15 @@ bool substrate_sign(uint8_t *suri, uint32_t suri_len, uint8_t *message, uint32_t
     pubkey->len = 32;
     *sign_len = 64;
     return true;
+}
+
+bool substrate_derive_extpubkey(uint8_t *suri, uint32_t suri_len, extended_key_t *extpublic)
+{
+    bool ret = false;
+    sr25519_keypair keypair = {0};
+
+    ret = derive_from_suri(suri, suri_len, keypair, extpublic);
+    memset(keypair, 0, 32);
+
+    return ret;
 }

@@ -137,6 +137,12 @@ bool cc_from_path_item(const uint8_t *pItem, uint32_t itemlen, bool is_hard, sr2
     uint8_t data[MAX_SURI_PATH_LEN + 4] = {0};
     uint32_t data_len = 0;
     uint64_t data_number = 0;
+
+    if (0 == itemlen)
+    {
+        return false;
+    }
+
     if (is_number(pItem, itemlen) && myatoui64((const char *)pItem, &data_number))
     {
         // number

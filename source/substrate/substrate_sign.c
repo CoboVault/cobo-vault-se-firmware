@@ -58,6 +58,7 @@ bool encode_to(uint32_t input, uint8_t *dest, uint32_t *dest_len)
     }
     else
     {
+        //compactRef encode_to
         return false;
     }
     return true;
@@ -84,15 +85,71 @@ bool using_encode(const uint8_t *in, uint32_t in_len, uint8_t *out, uint32_t *ou
     return true;
 }
 
-bool cc_from_path_item_soft(const uint8_t *pItem, uint32_t itemlen, sr25519_chain_code cc_out)
+bool is_number(const uint8_t *pnum, uint16_t len)
+{
+    uint16_t index = 0;
+    while ((index < len) && isdigit(pnum[index]))
+    {
+        index++;
+    }
+    return ((0 != index) && (index >= len));
+}
+
+//covert uint64 to buff using Little Endian
+void u64_to_le_buff(uint64_t u64, uint8_t *buf)
+{
+    buf[7] = (uint8_t)(u64 >> 56);
+    buf[6] = (uint8_t)(u64 >> 48);
+    buf[5] = (uint8_t)(u64 >> 40);
+    buf[4] = (uint8_t)(u64 >> 32);
+    buf[3] = (uint8_t)(u64 >> 24);
+    buf[2] = (uint8_t)(u64 >> 16);
+    buf[1] = (uint8_t)(u64 >> 8);
+    buf[0] = (uint8_t)(u64);
+}
+
+bool myatoui64(const char *str, uint64_t *ui64)
+{
+    uint64_t n = 0;
+
+    while (!isdigit(*str))
+        ++str;
+
+    while (isdigit(*str))
+    {
+        uint64_t c;
+        c = *str - '0';
+        /* compare with n and MAX/10 , if n>MAX/10 (also consider of n=MAX/10) , data will overflow */
+        if ((n > ULLONG_MAX / 10) || ((n == ULLONG_MAX / 10) && (c > ULLONG_MAX % 10)))
+        {
+            return false;
+        }
+        n = n * 10 + c;
+        ++str;
+    }
+    *ui64 = n;
+    return true;
+}
+
+bool cc_from_path_item(const uint8_t *pItem, uint32_t itemlen, bool is_hard, sr25519_chain_code cc_out)
 {
     sr25519_chain_code cc = {0};
     uint8_t data[MAX_SURI_PATH_LEN + 4] = {0};
     uint32_t data_len = 0;
-
-    if (!using_encode(pItem, itemlen, data, &data_len))
+    uint64_t data_number = 0;
+    if (is_number(pItem, itemlen) && myatoui64((const char *)pItem, &data_number))
     {
-        return false;
+        // number
+        u64_to_le_buff(data_number, data);
+        data_len = 8;
+    }
+    else
+    {
+        // or something
+        if (!using_encode(pItem, itemlen, data, &data_len))
+        {
+            return false;
+        }
     }
 
     if (data_len > 32)
@@ -107,29 +164,12 @@ bool cc_from_path_item_soft(const uint8_t *pItem, uint32_t itemlen, sr25519_chai
         memcpy(cc, data, data_len);
     }
     memcpy(cc_out, cc, 32);
-    return true;
-}
-
-bool cc_from_path_item(const uint8_t *pItem, uint32_t itemlen, bool is_hard, sr25519_chain_code cc_out)
-{
-    if (0)
-    {
-        // number
-        //cc_from_path_item_soft(number)
-    }
-    else
-    {
-        // something else
-        if (!cc_from_path_item_soft(pItem, itemlen, cc_out))
-        {
-            return false;
-        }
-    }
 
     if (is_hard)
     {
         //
     }
+
     return true;
 }
 

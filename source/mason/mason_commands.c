@@ -22,7 +22,7 @@ in the file COPYING.  If not, see <http://www.gnu.org/licenses/>.
 #include "uart.h"
 #include "mason_comm.h"
 #include "queue.h"
-#include "mason_debug.h"
+
 #include "TLV.h"
 #include "stack.h"
 #include "mason_storage.h"
@@ -41,6 +41,8 @@ in the file COPYING.  If not, see <http://www.gnu.org/licenses/>.
 #include "base58.h"
 #include "crypto_api.h"
 #include <mason_setting.h>
+#include "substrate_sign.h"
+
 #if (1 != VER_REL)
 #define MASON_TEST
 #endif
@@ -81,14 +83,13 @@ static void mason_cmd0302_create_wallet(void *pContext);
 static void mason_cmd0303_change_wallet_passphrase(void *pContext);
 static void mason_cmd0305_get_extpubkey(void *pContext);
 static void mason_cmd0306_delete_wallet(void *pContext);
-static void mason_cmd0307_sign_ECDSA(void *pContext);
+static void mason_cmd0307_sign(void *pContext);
 static void mason_cmd0308_get_masterkey_fingerprint(void *pContext);
 #ifdef MASON_TEST
 static void mason_cmd0401_generate_public_key_from_private_key(void *pContext);
 #endif
 static void mason_cmd0502_mnemonic_verify(void *pContext);
 static void mason_cmd0701_web_authentication(void *pContext);
-static void mason_cmd0702_update_key(void *pContext);
 static void mason_cmd0802_tamper_test(void *pContext);
 static void mason_cmd0901_usrpwd_modify(void *pContext);
 static void mason_cmd0902_usrpwd_reset(void *pContext);
@@ -199,7 +200,7 @@ MASON_COMMANDS_EXT volatile stCmdHandlerType gstCmdHandlers[CMD_H_MAX][CMD_L_MAX
 		 },
 		 {
 			 USER_WALLET,
-			 mason_cmd0307_sign_ECDSA,
+			 mason_cmd0307_sign,
 		 },
 		 {
 			 USER_WALLET,
@@ -314,8 +315,8 @@ MASON_COMMANDS_EXT volatile stCmdHandlerType gstCmdHandlers[CMD_H_MAX][CMD_L_MAX
 			 mason_cmd0701_web_authentication,
 		 },
 		 {
-			 USER_CHIP | USER_FACTORY | USER_EMPTY | USER_WALLET,
-			 mason_cmd0702_update_key,
+			 USER_ALL,
+			 mason_cmd_invalid,
 		 },
 		 {
 			 USER_ALL,
@@ -1776,29 +1777,39 @@ static void mason_cmd0305_get_extpubkey(void *pContext)
 			emRet = ERT_HDPathIllegal;
 			break;
 		}
-		memcpy((uint8_t *)path_string, path, path_len);
-		path_string[path_len] = 0;
-		if (!mason_wallet_path_is_pub(path_string, path_len) || !mason_parse_wallet_path_from_string(path_string, path_len, &wallet_path))
-		{
-			emRet = ERT_HDPathIllegal;
-			break;
-		}
 
 		if (stack_search_by_tag(pstS, &pstTLV, TLV_T_CURVE_TYPE) && ((1 == pstTLV->L)))
 		{
 			curve_type = (crypto_curve_t)(*(uint8_t *)pstTLV->pV);
 		}
 
-		if (!mason_bip32_derive_keys(&wallet_path, curve_type, &derived_private_key, &derived_chaincode, &extended_public_key))
+		if (CRYPTO_CURVE_SR25519 == curve_type)
 		{
-			emRet = ERT_HDPathIllegal;
-			break;
+			if (!substrate_derive_extpubkey(path, path_len, &extended_public_key))
+			{
+				emRet = ERT_HDPathIllegal;
+				break;
+			}
+		}
+		else
+		{
+			memcpy((uint8_t *)path_string, path, path_len);
+			path_string[path_len] = 0;
+			if (!mason_wallet_path_is_pub(path_string, path_len) || !mason_parse_wallet_path_from_string(path_string, path_len, &wallet_path))
+			{
+				emRet = ERT_HDPathIllegal;
+				break;
+			}
+			if (!mason_bip32_derive_keys(&wallet_path, curve_type, &derived_private_key, &derived_chaincode, &extended_public_key))
+			{
+				emRet = ERT_HDPathIllegal;
+				break;
+			}
 		}
 
 		b58enc(base58_ext_key, &base58_ext_key_len, (uint8_t *)&extended_public_key, sizeof(extended_public_key));
 		base58_ext_key[base58_ext_key_len] = 0;
 		mason_cmd_append_to_outputTLVArray(&stStack, TLV_T_EXT_KEY, base58_ext_key_len - 1, (uint8_t *)base58_ext_key);
-		mason_cmd_append_to_outputTLVArray(&stStack, TLV_T_HDP_DEPTH, 1, &wallet_path.num_of_segments);
 	} while (0);
 
 	memset(&derived_private_key, 0, sizeof(private_key_t));
@@ -1849,12 +1860,12 @@ static void mason_cmd0306_delete_wallet(void *pContext)
 	MASON_CMD_RESP_OUTPUT()
 }
 /**
- * @functionname: mason_cmd0307_sign_ECDSA
+ * @functionname: mason_cmd0307_sign
  * @description: 
  * @para: 
  * @return: 
  */
-static void mason_cmd0307_sign_ECDSA(void *pContext)
+static void mason_cmd0307_sign(void *pContext)
 {
 	MASON_CMD_DECLARE_VARIABLE(ERT_CommFailParam)
 
@@ -1862,8 +1873,8 @@ static void mason_cmd0307_sign_ECDSA(void *pContext)
 	uint16_t path_len = 0;
 	wallet_path_t wallet_path;
 	char path_string[MAX_HDPATH_SIZE + 1] = {0};
-	uint8_t hash[SHA512_LEN];
-	uint16_t hash_len = SHA512_LEN;
+	uint8_t *hash = NULL;
+	uint16_t hash_len = 0;
 	private_key_t derived_private_key;
 	chaincode_t derived_chaincode;
 	extended_key_t extended_public_key;
@@ -1908,12 +1919,7 @@ static void mason_cmd0307_sign_ECDSA(void *pContext)
 			break;
 		}
 		hash_len = pstTLV->L;
-		if ((0 == hash_len) || (hash_len > SHA512_LEN))
-		{
-			emRet = ERT_CommFailParam;
-			break;
-		}
-		memcpy(hash, pstTLV->pV, hash_len);
+		hash = (uint8_t *)pstTLV->pV;
 
 		if (!stack_search_by_tag(pstS, &pstTLV, TLV_T_HD_PATH))
 		{
@@ -1927,30 +1933,42 @@ static void mason_cmd0307_sign_ECDSA(void *pContext)
 			emRet = ERT_HDPathIllegal;
 			break;
 		}
-		memcpy((uint8_t *)path_string, path, path_len);
-		path_string[path_len] = 0;
-		if (!mason_parse_wallet_path_from_string(path_string, path_len, &wallet_path))
-		{
-			emRet = ERT_HDPathIllegal;
-			break;
-		}
 
 		if (stack_search_by_tag(pstS, &pstTLV, TLV_T_CURVE_TYPE) && ((1 == pstTLV->L)))
 		{
 			curve_type = (crypto_curve_t)(*(uint8_t *)pstTLV->pV);
 		}
 
-		if (!mason_bip32_derive_keys(&wallet_path, curve_type, &derived_private_key, &derived_chaincode, &extended_public_key))
+		if (CRYPTO_CURVE_SR25519 == curve_type)
 		{
-			emRet = ERT_HDPathIllegal;
-			break;
+			if (!substrate_sign(path, path_len, hash, hash_len, signature, &signature_len, &derived_public_key))
+			{
+				emRet = ERT_SignFail;
+				break;
+			}
 		}
-
-		private_key_to_public_key(curve_type, &derived_private_key, &derived_public_key);
-		if (!ecdsa_sign(curve_type, hash, hash_len, derived_private_key.data, signature, &signature_len))
+		else
 		{
-			emRet = ERT_ECDSASignFail;
-			break;
+			memcpy((uint8_t *)path_string, path, path_len);
+			path_string[path_len] = 0;
+			if (!mason_parse_wallet_path_from_string(path_string, path_len, &wallet_path))
+			{
+				emRet = ERT_HDPathIllegal;
+				break;
+			}
+
+			if (!mason_bip32_derive_keys(&wallet_path, curve_type, &derived_private_key, &derived_chaincode, &extended_public_key))
+			{
+				emRet = ERT_HDPathIllegal;
+				break;
+			}
+
+			private_key_to_public_key(curve_type, &derived_private_key, &derived_public_key);
+			if (!ecdsa_sign(curve_type, hash, hash_len, derived_private_key.data, signature, &signature_len))
+			{
+				emRet = ERT_ECDSASignFail;
+				break;
+			}
 		}
 
 		if (ERT_Verify_Success == verify_emRet)
@@ -2172,46 +2190,6 @@ static void mason_cmd0701_web_authentication(void *pContext)
 
 	memset(web_auth_private_key, 0, PRIVATE_KEY_LEN);
 	memset(web_auth_public_key, 0, PUB_KEY_LEN);
-	MASON_CMD_RESP_OUTPUT()
-}
-/**
- * @functionname: mason_cmd0702_update_key
- * @description: 
- * @para: 
- * @return: 
- */
-static void mason_cmd0702_update_key(void *pContext)
-{
-	MASON_CMD_DECLARE_VARIABLE(ERT_OK)
-
-	uint8_t is_read = 0;
-
-	mason_cmd_init_outputTLVArray(&stStack);
-
-	do
-	{
-		if (!stack_search_by_tag(pstS, &pstTLV, TLV_T_CMD))
-		{
-			emRet = ERT_CommFailParam;
-			break;
-		}
-		mason_cmd_append_ele_to_outputTLVArray(&stStack, pstTLV);
-
-		if (!stack_search_by_tag(pstS, &pstTLV, TLV_T_WR_RD) || (1 != pstTLV->L))
-		{
-			emRet = ERT_CommFailParam;
-			break;
-		}
-
-		is_read = *(uint8_t *)pstTLV->pV;
-		if (!is_read)
-		{
-			emRet = ERT_CMD_FAIL;
-			break;
-		}
-		mason_cmd_append_to_outputTLVArray(&stStack, TLV_T_UPDATE_KEY, sizeof(update_key_ex), update_key_ex);
-	} while (0);
-
 	MASON_CMD_RESP_OUTPUT()
 }
 /**

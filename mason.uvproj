@@ -345,7 +345,7 @@
               <MiscControls>-Ospace --c99</MiscControls>
               <Define></Define>
               <Undefine></Undefine>
-              <IncludePath>.\source\CMSIS\Include;.\source\system;.\source\driver;.\source\mason;.\source\COMMON;.\source\crypto;.\source;.\source\driver\ed25519-donna</IncludePath>
+              <IncludePath>.\source\CMSIS\Include;.\source\system;.\source\driver;.\source\mason;.\source\COMMON;.\source\crypto;.\source;.\source\driver\ed25519-donna;.\source\driver\sr25519;.\source\substrate</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -426,16 +426,6 @@
               <FilePath>.\source\driver\eflash.c</FilePath>
             </File>
             <File>
-              <FileName>sm2sm3_v1.lib</FileName>
-              <FileType>4</FileType>
-              <FilePath>.\source\driver\sm2sm3_v1.lib</FilePath>
-            </File>
-            <File>
-              <FileName>rsa_v1.lib</FileName>
-              <FileType>4</FileType>
-              <FilePath>.\source\driver\rsa_v1.lib</FilePath>
-            </File>
-            <File>
               <FileName>ecdsa_v2.lib</FileName>
               <FileType>4</FileType>
               <FilePath>.\source\driver\ecdsa_v2.lib</FilePath>
@@ -456,9 +446,34 @@
               <FilePath>.\source\driver\ed25519-donna\ed25519.c</FilePath>
             </File>
             <File>
+              <FileName>merlin.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\source\driver\sr25519\merlin.c</FilePath>
+            </File>
+            <File>
+              <FileName>ristretto-donna.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\source\driver\sr25519\ristretto-donna.c</FilePath>
+            </File>
+            <File>
+              <FileName>sr25519.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\source\driver\sr25519\sr25519.c</FilePath>
+            </File>
+            <File>
               <FileName>pki_v1.lib</FileName>
               <FileType>4</FileType>
               <FilePath>.\source\driver\pki_v1.lib</FilePath>
+            </File>
+            <File>
+              <FileName>rsa_v2.lib</FileName>
+              <FileType>4</FileType>
+              <FilePath>.\source\driver\rsa_v2.lib</FilePath>
+            </File>
+            <File>
+              <FileName>sm2sm3_v2.lib</FileName>
+              <FileType>4</FileType>
+              <FilePath>.\source\driver\sm2sm3_v2.lib</FilePath>
             </File>
           </Files>
         </Group>
@@ -540,21 +555,11 @@
               <FileType>1</FileType>
               <FilePath>.\source\main.c</FilePath>
             </File>
-            <File>
-              <FileName>version_def.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\source\version_def.c</FilePath>
-            </File>
           </Files>
         </Group>
         <Group>
           <GroupName>mason</GroupName>
           <Files>
-            <File>
-              <FileName>mason_debug.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\source\mason\mason_debug.c</FilePath>
-            </File>
             <File>
               <FileName>mason_comm.c</FileName>
               <FileType>1</FileType>
@@ -599,6 +604,16 @@
               <FileName>mason_setting.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\source\mason\mason_setting.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>substrate</GroupName>
+          <Files>
+            <File>
+              <FileName>substrate_sign.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\source\substrate\substrate_sign.c</FilePath>
             </File>
           </Files>
         </Group>

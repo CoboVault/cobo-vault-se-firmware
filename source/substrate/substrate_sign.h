@@ -14,38 +14,28 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 in the file COPYING.  If not, see <http://www.gnu.org/licenses/>.
 **************************************************************************************************/
-/** Avoid duplicate definitions */
-#ifndef MASON_DEBUG_H
-#define MASON_DEBUG_H
+#ifndef SUBSTRATE_SIGN_H
+#define SUBSTRATE_SIGN_H
 
-/** Avoid duplicate definitions */
-#ifdef MASON_DEBUG_GLOBAL
-#define MASON_DEBUG_EXT
-#else
-#define MASON_DEBUG_EXT extern
-#endif
+#include "sr25519.h"
+#include "mason_key.h"
 
-/** Header file reference */
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdint.h>
-#include <stdbool.h>
-#include <string.h> //memcpy...
-#include "mason_errno.h"
+#define SURI_DEPTH 10
+#define MAX_SURI_PATH_LEN 120
 
-/** Compatibility with the cplusplus*/
-#ifdef __cplusplus
-extern "C"
+typedef struct
 {
-#endif /* __cplusplus */
+    sr25519_chain_code cc;
+    bool is_hard;
+} suri_path_item_t;
 
-    /** Function declarations */
-    void dump_data(char *pTitle, uint8_t *pBuf, uint32_t bufLen);
-    void dump_data_printable(char *pTitle, uint8_t *pBuf, uint32_t bufLen);
+typedef struct
+{
+    suri_path_item_t item[SURI_DEPTH];
+    uint8_t depth;
+} suri_path_t;
 
-/** Compatibility with the cplusplus*/
-#ifdef __cplusplus
-} /* Extern C */
-#endif
-
+bool substrate_derive_extpubkey(uint8_t *suri, uint32_t suri_len, extended_key_t *extpublic);
+bool substrate_sign(uint8_t *suri, uint32_t suri_len, uint8_t *message, uint32_t message_len,
+                    sr25519_signature signature, uint16_t *sign_len, public_key_t *pubkey);
 #endif

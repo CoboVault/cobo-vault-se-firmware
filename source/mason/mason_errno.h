@@ -67,6 +67,8 @@ extern "C"
 		ERT_CKD_Fail,
 		ERT_MnemonicNotMatch,
 		ERT_CoinTypeInvalid,
+		ERT_SignFail,
+		ERT_VerifyFail,
 
 		ERT_CMD_FAIL = 0x0400,
 		ERT_NeedPreCMD,

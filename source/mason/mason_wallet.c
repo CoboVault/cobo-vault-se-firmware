@@ -28,8 +28,8 @@ in the file COPYING.  If not, see <http://www.gnu.org/licenses/>.
 #include <mason_hdw.h>
 
 /** Variable definitions */
-static wallet_seed_t passphrase_seed = {0};
-static wallet_seed_t passphrase_seedFromEntropy = {0};
+wallet_seed_t passphrase_seed = {0};
+wallet_seed_t passphrase_seedFromEntropy = {0};
 
 /** Function declarations */
 static bool mason_wallet_setup(mnemonic_t *mnemonic, entropy_t *entropy, uint8_t *passphrase, uint16_t passphrase_len, wallet_seed_t *seed, wallet_seed_t *seedFromEntropy);
@@ -39,7 +39,7 @@ static bool mason_entropy_read(entropy_t *entropy);
 static bool mason_entropy_write(entropy_t *entropy);
 static bool mason_seed_read(wallet_seed_t *seed);
 static bool mason_seed_write(wallet_seed_t *seed);
-static bool mason_seedFromEntropy_read(wallet_seed_t *seed);
+bool mason_seedFromEntropy_read(wallet_seed_t *seed);
 static bool mason_seedFromEntropy_write(wallet_seed_t *seed);
 
 /** Function implementations */
@@ -192,7 +192,7 @@ static bool mason_seed_write(wallet_seed_t *seed)
  * @para: 
  * @return: 
  */
-static bool mason_seedFromEntropy_read(wallet_seed_t *seed)
+bool mason_seedFromEntropy_read(wallet_seed_t *seed)
 {
     if (ERT_OK != mason_storage_read((uint8_t *)seed, sizeof(wallet_seed_t), FLASH_ADDR_SEED_FROM_ENTROPY))
     {
@@ -615,7 +615,7 @@ bool mason_bip32_generate_master_key_from_root_seed(
 
     key_len = strlen((char *)key);
 
-    if (SHA512_LEN == passphrase_seed.length)
+    if ((E_HDWM_PASSPHRASE == gemHDWSwitch) && (SHA512_LEN == passphrase_seed.length))
     {
         memcpy(&seed, &passphrase_seed, sizeof(wallet_seed_t));
     }
@@ -762,3 +762,4 @@ bool mason_bip32_derive_master_key_fingerprint(crypto_curve_t curve, uint8_t *fi
     memset(&master_chaincode, 0, sizeof(chaincode_t));
     return true;
 }
+

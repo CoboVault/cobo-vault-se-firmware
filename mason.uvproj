@@ -426,16 +426,6 @@
               <FilePath>.\source\driver\eflash.c</FilePath>
             </File>
             <File>
-              <FileName>sm2sm3_v1.lib</FileName>
-              <FileType>4</FileType>
-              <FilePath>.\source\driver\sm2sm3_v1.lib</FilePath>
-            </File>
-            <File>
-              <FileName>rsa_v1.lib</FileName>
-              <FileType>4</FileType>
-              <FilePath>.\source\driver\rsa_v1.lib</FilePath>
-            </File>
-            <File>
               <FileName>ecdsa_v2.lib</FileName>
               <FileType>4</FileType>
               <FilePath>.\source\driver\ecdsa_v2.lib</FilePath>
@@ -456,11 +446,6 @@
               <FilePath>.\source\driver\ed25519-donna\ed25519.c</FilePath>
             </File>
             <File>
-              <FileName>pki_v1.lib</FileName>
-              <FileType>4</FileType>
-              <FilePath>.\source\driver\pki_v1.lib</FilePath>
-            </File>
-            <File>
               <FileName>merlin.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\source\driver\sr25519\merlin.c</FilePath>
@@ -474,6 +459,21 @@
               <FileName>sr25519.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\source\driver\sr25519\sr25519.c</FilePath>
+            </File>
+            <File>
+              <FileName>pki_v1.lib</FileName>
+              <FileType>4</FileType>
+              <FilePath>.\source\driver\pki_v1.lib</FilePath>
+            </File>
+            <File>
+              <FileName>rsa_v2.lib</FileName>
+              <FileType>4</FileType>
+              <FilePath>.\source\driver\rsa_v2.lib</FilePath>
+            </File>
+            <File>
+              <FileName>sm2sm3_v2.lib</FileName>
+              <FileType>4</FileType>
+              <FilePath>.\source\driver\sm2sm3_v2.lib</FilePath>
             </File>
           </Files>
         </Group>

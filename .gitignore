@@ -1,7 +1,8 @@
 # build directory
-Objects/
+Objects/*
 binHistory/
 hexHistory/
+!Objects/*.fed
 
 # build files
 *.hex

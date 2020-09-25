@@ -536,14 +536,24 @@
               <FilePath>.\source\crypto\base58.c</FilePath>
             </File>
             <File>
-              <FileName>hmac-sha512.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\source\crypto\hmac-sha512.c</FilePath>
-            </File>
-            <File>
               <FileName>RipeMD160.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\source\crypto\RipeMD160.c</FilePath>
+            </File>
+            <File>
+              <FileName>hmac.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\source\crypto\hmac.c</FilePath>
+            </File>
+            <File>
+              <FileName>pbkdf2.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\source\crypto\pbkdf2.c</FilePath>
+            </File>
+            <File>
+              <FileName>slip39_encrypt.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\source\crypto\slip39_encrypt.c</FilePath>
             </File>
           </Files>
         </Group>

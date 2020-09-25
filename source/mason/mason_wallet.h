@@ -37,6 +37,7 @@ enum SupportEntropyBits
 #define MAX_ENTROPY_SIZE 32
 #define MAX_HDPATH_SIZE 121
 #define MAX_PASSPHRASE_SIZE (128 * 4)
+#define MAX_SLIP39_SEED_SIZE 32
 
 typedef struct mnemonic_s
 {
@@ -56,6 +57,14 @@ typedef struct wallet_seed_s
     uint8_t data[SHA512_LEN];
 } wallet_seed_t;
 
+typedef struct wallet_slip39_master_seed_s
+{
+    uint32_t data_size;
+    uint8_t data[SHA512_LEN];
+    uint16_t id;
+    uint16_t e;
+} wallet_slip39_master_seed_t;
+
 #define MAX_WALLET_SEGMENTS 10
 
 typedef struct wallet_path_s
@@ -74,13 +83,17 @@ typedef struct update_key_s
 } update_key_t;
 
 extern wallet_seed_t passphrase_seedFromEntropy;
+extern wallet_seed_t passphrase_slip39_seed;
 /** Function declarations */
 bool mason_generate_entropy(uint8_t *output_entropy, uint16_t bits, bool need_checksum);
-bool mason_create_wallet(uint8_t *mnemonic, uint16_t mnemonic_len, uint8_t *entropy, uint16_t entropy_len);
+bool mason_create_bip39_wallet(uint8_t *mnemonic, uint16_t mnemonic_len, uint8_t *entropy, uint16_t entropy_len);
+bool mason_create_slip39_wallet(uint8_t *slip39_seed_data, uint16_t slip39_seed_len, uint16_t slip39_id, uint8_t slip39_e);
 bool mason_change_wallet_passphrase(uint8_t *passphrase, uint16_t passphrase_len);
 bool mason_delete_wallet(void);
 
 bool mason_seedFromEntropy_read(wallet_seed_t *seed);
+bool mason_slip39_master_seed_read(wallet_slip39_master_seed_t *seed);
+bool mason_slip39_dec_seed_read(wallet_seed_t *seed);
 
 bool mason_update_key_load(update_key_t *update_key);
 bool mason_update_key_save(const update_key_t *update_key);
@@ -91,6 +104,7 @@ bool mason_parse_wallet_path_from_string(char *string, uint16_t len, wallet_path
 bool mason_valid_wallet_path(wallet_path_t *wallet_path);
 
 emRetType mason_verify_mnemonic(char *mnemonic_str, uint16_t len);
+emRetType mason_verify_slip39_seed(uint8_t *slip39_seed_data, uint16_t slip39_seed_len, uint16_t slip39_id);
 
 bool mason_bip32_generate_master_key_from_root_seed(
     crypto_curve_t curve_type,

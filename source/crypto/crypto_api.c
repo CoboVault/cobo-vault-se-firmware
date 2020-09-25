@@ -118,7 +118,7 @@ CRYPTO_API_EXT void sha512_api(uint8_t *pData, uint32_t len, uint8_t *pDigest)
 CRYPTO_API_EXT void hmac_sha512_api(uint8_t *pData, uint32_t dataLen,
 									uint8_t *pKey, uint32_t keyLen, uint8_t *pDigest)
 {
-	hmac_sha512(pData, dataLen, pKey, keyLen, pDigest);
+	hmac_sha512(pKey, keyLen, pData, dataLen, pDigest);
 }
 /**
  * @functionname: is_valid_private_key

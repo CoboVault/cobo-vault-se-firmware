@@ -126,6 +126,9 @@ extern "C"
 #define TLV_T_BIP32_KEY					0x0808
 #define TLV_T_ACTIVE_TAMPER				0x0809
 #define TLV_T_PASSIVE_TAMPER			0x080A
+#define TLV_T_SLIP39_MASTER_SEED		0x080B
+#define TLV_T_SLIP39_ID				    0x080C
+#define TLV_T_SLIP39_EXPONENT			0x080D
 
 /** Compatibility with the cplusplus*/
 #ifdef __cplusplus

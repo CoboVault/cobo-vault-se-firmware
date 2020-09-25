@@ -1,4 +1,4 @@
-;#<FEEDBACK># ARM Linker, 4.1 [Build 481]: Last Updated: Fri Sep 11 14:56:54 2020
+;#<FEEDBACK># ARM Linker, 4.1 [Build 481]: Last Updated: Fri Sep 25 12:32:04 2020
 ;VERSION 0.2
 ;FILE base58.o
 __asm___8_base58_c_d7aa15c2____REV16 <= USED 0
@@ -9,6 +9,7 @@ b58tobin <= USED 0
 ;FILE bip39.o
 __asm___7_bip39_c_8f6eec6f____REV16 <= USED 0
 __asm___7_bip39_c_8f6eec6f____REVSH <= USED 0
+mnemonic_to_seed <= USED 0
 ;FILE bip44.o
 __asm___7_bip44_c_b11ed4de____REV16 <= USED 0
 __asm___7_bip44_c_b11ed4de____REVSH <= USED 0
@@ -69,10 +70,13 @@ eflash_erase_pages <= USED 0
 ;FILE gpio.o
 __asm___6_gpio_c_1ac9b19b____REV16 <= USED 0
 __asm___6_gpio_c_1ac9b19b____REVSH <= USED 0
-;FILE hmac-sha512.o
-__asm___13_hmac_sha512_c_886257e4____REV16 <= USED 0
-__asm___13_hmac_sha512_c_886257e4____REVSH <= USED 0
+;FILE hmac.o
 hmac_sha256 <= USED 0
+hmac_sha256_Final <= USED 0
+hmac_sha256_Init <= USED 0
+hmac_sha256_Update <= USED 0
+hmac_sha512_Update <= USED 0
+hmac_sha512_prepare <= USED 0
 ;FILE hrng.o
 __asm___6_hrng_c_CHI_N____REV16 <= USED 0
 __asm___6_hrng_c_CHI_N____REVSH <= USED 0
@@ -147,6 +151,11 @@ __asm___6_math_c_435231c4____REVSH <= USED 0
 __asm___8_merlin_c_eba51a9a____REV16 <= USED 0
 __asm___8_merlin_c_eba51a9a____REVSH <= USED 0
 merlin_rng_wipe <= USED 0
+;FILE pbkdf2.o
+pbkdf2_hmac_sha512 <= USED 0
+pbkdf2_hmac_sha512_Final <= USED 0
+pbkdf2_hmac_sha512_Init <= USED 0
+pbkdf2_hmac_sha512_Update <= USED 0
 ;FILE queue.o
 enqueue_overwrite <= USED 0
 queue_size <= USED 0
@@ -176,6 +185,8 @@ sha256_Data <= USED 0
 sha256_End <= USED 0
 sha512_Data <= USED 0
 sha512_End <= USED 0
+;FILE slip39_encrypt.o
+slip39_encrypt <= USED 0
 ;FILE sm2.o
 CalLastBitNum <= USED 0
 KDF <= USED 0

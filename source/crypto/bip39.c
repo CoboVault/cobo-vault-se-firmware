@@ -22,6 +22,10 @@ in the file COPYING.  If not, see <http://www.gnu.org/licenses/>.
 #include "crypto_api.h"
 #include "stdio.h"
 #include <wdt.h>
+#include <pbkdf2.h>
+#include <memzero.h>
+
+#define BIP39_PBKDF2_ROUNDS 2048
 
 /** Function implementations */
 /**
@@ -108,6 +112,32 @@ void PBKDF2_HMAC_SHA512(uint8_t *pPassword, uint32_t passwordLen,
 	}
 
 	return;
+}
+
+/**
+* @functionname: mnemonic_to_seed
+* @description: 
+* @para:
+* @return:
+* @notice: pMnemonic -> password;pPassphrase -> salt
+* @notice: seed output from BIP39 is BIP32 input seed
+*/
+void mnemonic_to_seed(const char *mnemonic, int mnemoniclen, const char *passphrase, int passphraselen, uint8_t seed[512 / 8])
+{
+
+	uint8_t salt[8 + 256] = {0};
+	memcpy(salt, "mnemonic", 8);
+	memcpy(salt + 8, passphrase, passphraselen);
+	static PBKDF2_HMAC_SHA512_CTX pctx;
+	pbkdf2_hmac_sha512_Init(&pctx, (const uint8_t *)mnemonic, mnemoniclen, salt,
+							passphraselen + 8, 1);
+
+	for (int i = 0; i < 16; i++)
+	{
+		pbkdf2_hmac_sha512_Update(&pctx, BIP39_PBKDF2_ROUNDS / 16);
+	}
+	pbkdf2_hmac_sha512_Final(&pctx, seed);
+	memzero(salt, sizeof(salt));
 }
 
 /**

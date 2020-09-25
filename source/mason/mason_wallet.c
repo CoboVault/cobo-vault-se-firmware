@@ -26,10 +26,12 @@ in the file COPYING.  If not, see <http://www.gnu.org/licenses/>.
 #include <bip44.h>
 #include <secp256.h>
 #include <mason_hdw.h>
+#include <slip39_encrypt.h>
 
 /** Variable definitions */
 wallet_seed_t passphrase_seed = {0};
 wallet_seed_t passphrase_seedFromEntropy = {0};
+wallet_seed_t passphrase_slip39_seed = {0};
 
 /** Function declarations */
 static bool mason_wallet_setup(mnemonic_t *mnemonic, entropy_t *entropy, uint8_t *passphrase, uint16_t passphrase_len, wallet_seed_t *seed, wallet_seed_t *seedFromEntropy);
@@ -220,17 +222,85 @@ static bool mason_seedFromEntropy_write(wallet_seed_t *seed)
     return is_succeed;
 }
 /**
- * @functionname: mason_create_wallet
+ * @functionname: mason_slip39_master_seed_read
  * @description: 
  * @para: 
  * @return: 
  */
-bool mason_create_wallet(uint8_t *mnemonic, uint16_t mnemonic_len, uint8_t *entropy, uint16_t entropy_len)
+bool mason_slip39_master_seed_read(wallet_slip39_master_seed_t *seed)
+{
+    if (ERT_OK != mason_storage_read((uint8_t *)seed, sizeof(wallet_slip39_master_seed_t), FLASH_ADDR_SLIP39_MASTER_SEED))
+    {
+        return false;
+    }
+
+    if ((0 == seed->data_size) || (seed->data_size > sizeof(seed->data)))
+    {
+        memset(seed, 0, sizeof(wallet_slip39_master_seed_t));
+        return false;
+    }
+
+    return true;
+}
+/**
+ * @functionname: mason_slip39_master_seed_write
+ * @description: 
+ * @para: 
+ * @return: 
+ */
+static bool mason_slip39_master_seed_write(wallet_slip39_master_seed_t *seed)
+{
+    bool is_succeed = false;
+    is_succeed = mason_storage_write_buffer((uint8_t *)seed, sizeof(wallet_slip39_master_seed_t), FLASH_ADDR_SLIP39_MASTER_SEED);
+    return is_succeed;
+}
+/**
+ * @functionname: mason_slip39_dec_seed_read
+ * @description: 
+ * @para: 
+ * @return: 
+ */
+bool mason_slip39_dec_seed_read(wallet_seed_t *seed)
+{
+    if (ERT_OK != mason_storage_read((uint8_t *)seed, sizeof(wallet_seed_t), FLASH_ADDR_SLIP39_DEC_SEED))
+    {
+        return false;
+    }
+
+    if ((0 == seed->length) || (seed->length > sizeof(seed->data)))
+    {
+        memset(seed, 0, sizeof(wallet_seed_t));
+        return false;
+    }
+
+    return true;
+}
+/**
+ * @functionname: mason_slip39_dec_seed_write
+ * @description: 
+ * @para: 
+ * @return: 
+ */
+static bool mason_slip39_dec_seed_write(wallet_seed_t *seed)
+{
+    bool is_succeed = false;
+    is_succeed = mason_storage_write_buffer((uint8_t *)seed, sizeof(wallet_seed_t), FLASH_ADDR_SLIP39_DEC_SEED);
+    return is_succeed;
+}
+/**
+ * @functionname: mason_create_bip39_wallet
+ * @description: 
+ * @para: 
+ * @return: 
+ */
+bool mason_create_bip39_wallet(uint8_t *mnemonic, uint16_t mnemonic_len, uint8_t *entropy, uint16_t entropy_len)
 {
     mnemonic_t mnemonic_data = {0};
     entropy_t entropy_data = {0};
     wallet_seed_t seed = {0};
     wallet_seed_t seedFromEntropy = {0};
+    wallet_slip39_master_seed_t slip39_m_seed = {0};
+    wallet_seed_t slip39_d_seed = {0};
     bool is_succeed = false;
 
     if ((0 == mnemonic_len) || (mnemonic_len > MAX_MNEMONIC_SIZE))
@@ -270,6 +340,7 @@ bool mason_create_wallet(uint8_t *mnemonic, uint16_t mnemonic_len, uint8_t *entr
 
         memset(&passphrase_seed, 0, sizeof(wallet_seed_t));
         memset(&passphrase_seedFromEntropy, 0, sizeof(wallet_seed_t));
+        memset(&passphrase_slip39_seed, 0, sizeof(wallet_seed_t));
         gemHDWSwitch = E_HDWM_MNEMONIC;
 
         is_succeed = mason_mnemonic_write(&mnemonic_data);
@@ -283,6 +354,18 @@ bool mason_create_wallet(uint8_t *mnemonic, uint16_t mnemonic_len, uint8_t *entr
         {
             break;
         }
+
+        is_succeed = mason_slip39_master_seed_write(&slip39_m_seed);
+        if (!is_succeed)
+        {
+            break;
+        }
+
+        is_succeed = mason_slip39_dec_seed_write(&slip39_d_seed);
+        if (!is_succeed)
+        {
+            break;
+        }
     } while (0);
 
     memset(&seed, 0, sizeof(wallet_seed_t));
@@ -292,18 +375,97 @@ bool mason_create_wallet(uint8_t *mnemonic, uint16_t mnemonic_len, uint8_t *entr
     return is_succeed;
 }
 /**
- * @functionname: mason_change_wallet_passphrase
+ * @functionname: mason_create_slip39_wallet
  * @description: 
  * @para: 
  * @return: 
  */
-bool mason_change_wallet_passphrase(uint8_t *passphrase, uint16_t passphrase_len)
+bool mason_create_slip39_wallet(uint8_t *slip39_seed_data, uint16_t slip39_seed_len, uint16_t slip39_id, uint8_t slip39_e)
+{
+    mnemonic_t mnemonic_data = {0};
+    entropy_t entropy_data = {0};
+    wallet_seed_t seed = {0};
+    wallet_seed_t seedFromEntropy = {0};
+    wallet_slip39_master_seed_t slip39_m_seed = {0};
+    wallet_seed_t slip39_d_seed = {0};
+    bool is_succeed = false;
+
+    if ((0 == slip39_seed_len) || (slip39_seed_len > MAX_SLIP39_SEED_SIZE))
+    {
+        return false;
+    }
+    memcpy(slip39_m_seed.data, slip39_seed_data, slip39_seed_len);
+    slip39_m_seed.e = slip39_e;
+    slip39_m_seed.id = slip39_id;
+    slip39_m_seed.data_size = slip39_seed_len;
+
+    //decrypt get slip39_dec_seed
+    slip39_decrypt(slip39_seed_data, slip39_seed_len, NULL, slip39_e, slip39_id, slip39_d_seed.data);
+    slip39_d_seed.length = slip39_seed_len;
+
+    do
+    {
+        is_succeed = mason_slip39_master_seed_write(&slip39_m_seed);
+        if (!is_succeed)
+        {
+            break;
+        }
+
+        is_succeed = mason_slip39_dec_seed_write(&slip39_d_seed);
+        if (!is_succeed)
+        {
+            break;
+        }
+
+        is_succeed = mason_seed_write(&seed);
+        if (!is_succeed)
+        {
+            break;
+        }
+
+        is_succeed = mason_seedFromEntropy_write(&seedFromEntropy);
+        if (!is_succeed)
+        {
+            break;
+        }
+
+        is_succeed = mason_mnemonic_write(&mnemonic_data);
+        if (!is_succeed)
+        {
+            break;
+        }
+
+        is_succeed = mason_entropy_write(&entropy_data);
+        if (!is_succeed)
+        {
+            break;
+        }
+
+        memset(&passphrase_seed, 0, sizeof(wallet_seed_t));
+        memset(&passphrase_seedFromEntropy, 0, sizeof(wallet_seed_t));
+        memset(&passphrase_slip39_seed, 0, sizeof(wallet_seed_t));
+        gemHDWSwitch = E_HDWM_MNEMONIC;
+    } while (0);
+
+    memset(&slip39_m_seed, 0, sizeof(wallet_slip39_master_seed_t));
+    memset(&slip39_d_seed, 0, sizeof(wallet_seed_t));
+    return is_succeed;
+}
+/**
+ * @functionname: mason_change_bip39_wallet_passphrase
+ * @description: 
+ * @para: 
+ * @return: 
+ */
+static bool mason_change_bip39_wallet_passphrase(uint8_t *passphrase, uint16_t passphrase_len)
 {
     bool is_succeed = false;
     mnemonic_t mnemonic = {0};
     entropy_t entropy = {0};
     wallet_seed_t seed = {0};
     wallet_seed_t seedFromEntropy = {0};
+    wallet_slip39_master_seed_t slip39_m_seed = {0};
+    wallet_seed_t slip39_d_seed = {0};
 
     if (passphrase_len > MAX_PASSPHRASE_SIZE)
     {
@@ -352,6 +514,11 @@ bool mason_change_wallet_passphrase(uint8_t *passphrase, uint16_t passphrase_len
             memcpy(&passphrase_seedFromEntropy, &seedFromEntropy, sizeof(wallet_seed_t));
             gemHDWSwitch = E_HDWM_PASSPHRASE;
         }
+
+        memset(&passphrase_slip39_seed, 0, sizeof(wallet_seed_t));
+        mason_slip39_master_seed_write(&slip39_m_seed);
+        mason_slip39_dec_seed_write(&slip39_d_seed);
+
     } while (0);
 
     memset(&seed, 0, sizeof(wallet_seed_t));
@@ -359,6 +526,84 @@ bool mason_change_wallet_passphrase(uint8_t *passphrase, uint16_t passphrase_len
     memset(&mnemonic, 0, sizeof(mnemonic_t));
     memset(&entropy, 0, sizeof(entropy_t));
 
+    return is_succeed;
+}
+/**
+ * @functionname: mason_change_slip39_wallet_passphrase
+ * @description: 
+ * @para: 
+ * @return: 
+ */
+static bool mason_change_slip39_wallet_passphrase(uint8_t *passphrase, uint16_t passphrase_len)
+{
+    bool is_succeed = false;
+    mnemonic_t mnemonic = {0};
+    entropy_t entropy = {0};
+    wallet_seed_t seed = {0};
+    wallet_seed_t seedFromEntropy = {0};
+    wallet_slip39_master_seed_t slip39_m_seed = {0};
+
+    if (passphrase_len > MAX_PASSPHRASE_SIZE)
+    {
+        return false;
+    }
+
+    do
+    {
+        is_succeed = mason_slip39_master_seed_read(&slip39_m_seed);
+        if (!is_succeed)
+        {
+            break;
+        }
+
+        if (0 == passphrase_len || NULL == passphrase)
+        {
+            memset(&passphrase_slip39_seed, 0, sizeof(wallet_seed_t));
+            gemHDWSwitch = E_HDWM_MNEMONIC;
+        }
+        else
+        {
+            wallet_seed_t pass_seed = {0};
+            // decrpty get pass_seed
+            char passphrase_str[MAX_PASSPHRASE_SIZE + 1] = {0};
+            memcpy(passphrase_str, passphrase, passphrase_len);
+            slip39_decrypt(slip39_m_seed.data, slip39_m_seed.data_size, passphrase_str, (uint8_t)slip39_m_seed.e, slip39_m_seed.id, pass_seed.data);
+            pass_seed.length = slip39_m_seed.data_size;
+
+            memcpy(&passphrase_slip39_seed, &pass_seed, sizeof(wallet_seed_t));
+            gemHDWSwitch = E_HDWM_PASSPHRASE;
+        }
+
+        mason_seed_write(&seed);
+        mason_seedFromEntropy_write(&seedFromEntropy);
+        mason_mnemonic_write(&mnemonic);
+        mason_entropy_write(&entropy);
+        memset(&passphrase_seed, 0, sizeof(wallet_seed_t));
+        memset(&passphrase_seedFromEntropy, 0, sizeof(wallet_seed_t));
+
+    } while (0);
+
+    memset(&slip39_m_seed, 0, sizeof(wallet_slip39_master_seed_t));
+    return is_succeed;
+}
+/**
+ * @functionname: mason_change_wallet_passphrase
+ * @description: 
+ * @para: 
+ * @return: 
+ */
+bool mason_change_wallet_passphrase(uint8_t *passphrase, uint16_t passphrase_len)
+{
+    bool is_succeed = false;
+    wallet_slip39_master_seed_t slip39_seed = {0};
+    if (mason_slip39_master_seed_read(&slip39_seed))
+    {
+        is_succeed = mason_change_slip39_wallet_passphrase(passphrase, passphrase_len);
+    }
+    else
+    {
+        is_succeed = mason_change_bip39_wallet_passphrase(passphrase, passphrase_len);
+    }
     return is_succeed;
 }
 /**
@@ -391,6 +636,8 @@ bool mason_delete_wallet(void)
     entropy_t entropy_data = {0};
     wallet_seed_t seed = {0};
     wallet_seed_t seedFromEntropy = {0};
+    wallet_slip39_master_seed_t slip39_m_seed = {0};
+    wallet_seed_t slip39_d_seed = {0};
     bool is_succeed = false;
 
     is_succeed = mason_storage_write_buffer((uint8_t *)&mnemonic_data, sizeof(mnemonic_t), FLASH_ADDR_MNEMONIC);
@@ -417,9 +664,22 @@ bool mason_delete_wallet(void)
         return false;
     }
 
+    is_succeed = mason_storage_write_buffer((uint8_t *)&slip39_m_seed, sizeof(wallet_slip39_master_seed_t), FLASH_ADDR_SLIP39_MASTER_SEED);
+    if (!is_succeed)
+    {
+        return false;
+    }
+
+    is_succeed = mason_storage_write_buffer((uint8_t *)&slip39_d_seed, sizeof(wallet_seed_t), FLASH_ADDR_SLIP39_DEC_SEED);
+    if (!is_succeed)
+    {
+        return false;
+    }
+
     gemHDWSwitch = E_HDWM_MNEMONIC;
     memset(&passphrase_seed, 0, sizeof(wallet_seed_t));
     memset(&passphrase_seedFromEntropy, 0, sizeof(wallet_seed_t));
+    memset(&passphrase_slip39_seed, 0, sizeof(wallet_seed_t));
     return is_succeed;
 }
 /**
@@ -580,6 +840,48 @@ emRetType mason_verify_mnemonic(char *mnemonic_str, uint16_t len)
     return emRet;
 }
 /**
+ * @functionname: mason_verify_slip39_seed
+ * @description: 
+ * @para: 
+ * @return: 
+ */
+emRetType mason_verify_slip39_seed(uint8_t *slip39_seed_data, uint16_t slip39_seed_len, uint16_t slip39_id)
+{
+    emRetType emRet = ERT_Verify_Init;
+    wallet_slip39_master_seed_t slip39_m_seed = {0};
+
+    do
+    {
+        if (!mason_slip39_master_seed_read(&slip39_m_seed))
+        {
+            emRet = ERT_VerifyValueFail;
+            break;
+        }
+
+        if ((0 == slip39_seed_len) || (slip39_seed_len > MAX_SLIP39_SEED_SIZE) || (slip39_seed_len != slip39_m_seed.data_size))
+        {
+            emRet = ERT_VerifyLenFail;
+            break;
+        }
+
+        if (slip39_id != slip39_m_seed.id)
+        {
+            emRet = ERT_VerifyValueFail;
+            break;
+        }
+
+        if (memcmp_ATA(slip39_seed_data, slip39_m_seed.data, slip39_seed_len))
+        {
+            emRet = ERT_VerifyValueFail;
+            break;
+        }
+        emRet = ERT_Verify_Success;
+    } while (0);
+
+    memset(&slip39_m_seed, 0, sizeof(wallet_slip39_master_seed_t));
+    return emRet;
+}
+/**
  * @functionname: mason_bip32_generate_master_key_from_root_seed
  * @description: 
  * @para: 
@@ -615,11 +917,25 @@ bool mason_bip32_generate_master_key_from_root_seed(
 
     key_len = strlen((char *)key);
 
-    if ((E_HDWM_PASSPHRASE == gemHDWSwitch) && (SHA512_LEN == passphrase_seed.length))
+    if ((E_HDWM_PASSPHRASE == gemHDWSwitch) && (passphrase_slip39_seed.length))
     {
+        // PASSPHRASE slip39 seed
+        memcpy(&seed, &passphrase_slip39_seed, sizeof(wallet_seed_t));
+    }
+    else if ((E_HDWM_PASSPHRASE == gemHDWSwitch) && (SHA512_LEN == passphrase_seed.length))
+    {
+        // PASSPHRASE bip39 seed
         memcpy(&seed, &passphrase_seed, sizeof(wallet_seed_t));
     }
-    else if (!mason_seed_read(&seed))
+    else if (mason_slip39_dec_seed_read(&seed))
+    {
+        // MNEMONIC slip39 seed
+    }
+    else if (mason_seed_read(&seed) && (SHA512_LEN == seed.length))
+    {
+        // MNEMONIC bip39 seed
+    }
+    else
     {
         return false;
     }
@@ -762,4 +1078,3 @@ bool mason_bip32_derive_master_key_fingerprint(crypto_curve_t curve, uint8_t *fi
     memset(&master_chaincode, 0, sizeof(chaincode_t));
     return true;
 }
-

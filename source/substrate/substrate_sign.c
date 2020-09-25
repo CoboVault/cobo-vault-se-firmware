@@ -22,19 +22,34 @@ in the file COPYING.  If not, see <http://www.gnu.org/licenses/>.
 #include "bip44.h"
 //#include "blake2b.h"
 
-bool mini_secret_from_entropy(sr25519_mini_secret_key seed)
+bool mini_secret_from_entropy(sr25519_mini_secret_key seed_out)
 {
-    wallet_seed_t seedFromEntropy = {0};
+    wallet_seed_t seed = {0};
 
-    if ((E_HDWM_PASSPHRASE == gemHDWSwitch) && (SHA512_LEN == passphrase_seedFromEntropy.length))
+    if ((E_HDWM_PASSPHRASE == gemHDWSwitch) && (passphrase_slip39_seed.length))
     {
-        memcpy(&seedFromEntropy, &passphrase_seedFromEntropy, sizeof(wallet_seed_t));
+        // PASSPHRASE slip39 seed
+        memcpy(&seed, &passphrase_slip39_seed, sizeof(wallet_seed_t));
     }
-    else if (!mason_seedFromEntropy_read(&seedFromEntropy))
+    else if ((E_HDWM_PASSPHRASE == gemHDWSwitch) && (SHA512_LEN == passphrase_seedFromEntropy.length))
+    {
+        // PASSPHRASE bip39 seed
+        memcpy(&seed, &passphrase_seedFromEntropy, sizeof(wallet_seed_t));
+    }
+    else if (mason_slip39_dec_seed_read(&seed))
+    {
+        // MNEMONIC slip39 seed
+    }
+    else if (mason_seedFromEntropy_read(&seed) && (SHA512_LEN == seed.length))
+    {
+        // MNEMONIC bip39 seed
+    }
+    else
     {
         return false;
     }
-    memcpy(seed, seedFromEntropy.data, 32);
+
+    memcpy(seed_out, seed.data, 32);
     return true;
 }
 

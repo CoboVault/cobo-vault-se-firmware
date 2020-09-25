@@ -86,9 +86,15 @@ extern "C"
 #define FLASH_ADDR_UPDATE_KEY_512B          (FLASH_ADDR_SEED_72B + PAGE_SIZE)
 #define UPDATE_KEY_512B_SIZE                PAGE_SIZE
 
-// 0x38800 seedFromEntropy -- 1 page
+// 0x38800 seedFromEntropy, slip39 seed, id, e -- 1 page
 #define FLASH_ADDR_SEED_FROM_ENTROPY        (FLASH_ADDR_UPDATE_KEY_512B + PAGE_SIZE)
 #define SEED_FROM_ENTROPY_SIZE              72
+
+#define FLASH_ADDR_SLIP39_MASTER_SEED       (FLASH_ADDR_SEED_FROM_ENTROPY + SEED_FROM_ENTROPY_SIZE)
+#define SLIP39_MASTER_SEED_SIZE             76
+
+#define FLASH_ADDR_SLIP39_DEC_SEED          (FLASH_ADDR_SLIP39_MASTER_SEED + SLIP39_MASTER_SEED_SIZE)
+#define SLIP39_DEC_SEED_SIZE                72
 
 // 0x39200 usr data area
 #define FLASH_ADDR_USRDATA_START            (FLASH_ADDR_PARAM_START + PAGE_SIZE*9)

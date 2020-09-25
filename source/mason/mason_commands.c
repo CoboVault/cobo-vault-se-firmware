@@ -1226,6 +1226,80 @@ emRetType mason_cmd_verify_fing(pstStackType pstStack, stackElementType *pelemen
 	return emRet;
 }
 /**
+ * @functionname: mason_cmd_verify_slip39_seed
+ * @description: 
+ * @para: 
+ * @return: 
+ */
+emRetType mason_cmd_verify_slip39_seed(pstStackType pstStack, stackElementType *pelement)
+{
+	emRetType emRet = ERT_Verify_Init;
+	uint8_t *slip39_seed = NULL;
+	uint16_t slip39_seed_len = 0;
+	uint16_t slip39_id = 0;
+	uint8_t time = 0;
+
+	do
+	{
+		if (!stack_search_by_tag(pstStack, pelement, TLV_T_SLIP39_MASTER_SEED))
+		{
+			emRet = ERT_VerifyValueFail;
+			break;
+		}
+		slip39_seed = (uint8_t *)(*pelement)->pV;
+		slip39_seed_len = (*pelement)->L;
+
+		if (!stack_search_by_tag(pstStack, pelement, TLV_T_SLIP39_ID) || (2 != (*pelement)->L))
+		{
+			emRet = ERT_CommFailParam;
+			break;
+		}
+		buf_to_u16(&slip39_id, (uint8_t *)(*pelement)->pV);
+		if (ERT_Verify_Success != mason_verify_slip39_seed(slip39_seed, slip39_seed_len, slip39_id))
+		{
+			emRet = ERT_VerifyValueFail;
+			break;
+		}
+
+		//sleep
+		gen_random(&time, 8);
+		_delay_us(time * 2);
+
+		slip39_seed = NULL;
+		slip39_seed_len = 0;
+		slip39_id = 0;
+		if (!stack_search_by_tag(pstStack, pelement, TLV_T_SLIP39_MASTER_SEED))
+		{
+			emRet = ERT_VerifyValueFail;
+			break;
+		}
+		slip39_seed = (uint8_t *)(*pelement)->pV;
+		slip39_seed_len = (*pelement)->L;
+
+		if (!stack_search_by_tag(pstStack, pelement, TLV_T_SLIP39_ID) || (2 != (*pelement)->L))
+		{
+			emRet = ERT_CommFailParam;
+			break;
+		}
+		buf_to_u16(&slip39_id, (uint8_t *)(*pelement)->pV);
+		if (ERT_Verify_Success != mason_verify_slip39_seed(slip39_seed, slip39_seed_len, slip39_id))
+		{
+			emRet = ERT_VerifyValueFail;
+			break;
+		}
+
+		emRet = ERT_Verify_Success;
+	} while (0);
+
+	if (slip39_seed)
+	{
+		memset(slip39_seed, 0, slip39_seed_len);
+		slip39_seed = NULL;
+		slip39_seed_len = 0;
+	}
+	return emRet;
+}
+/**
  * @functionname: mason_cmd0102_get_information
  * @description: 
  * @para: 
@@ -1591,23 +1665,50 @@ static void mason_cmd0302_create_wallet(void *pContext)
 		}
 		verify_emRet = emRet;
 
-		if (!stack_search_by_tag(pstS, &pstTLV, TLV_T_MNEMONIC))
+		if (stack_search_by_tag(pstS, &pstTLV, TLV_T_MNEMONIC))
 		{
-			emRet = ERT_CommFailParam;
-			break;
-		}
-		mnemonic = (uint8_t *)pstTLV->pV;
-		mnemonic_len = pstTLV->L;
+			mnemonic = (uint8_t *)pstTLV->pV;
+			mnemonic_len = pstTLV->L;
 
-		if (!stack_search_by_tag(pstS, &pstTLV, TLV_T_ENTROPY))
+			if (!stack_search_by_tag(pstS, &pstTLV, TLV_T_ENTROPY))
+			{
+				emRet = ERT_needEntropy;
+				break;
+			}
+			entropy = (uint8_t *)pstTLV->pV;
+			entropy_len = pstTLV->L;
+
+			if (!mason_create_bip39_wallet(mnemonic, mnemonic_len, entropy, entropy_len))
+			{
+				emRet = ERT_CommFailParam;
+				break;
+			}
+		}
+		else if (stack_search_by_tag(pstS, &pstTLV, TLV_T_SLIP39_MASTER_SEED))
 		{
-			emRet = ERT_needEntropy;
-			break;
-		}
-		entropy = (uint8_t *)pstTLV->pV;
-		entropy_len = pstTLV->L;
+			uint8_t *slip39_seed_data = (uint8_t *)pstTLV->pV;
+			uint16_t slip39_seed_len = pstTLV->L;
+			uint16_t slip39_id = 0;
+			uint8_t slip39_e = 1;
 
-		if (!mason_create_wallet(mnemonic, mnemonic_len, entropy, entropy_len))
+			if (!stack_search_by_tag(pstS, &pstTLV, TLV_T_SLIP39_ID) || (2 != pstTLV->L))
+			{
+				emRet = ERT_CommFailParam;
+				break;
+			}
+			buf_to_u16(&slip39_id, (uint8_t *)pstTLV->pV);
+			if (stack_search_by_tag(pstS, &pstTLV, TLV_T_SLIP39_EXPONENT) && (1 == pstTLV->L))
+			{
+				slip39_e = *(uint8_t *)pstTLV->pV;
+			}
+
+			if (!mason_create_slip39_wallet(slip39_seed_data, slip39_seed_len, slip39_id, slip39_e))
+			{
+				emRet = ERT_CommFailParam;
+				break;
+			}
+		}
+		else
 		{
 			emRet = ERT_CommFailParam;
 			break;
@@ -2103,7 +2204,7 @@ static void mason_cmd0502_mnemonic_verify(void *pContext)
 		}
 		mason_cmd_append_ele_to_outputTLVArray(&stStack, pstTLV);
 
-		if (ERT_Verify_Success != (emRet = mason_cmd_verify_mnemonic(pstS, &pstTLV)))
+		if (ERT_Verify_Success != (emRet = mason_cmd_verify_mnemonic(pstS, &pstTLV)) && ERT_Verify_Success != (emRet = mason_cmd_verify_slip39_seed(pstS, &pstTLV)))
 		{
 			break;
 		}
@@ -2322,7 +2423,7 @@ static void mason_cmd0902_usrpwd_reset(void *pContext)
 		}
 		else if (E_HDWS_WALLET == status.emHDWStatus)
 		{
-			if (ERT_Verify_Success != (emRet = mason_cmd_verify_mnemonic(pstS, &pstTLV)))
+			if (ERT_Verify_Success != (emRet = mason_cmd_verify_mnemonic(pstS, &pstTLV)) && ERT_Verify_Success != (emRet = mason_cmd_verify_slip39_seed(pstS, &pstTLV)))
 			{
 				break;
 			}

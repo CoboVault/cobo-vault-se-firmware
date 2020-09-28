@@ -31,7 +31,7 @@
 #include <string.h>
 #include <stdint.h>
 #include "sha2.h"
-#include "memzero.h"
+#include "util.h"
 
 /*
  * ASSERT NOTE:

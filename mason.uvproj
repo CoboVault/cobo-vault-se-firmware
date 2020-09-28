@@ -505,6 +505,11 @@
               <FileType>1</FileType>
               <FilePath>.\source\COMMON\stack.c</FilePath>
             </File>
+            <File>
+              <FileName>util.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\source\COMMON\util.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -584,11 +589,6 @@
               <FileName>mason_storage.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\source\mason\mason_storage.c</FilePath>
-            </File>
-            <File>
-              <FileName>mason_util.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\source\mason\mason_util.c</FilePath>
             </File>
             <File>
               <FileName>mason_iap.c</FileName>

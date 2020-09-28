@@ -26,7 +26,7 @@ in the file COPYING.  If not, see <http://www.gnu.org/licenses/>.
 #include "TLV.h"
 #include "stack.h"
 #include "mason_storage.h"
-#include "mason_util.h"
+#include "util.h"
 #include "mason_tags.h"
 #include "eflash.h"
 #include "mason_iap.h"

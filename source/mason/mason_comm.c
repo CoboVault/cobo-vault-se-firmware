@@ -20,8 +20,8 @@ in the file COPYING.  If not, see <http://www.gnu.org/licenses/>.
 /** Header file reference */
 #include "mason_comm.h"
 #include "mason_tags.h"
-#include "mason_util.h"
 #include "mason_commands.h"
+#include "util.h"
 #include "uart.h"
 #include "timer.h"
 #include "wdt.h"

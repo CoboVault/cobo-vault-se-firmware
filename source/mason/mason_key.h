@@ -21,7 +21,7 @@ in the file COPYING.  If not, see <http://www.gnu.org/licenses/>.
 /** Header file reference */
 #include <stdint.h>
 #include <stdbool.h>
-#include <mason_util.h>
+#include <util.h>
 #include <crypto_api.h>
 
 /** Macro definitions*/

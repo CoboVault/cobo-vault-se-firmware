@@ -23,7 +23,7 @@ in the file COPYING.  If not, see <http://www.gnu.org/licenses/>.
 #include "RipeMD160.h"
 #include "hmac.h"
 #include "sm2.h"
-#include "mason_util.h"
+#include "util.h"
 #include "ed25519.h"
 /** Function implementations */
 /**
@@ -38,46 +38,6 @@ bool crypto_init()
 	secp256r1_init();
 	crypto_api_sm2_init();
 	return true;
-}
-/**
- * @functionname: u32_to_buff
- * @description: 
- * @para: 
- * @return: 
- */
-void u32_to_buff(uint32_t u32, uint8_t *buf)
-{
-	buf[0] = (uint8_t)(u32 >> 24);
-	buf[1] = (uint8_t)(u32 >> 16);
-	buf[2] = (uint8_t)(u32 >> 8);
-	buf[3] = (uint8_t)(u32);
-}
-/**
- * @functionname: myatoui
- * @description: 
- * @para: 
- * @return: 
- */
-unsigned int myatoui(const char *str)
-{
-	unsigned int n = 0;
-
-	while (!isdigit(*str))
-		++str;
-
-	while (isdigit(*str))
-	{
-		int c;
-		c = *str - '0';
-		/* compare with n and MAX/10 , if n>MAX/10 (also consider of n=MAX/10) , data will overflow */
-		if ((n > UINT_MAX / 10) || ((n == UINT_MAX / 10) && (c >= UINT_MAX % 10)))
-		{
-			return UINT_MAX;
-		}
-		n = n * 10 + c;
-		++str;
-	}
-	return n;
 }
 /**
  * @functionname: ripeMD160_api

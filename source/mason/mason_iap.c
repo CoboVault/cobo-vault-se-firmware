@@ -20,7 +20,7 @@ in the file COPYING.  If not, see <http://www.gnu.org/licenses/>.
 /** Header file reference */
 #include "mason_iap.h"
 #include "common.h"
-#include "mason_util.h"
+#include "util.h"
 #include "eflash.h"
 #include "sha2.h"
 #include "mason_hdw.h"

@@ -15,14 +15,14 @@ You should have received a copy of the GNU General Public License
 in the file COPYING.  If not, see <http://www.gnu.org/licenses/>.
 **************************************************************************************************/
 /** Avoid duplicate definitions */
-#ifndef MASON_UTIL_H
-#define MASON_UTIL_H
+#ifndef UTIL_H
+#define UTIL_H
 
 /** Avoid duplicate definitions */
-#ifdef MASON_UTIL_GLOBAL
-#define MASON_UTIL_EXT
+#ifdef UTIL_GLOBAL
+#define UTIL_EXT
 #else
-#define MASON_UTIL_EXT extern
+#define UTIL_EXT extern
 #endif
 
 /** Header file reference */
@@ -33,7 +33,6 @@ in the file COPYING.  If not, see <http://www.gnu.org/licenses/>.
 #include <string.h>
 #include <ctype.h>
 #include <limits.h>
-#include "mason_errno.h"
 
 /** Compatibility with the cplusplus*/
 #ifdef __cplusplus
@@ -61,8 +60,12 @@ extern "C"
 	void hex_to_str(uint8_t *str, uint32_t *strLen, uint8_t *bufBcd, uint32_t bufBcdLen);
 	void u16_to_buf(uint8_t *buf, uint16_t u16);
 	void u32_to_buf(uint8_t *buf, uint32_t u32);
+	void u64_to_le_buf(uint64_t u64, uint8_t *buf);
 	void buf_to_u16(uint16_t *pu16, uint8_t *buf);
 	void buf_to_u32(uint32_t *pu32, uint8_t *buf);
+	unsigned int myatoui(const char *str);
+	bool myatoui64(const char *str, uint64_t *ui64);
+	bool is_number(const uint8_t *pnum, uint16_t len);
 	uint16_t buf_return_u16(uint8_t *buf);
 	uint32_t buf_return_u32(uint8_t *buf);
 	void swap_fast(uint8_t *num1, uint8_t *num2);
@@ -71,7 +74,7 @@ extern "C"
 	int8_t sequence_compare_bit8(const uint8_t *pBuf1, const uint8_t *pBuf2, uint32_t bufLen);
 	bool sequence_all_zero(const uint8_t *pBuf, uint32_t bufLen);
 	void data_padding(uint8_t *pMsg, uint16_t *msgLen, emPaddingType emPadding);
-	void zeromemory(void *src, size_t len);
+	void memzero(void* const pnt, const size_t len);
 	uint8_t get_lrc(uint8_t *pMsg, uint16_t msgLen);
 	bool memcmp_ATA(const uint8_t *buf1, const uint8_t *buf2, uint16_t len);
 	void debug_key(char *name, uint8_t *key, uint16_t len);

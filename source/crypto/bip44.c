@@ -20,6 +20,7 @@ in the file COPYING.  If not, see <http://www.gnu.org/licenses/>.
 /** Header file reference */
 #include "bip44.h"
 #include "crypto_api.h"
+#include "util.h"
 
 /** Function implementations */
 /**

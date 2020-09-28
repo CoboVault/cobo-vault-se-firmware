@@ -22,6 +22,7 @@ in the file COPYING.  If not, see <http://www.gnu.org/licenses/>.
 #include <stdint.h>
 #include <stdbool.h>
 #include <mason_key.h>
+#include <mason_errno.h>
 #include <crypto_api.h>
 
 /** Variable declarations */

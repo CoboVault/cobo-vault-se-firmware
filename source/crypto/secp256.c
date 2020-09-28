@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <rsa_keygen.h>
 #include <ecdsa.h>
-#include <mason_util.h>
+#include <util.h>
 
 const UINT32 SECP256K1_CURVE_LENGTH = 8;
 UINT32 SECP256K1_P[8] = {0xFFFFFC2F, 0xFFFFFFFE, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF};

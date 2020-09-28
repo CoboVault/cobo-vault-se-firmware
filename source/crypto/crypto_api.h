@@ -83,8 +83,6 @@ extern "C"
     bool crypto_init(void);
     void ed25519_private_key_to_public_key(uint8_t *private_key, uint8_t *public_key);
 
-    void u32_to_buff(uint32_t u32, uint8_t *buf);
-    unsigned int myatoui(const char *str);
     CRYPTO_API_EXT void ripeMD160_api(uint8_t *pData, uint32_t len, uint8_t *pDigest);
     CRYPTO_API_EXT void sha256_api(uint8_t *pData, uint32_t len, uint8_t *pDigest);
     CRYPTO_API_EXT void sha512_api(uint8_t *pData, uint32_t len, uint8_t *pDigest);

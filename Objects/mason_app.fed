@@ -1,4 +1,4 @@
-;#<FEEDBACK># ARM Linker, 4.1 [Build 481]: Last Updated: Mon Sep 28 11:03:52 2020
+;#<FEEDBACK># ARM Linker, 4.1 [Build 481]: Last Updated: Mon Sep 28 11:11:53 2020
 ;VERSION 0.2
 ;FILE base58.o
 __asm___8_base58_c_d7aa15c2____REV16 <= USED 0
@@ -118,15 +118,6 @@ __asm___15_mason_storage_c_a703afb9____REVSH <= USED 0
 mason_storage_check_flag <= USED 0
 mason_storage_read_flag <= USED 0
 mason_storage_write_flag <= USED 0
-;FILE mason_util.o
-__asm___12_mason_util_c_f9ead7b0____REV16 <= USED 0
-__asm___12_mason_util_c_f9ead7b0____REVSH <= USED 0
-debug_key <= USED 0
-sequence_all_zero <= USED 0
-sequence_compare_bit8 <= USED 0
-str_reverse <= USED 0
-swap_fast <= USED 0
-zeromemory <= USED 0
 ;FILE mason_wallet.o
 __asm___14_mason_wallet_c_30889904____REV16 <= USED 0
 __asm___14_mason_wallet_c_30889904____REVSH <= USED 0
@@ -236,6 +227,15 @@ timer_set_us <= USED 0
 ;FILE uart.o
 __asm___6_uart_c_2ecca21a____REV16 <= USED 0
 __asm___6_uart_c_2ecca21a____REVSH <= USED 0
+;FILE util.o
+__asm___6_util_c_f9ead7b0____REV16 <= USED 0
+__asm___6_util_c_f9ead7b0____REVSH <= USED 0
+debug_key <= USED 0
+sequence_all_zero <= USED 0
+sequence_compare_bit8 <= USED 0
+str_reverse <= USED 0
+swap_fast <= USED 0
+zeromemory <= USED 0
 ;FILE wdt.o
 __asm___5_wdt_c_a2d39080____REV16 <= USED 0
 __asm___5_wdt_c_a2d39080____REVSH <= USED 0

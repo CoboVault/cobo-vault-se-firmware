@@ -15,12 +15,11 @@ You should have received a copy of the GNU General Public License
 in the file COPYING.  If not, see <http://www.gnu.org/licenses/>.
 **************************************************************************************************/
 /** Avoid duplicate definitions */
-#define MASON_UTIL_GLOBAL
+#define UTIL_GLOBAL
 
 /** Header file reference */
-#include "mason_util.h"
+#include "util.h"
 #include "RipeMD160.h"
-#include "mason_storage.h"
 #include <hrng.h>
 
 /** Function implementations */

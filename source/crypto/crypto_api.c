@@ -23,7 +23,7 @@ in the file COPYING.  If not, see <http://www.gnu.org/licenses/>.
 #include "RipeMD160.h"
 #include "hmac.h"
 #include "sm2.h"
-#include "mason_util.h"
+#include "util.h"
 #include "ed25519.h"
 /** Function implementations */
 /**

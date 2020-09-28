@@ -16,7 +16,7 @@ in the file COPYING.  If not, see <http://www.gnu.org/licenses/>.
 **************************************************************************************************/
 /** Header file reference */
 #include <mason_key.h>
-#include <mason_util.h>
+#include <util.h>
 #include <crypto_api.h>
 #include <secp256.h>
 

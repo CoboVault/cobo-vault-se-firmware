@@ -15,14 +15,14 @@ You should have received a copy of the GNU General Public License
 in the file COPYING.  If not, see <http://www.gnu.org/licenses/>.
 **************************************************************************************************/
 /** Avoid duplicate definitions */
-#ifndef MASON_UTIL_H
-#define MASON_UTIL_H
+#ifndef UTIL_H
+#define UTIL_H
 
 /** Avoid duplicate definitions */
-#ifdef MASON_UTIL_GLOBAL
-#define MASON_UTIL_EXT
+#ifdef UTIL_GLOBAL
+#define UTIL_EXT
 #else
-#define MASON_UTIL_EXT extern
+#define UTIL_EXT extern
 #endif
 
 /** Header file reference */

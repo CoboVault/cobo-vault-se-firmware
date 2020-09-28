@@ -895,7 +895,6 @@ bool mason_bip32_generate_master_key_from_root_seed(
     uint8_t hash[SHA512_LEN];
     uint8_t secp256k1_key[] = "Bitcoin seed";
     uint8_t secp256r1_key[] = "Nist256p1 seed";
-    uint8_t ed25519_key[] = "ed25519 seed";
     uint16_t key_len;
     uint8_t *key;
     wallet_seed_t seed = {0};
@@ -904,9 +903,6 @@ bool mason_bip32_generate_master_key_from_root_seed(
     {
     case CRYPTO_CURVE_SECP256R1:
         key = secp256r1_key;
-        break;
-    case CRYPTO_CURVE_ED25519:
-        key = ed25519_key;
         break;
     case CRYPTO_CURVE_SECP256K1:
         key = secp256k1_key;

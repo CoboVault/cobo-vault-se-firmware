@@ -24,7 +24,6 @@ in the file COPYING.  If not, see <http://www.gnu.org/licenses/>.
 #include "hmac.h"
 #include "sm2.h"
 #include "util.h"
-#include "ed25519.h"
 /** Function implementations */
 /**
  * @functionname: crypto_init
@@ -92,11 +91,6 @@ bool is_valid_private_key(crypto_curve_t curve, uint8_t *private_key)
 	uint8_t secp256_n[32] = {0};
 	uint16_t key_length = 0;
 
-	if (curve == CRYPTO_CURVE_ED25519)
-	{
-		return true;
-	}
-
 	if (memcmp(private_key, zero_buf, SECP256K1_CURVE_LENGTH * 4) == 0)
 	{
 		return false;
@@ -132,10 +126,7 @@ bool is_valid_private_key(crypto_curve_t curve, uint8_t *private_key)
  */
 bool is_canonical(uint8_t signature[64])
 {
-	return	!(signature[0] & 0x80)
-		 && !(signature[0] == 0 &&  !(signature[1] & 0x80)) 
-		 && !(signature[32] & 0x80) 
-		 && !(signature[32] == 0 && !(signature[33] & 0x80));
+	return !(signature[0] & 0x80) && !(signature[0] == 0 && !(signature[1] & 0x80)) && !(signature[32] & 0x80) && !(signature[32] == 0 && !(signature[33] & 0x80));
 }
 /**
  * @functionname: ecdsa_sign_once
@@ -165,14 +156,6 @@ bool ecdsa_sign_once(crypto_curve_t curve, uint8_t *hash, uint16_t hash_len, uin
 			private_key,
 			signature);
 	}
-	case CRYPTO_CURVE_ED25519:
-	{
-		uint8_t public_key[32];
-		*signature_len = 64;
-		ed25519_publickey(private_key, public_key);
-		ed25519_sign(hash, hash_len, private_key, public_key, signature);
-		return true;
-	}
 	default:
 	{
 		return false;
@@ -195,7 +178,7 @@ bool ecdsa_sign(crypto_curve_t curve, uint8_t *hash, uint16_t hash_len, uint8_t 
 		{
 			return false;
 		}
-	} while (curve != CRYPTO_CURVE_ED25519 && !is_canonical(signature));
+	} while (!is_canonical(signature));
 
 	return is_succeed;
 }
@@ -222,10 +205,6 @@ bool ecdsa_verify(crypto_curve_t curve, uint8_t *hash, uint8_t *public_key, uint
 			hash,
 			public_key,
 			signature);
-	}
-	case CRYPTO_CURVE_ED25519:
-	{
-		return false;
 	}
 	default:
 	{
@@ -333,15 +312,5 @@ bool crypto_api_sm2_decrypt(uint8_t *private_key, uint8_t *encrypted_data, uint3
 						   SM2_NORMAL));
 
 	return is_succeed;
-}
-/**
- * @functionname: ed25519_private_key_to_public_key
- * @description: 
- * @para: 
- * @return: 
- */
-void ed25519_private_key_to_public_key(uint8_t *private_key, uint8_t *public_key)
-{
-	ed25519_publickey(private_key, public_key);
 }
 

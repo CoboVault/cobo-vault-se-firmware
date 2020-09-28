@@ -209,14 +209,14 @@ void data_padding(uint8_t *pMsg, uint16_t *msgLen, emPaddingType emPadding)
 	}
 }
 /**
- * @functionname: zeromemory
+ * @functionname: memzero
  * @description: 
  * @para: 
  * @return: 
  */
-void zeromemory(void *src, size_t len)
+void memzero(void* const pnt, const size_t len)
 {
-	memset(src, 0, len);
+	memset(pnt, 0, len);
 }
 /**
  * @functionname: memcmp_ATA

@@ -23,7 +23,7 @@ in the file COPYING.  If not, see <http://www.gnu.org/licenses/>.
 #include "stdio.h"
 #include <wdt.h>
 #include <pbkdf2.h>
-#include <memzero.h>
+#include <util.h>
 
 #define BIP39_PBKDF2_ROUNDS 2048
 

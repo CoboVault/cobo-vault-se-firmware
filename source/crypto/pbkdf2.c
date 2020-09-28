@@ -24,7 +24,7 @@
 #include "pbkdf2.h"
 #include <string.h>
 #include "hmac.h"
-#include "memzero.h"
+#include "util.h"
 #include "sha2.h"
 
 void pbkdf2_hmac_sha256_Init(PBKDF2_HMAC_SHA256_CTX *pctx, const uint8_t *pass,

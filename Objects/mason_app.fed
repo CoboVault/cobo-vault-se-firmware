@@ -1,4 +1,4 @@
-;#<FEEDBACK># ARM Linker, 4.1 [Build 481]: Last Updated: Mon Sep 28 11:11:53 2020
+;#<FEEDBACK># ARM Linker, 4.1 [Build 481]: Last Updated: Mon Sep 28 11:20:03 2020
 ;VERSION 0.2
 ;FILE base58.o
 __asm___8_base58_c_d7aa15c2____REV16 <= USED 0
@@ -235,7 +235,6 @@ sequence_all_zero <= USED 0
 sequence_compare_bit8 <= USED 0
 str_reverse <= USED 0
 swap_fast <= USED 0
-zeromemory <= USED 0
 ;FILE wdt.o
 __asm___5_wdt_c_a2d39080____REV16 <= USED 0
 __asm___5_wdt_c_a2d39080____REVSH <= USED 0

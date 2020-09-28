@@ -48,6 +48,24 @@ void u32_to_buf(uint8_t *buf, uint32_t u32)
 	buf[3] = (uint8_t)(u32);
 }
 /**
+ * @functionname: u64_to_le_buf
+ * @description: 
+ * @para: 
+ * @return: 
+ */
+//covert uint64 to buff using Little Endian
+void u64_to_le_buf(uint64_t u64, uint8_t *buf)
+{
+    buf[7] = (uint8_t)(u64 >> 56);
+    buf[6] = (uint8_t)(u64 >> 48);
+    buf[5] = (uint8_t)(u64 >> 40);
+    buf[4] = (uint8_t)(u64 >> 32);
+    buf[3] = (uint8_t)(u64 >> 24);
+    buf[2] = (uint8_t)(u64 >> 16);
+    buf[1] = (uint8_t)(u64 >> 8);
+    buf[0] = (uint8_t)(u64);
+}
+/**
  * @functionname: buf_to_u16
  * @description: 
  * @para: 
@@ -98,6 +116,50 @@ unsigned int myatoui(const char *str)
 	}
 	return n;
 }
+/**
+ * @functionname: myatoui64
+ * @description: 
+ * @para: 
+ * @return: 
+ */
+bool myatoui64(const char *str, uint64_t *ui64)
+{
+    uint64_t n = 0;
+
+    while (!isdigit(*str))
+        ++str;
+
+    while (isdigit(*str))
+    {
+        uint64_t c;
+        c = *str - '0';
+        /* compare with n and MAX/10 , if n>MAX/10 (also consider of n=MAX/10) , data will overflow */
+        if ((n > ULLONG_MAX / 10) || ((n == ULLONG_MAX / 10) && (c > ULLONG_MAX % 10)))
+        {
+            return false;
+        }
+        n = n * 10 + c;
+        ++str;
+    }
+    *ui64 = n;
+    return true;
+}
+/**
+ * @functionname: is_number
+ * @description: 
+ * @para: 
+ * @return: 
+ */
+bool is_number(const uint8_t *pnum, uint16_t len)
+{
+    uint16_t index = 0;
+    while ((index < len) && isdigit(pnum[index]))
+    {
+        index++;
+    }
+    return ((0 != index) && (index >= len));
+}
+
 /**
  * @functionname: swap_fast
  * @description: 

@@ -31,7 +31,6 @@ in the file COPYING.  If not, see <http://www.gnu.org/licenses/>.
 #include <stdint.h>
 #include <stdbool.h>
 #include <string.h> //memcpy...
-#include "mason_errno.h"
 
 /** Compatibility with the cplusplus*/
 #ifdef __cplusplus

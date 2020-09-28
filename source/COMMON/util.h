@@ -60,9 +60,12 @@ extern "C"
 	void hex_to_str(uint8_t *str, uint32_t *strLen, uint8_t *bufBcd, uint32_t bufBcdLen);
 	void u16_to_buf(uint8_t *buf, uint16_t u16);
 	void u32_to_buf(uint8_t *buf, uint32_t u32);
+	void u64_to_le_buf(uint64_t u64, uint8_t *buf);
 	void buf_to_u16(uint16_t *pu16, uint8_t *buf);
 	void buf_to_u32(uint32_t *pu32, uint8_t *buf);
 	unsigned int myatoui(const char *str);
+	bool myatoui64(const char *str, uint64_t *ui64);
+	bool is_number(const uint8_t *pnum, uint16_t len);
 	uint16_t buf_return_u16(uint8_t *buf);
 	uint32_t buf_return_u32(uint8_t *buf);
 	void swap_fast(uint8_t *num1, uint8_t *num2);

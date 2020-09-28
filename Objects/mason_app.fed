@@ -1,4 +1,4 @@
-;#<FEEDBACK># ARM Linker, 4.1 [Build 481]: Last Updated: Fri Sep 25 12:32:04 2020
+;#<FEEDBACK># ARM Linker, 4.1 [Build 481]: Last Updated: Mon Sep 28 11:03:52 2020
 ;VERSION 0.2
 ;FILE base58.o
 __asm___8_base58_c_d7aa15c2____REV16 <= USED 0
@@ -29,7 +29,6 @@ reverse_memory <= USED 0
 __asm___12_crypto_api_c_f8b1852b____REV16 <= USED 0
 __asm___12_crypto_api_c_f8b1852b____REVSH <= USED 0
 crypto_api_sm2_encrypt <= USED 0
-u32_to_buff <= USED 0
 ;FILE ecc.o
 ECC_NN_Digits <= USED 0
 ECC_PD <= USED 0

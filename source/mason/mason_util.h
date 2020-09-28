@@ -33,7 +33,6 @@ in the file COPYING.  If not, see <http://www.gnu.org/licenses/>.
 #include <string.h>
 #include <ctype.h>
 #include <limits.h>
-#include "mason_errno.h"
 
 /** Compatibility with the cplusplus*/
 #ifdef __cplusplus
@@ -63,6 +62,7 @@ extern "C"
 	void u32_to_buf(uint8_t *buf, uint32_t u32);
 	void buf_to_u16(uint16_t *pu16, uint8_t *buf);
 	void buf_to_u32(uint32_t *pu32, uint8_t *buf);
+	unsigned int myatoui(const char *str);
 	uint16_t buf_return_u16(uint8_t *buf);
 	uint32_t buf_return_u32(uint8_t *buf);
 	void swap_fast(uint8_t *num1, uint8_t *num2);

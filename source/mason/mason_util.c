@@ -73,6 +73,33 @@ void buf_to_u32(uint32_t *pu32, uint8_t *buf)
 	*pu32 |= (uint32_t)buf[3];
 }
 /**
+ * @functionname: myatoui
+ * @description: 
+ * @para: 
+ * @return: 
+ */
+unsigned int myatoui(const char *str)
+{
+	unsigned int n = 0;
+
+	while (!isdigit(*str))
+		++str;
+
+	while (isdigit(*str))
+	{
+		int c;
+		c = *str - '0';
+		/* compare with n and MAX/10 , if n>MAX/10 (also consider of n=MAX/10) , data will overflow */
+		if ((n > UINT_MAX / 10) || ((n == UINT_MAX / 10) && (c >= UINT_MAX % 10)))
+		{
+			return UINT_MAX;
+		}
+		n = n * 10 + c;
+		++str;
+	}
+	return n;
+}
+/**
  * @functionname: swap_fast
  * @description: 
  * @para: 

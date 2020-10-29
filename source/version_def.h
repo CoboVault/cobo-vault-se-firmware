@@ -44,7 +44,7 @@ extern "C"
 #define VER_Major			0
 #define VER_Minor			4
 #define VER_Release			1
-#define VER_Build			00000
+#define VER_Build			10000
 
 #if VER_Major>0x9 || VER_Minor>0x9 || VER_Release>0x9 || VER_Build>0x0FFFFF
 #if defined _WIN32 || _WIN64

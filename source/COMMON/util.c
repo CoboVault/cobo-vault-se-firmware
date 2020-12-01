@@ -19,8 +19,7 @@ in the file COPYING.  If not, see <http://www.gnu.org/licenses/>.
 
 /** Header file reference */
 #include "util.h"
-#include "RipeMD160.h"
-#include <hrng.h>
+#include "hrng.h"
 
 /** Function implementations */
 /**

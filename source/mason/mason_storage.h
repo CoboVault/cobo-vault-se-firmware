@@ -60,7 +60,7 @@ extern "C"
 #define CHIP_MODE_SIZE                                           12
 
 #define FLASH_ADDR_APP_VERCODE_4B           (FLASH_ADDR_CHIP_MODE_WITH_CHECKSUM_12B + CHIP_MODE_SIZE)
-#define APP_VERCODE_SIZE                    4
+#define APP_VERCODE_SIZE                    16
 
 // 0x38200 mnemonic, entropy -- 1 page
 #define FLASH_ADDR_WALLET_START             (FLASH_ADDR_PARAM_START + PAGE_SIZE)

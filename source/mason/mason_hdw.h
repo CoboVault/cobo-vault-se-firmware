@@ -102,8 +102,8 @@ extern "C"
 	bool mason_HDW_check_sha256sha256(uint8_t *pText, uint32_t textLen, uint8_t *pCheckSum);
 	bool mason_get_mode(volatile stHDWStatusType *status);
 	bool mason_set_mode(uint8_t type);
-	bool mason_get_appvercode(uint32_t *vercode);
-	bool mason_set_appvercode(void);
+	emRetType mason_get_appvercode(uint32_t *vercode);
+	emRetType mason_set_appvercode(void);
 
 /** Compatibility with the cplusplus*/
 #ifdef __cplusplus

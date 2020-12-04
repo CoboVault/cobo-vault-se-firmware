@@ -303,7 +303,7 @@ void tamper_check(void)
  */
 void mason_init(void)
 {
-	(void)mason_set_appvercode();
+	//(void)mason_set_appvercode();
 }
 /**
  * @functionname: main

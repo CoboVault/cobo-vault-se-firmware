@@ -1545,7 +1545,7 @@ static void mason_cmd0203_iap_verify(void *pContext)
 			}
 			addr = (FLAG_APP_EXIST == eflash_read_word(FLASH_ADDR_APP_EXIST_4B)
 						? FLASH_ADDR_APP_START
-						: OFF_MASK(eflash_read_word(FLASH_ADDR_BOOT_ADDR_4B)));
+						: FLASH_ADDR_BOOT1_START);
 			u32_to_buf(bufAddr, addr);
 			mason_cmd_append_to_outputTLVArray(&stStack, TLV_T_FLASH_ADDR, sizeof(bufAddr), bufAddr);
 		}
@@ -1560,9 +1560,9 @@ static void mason_cmd0203_iap_verify(void *pContext)
 
 	if ((ERT_OK == emRet) && (E_PACK_HDR == emFwPackType) && (ERT_Verify_Success == verify_emRet))
 	{
+		(void)mason_iap_set_app_not_exist();
 		_delay_ms(500);
 		//printf("\nClean App && Rebooting..\n");
-		(void)mason_iap_set_app_not_exist();
 		wdt_stop();
 		REG_SCU_RCR &= 0x7FFF; //Soft Reset
 	}

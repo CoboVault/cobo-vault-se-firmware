@@ -49,11 +49,7 @@ bool mason_get_mode(volatile stHDWStatusType *status)
 {
 	mason_storage_read((uint8_t *)status, sizeof(stHDWStatusType), FLASH_ADDR_CHIP_MODE_WITH_CHECKSUM_12B);
 
-	if (status->emHDWStatus != E_HDWS_ATTACK
-		&& status->emHDWStatus != E_HDWS_EMPTY
-		&& status->emHDWStatus != E_HDWS_WALLET
-		&& status->emHDWStatus != E_HDWS_CHIP
-		&& status->emHDWStatus != E_HDWS_FACTORY)
+	if (status->emHDWStatus != E_HDWS_ATTACK && status->emHDWStatus != E_HDWS_EMPTY && status->emHDWStatus != E_HDWS_WALLET && status->emHDWStatus != E_HDWS_CHIP && status->emHDWStatus != E_HDWS_FACTORY)
 	{
 		*status = gstHDWStatus[HDW_STATUS_CHIP];
 	}
@@ -82,10 +78,29 @@ bool mason_set_mode(uint8_t type)
  * @para: 
  * @return: 
  */
-bool mason_set_appvercode(void)
+emRetType mason_set_appvercode(void)
 {
-	uint32_t vercode = VERSION_BCD;
-	return mason_storage_write_buffer((uint8_t *)&vercode, sizeof(uint32_t), FLASH_ADDR_APP_VERCODE_4B);
+	emRetType ret = ERT_OK;
+	uint32_t vercode = 0;
+	if (ERT_OK == mason_get_appvercode(&vercode))
+	{
+		if (vercode == VERSION_BCD)
+		{
+			return ERT_OK;
+		}
+	}
+
+	if (ERT_OK != (ret = mason_storage_write_flag_safe(FLASH_ADDR_APP_VERCODE_4B, VERSION_BCD)))
+	{
+		return ret;
+	}
+	uint32_t verhash = 0;
+	uint8_t bufVerCode[4] = {0x00};
+	u32_to_buf(bufVerCode, VERSION_BCD);
+	uint8_t sha256_buf[SHA256_LEN] = {0};
+	sha256_api(bufVerCode, 4, sha256_buf);
+	buf_to_u32(&verhash, sha256_buf);
+	return mason_storage_write_flag_safe(FLASH_ADDR_APP_VERCODE_4B + 4, verhash);
 }
 /**
  * @functionname: mason_get_appvercode
@@ -93,9 +108,30 @@ bool mason_set_appvercode(void)
  * @para: 
  * @return: 
  */
-bool mason_get_appvercode(uint32_t *vercode)
+emRetType mason_get_appvercode(uint32_t *vercode)
 {
-	return mason_storage_read((uint8_t *)vercode, sizeof(uint32_t), FLASH_ADDR_APP_VERCODE_4B);
+	uint32_t vercodeflash = 0;
+	vercodeflash = mason_storage_read_flag(FLASH_ADDR_APP_VERCODE_4B);
+
+	uint32_t verhashflash = 0;
+	verhashflash = mason_storage_read_flag(FLASH_ADDR_APP_VERCODE_4B + 4);
+
+	uint8_t bufVerCode[4] = {0x00};
+	u32_to_buf(bufVerCode, vercodeflash);
+
+	uint8_t sha256_buf[SHA256_LEN] = {0};
+	sha256_api(bufVerCode, 4, sha256_buf);
+
+	uint32_t vercode_hash = 0;
+	buf_to_u32(&vercode_hash, sha256_buf);
+
+	if (vercode_hash != verhashflash)
+	{
+		return ERT_VerConflict;
+	}
+
+	*vercode = vercodeflash;
+	return ERT_OK;
 }
 /**
 * @functionname: mason_HDW_gen_sha256

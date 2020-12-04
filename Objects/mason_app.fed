@@ -1,4 +1,4 @@
-;#<FEEDBACK># ARM Linker, 4.1 [Build 481]: Last Updated: Mon Sep 28 15:59:29 2020
+;#<FEEDBACK># ARM Linker, 4.1 [Build 481]: Last Updated: Wed Dec 02 16:06:48 2020
 ;VERSION 0.2
 ;FILE base58.o
 __ARM_common_ll_muluu <= USED 0
@@ -97,6 +97,7 @@ mason_HDW_check_sha256 <= USED 0
 mason_HDW_check_sha256sha256 <= USED 0
 mason_HDW_gen_sha256 <= USED 0
 mason_get_appvercode <= USED 0
+mason_set_appvercode <= USED 0
 ;FILE mason_iap.o
 __asm___11_mason_iap_c_fc3fe5c6____REV16 <= USED 0
 __asm___11_mason_iap_c_fc3fe5c6____REVSH <= USED 0

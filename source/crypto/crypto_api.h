@@ -56,8 +56,6 @@ extern "C"
     {
         CRYPTO_CURVE_SECP256K1 = 0,
         CRYPTO_CURVE_SECP256R1,
-        CRYPTO_CURVE_ED25519,
-        CRYPTO_CURVE_SR25519,
     } crypto_curve_t;
 
     /** Function declarations */
@@ -81,7 +79,6 @@ extern "C"
     bool is_valid_private_key(crypto_curve_t curve, uint8_t *private_key);
 
     bool crypto_init(void);
-    void ed25519_private_key_to_public_key(uint8_t *private_key, uint8_t *public_key);
 
     CRYPTO_API_EXT void ripeMD160_api(uint8_t *pData, uint32_t len, uint8_t *pDigest);
     CRYPTO_API_EXT void sha256_api(uint8_t *pData, uint32_t len, uint8_t *pDigest);

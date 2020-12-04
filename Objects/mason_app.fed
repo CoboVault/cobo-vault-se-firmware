@@ -1,6 +1,7 @@
 ;#<FEEDBACK># ARM Linker, 4.1 [Build 481]: Last Updated: Wed Dec 02 16:06:48 2020
 ;VERSION 0.2
 ;FILE base58.o
+__ARM_common_ll_muluu <= USED 0
 __asm___8_base58_c_d7aa15c2____REV16 <= USED 0
 __asm___8_base58_c_d7aa15c2____REVSH <= USED 0
 b58check <= USED 0
@@ -57,11 +58,6 @@ Square_of_Y <= USED 0
 TextToECP <= USED 0
 __asm___7_ecdsa_c_19676e1f____REV16 <= USED 0
 __asm___7_ecdsa_c_19676e1f____REVSH <= USED 0
-;FILE ed25519.o
-__asm___9_ed25519_c_d90ecc0b____REV16 <= USED 0
-__asm___9_ed25519_c_d90ecc0b____REVSH <= USED 0
-curved25519_scalarmult_basepoint <= USED 0
-ed25519_sign_open <= USED 0
 ;FILE eflash.o
 __asm___8_eflash_c_edc759be____REV16 <= USED 0
 __asm___8_eflash_c_edc759be____REVSH <= USED 0
@@ -122,6 +118,7 @@ mason_storage_write_flag <= USED 0
 ;FILE mason_wallet.o
 __asm___14_mason_wallet_c_30889904____REV16 <= USED 0
 __asm___14_mason_wallet_c_30889904____REVSH <= USED 0
+mason_seedFromEntropy_read <= USED 0
 mason_update_key_load <= USED 0
 mason_update_key_save <= USED 0
 mason_valid_wallet_path <= USED 0
@@ -138,10 +135,6 @@ NN_RShift <= USED 0
 NN_Sub <= USED 0
 __asm___6_math_c_435231c4____REV16 <= USED 0
 __asm___6_math_c_435231c4____REVSH <= USED 0
-;FILE merlin.o
-__asm___8_merlin_c_eba51a9a____REV16 <= USED 0
-__asm___8_merlin_c_eba51a9a____REVSH <= USED 0
-merlin_rng_wipe <= USED 0
 ;FILE pbkdf2.o
 pbkdf2_hmac_sha512 <= USED 0
 pbkdf2_hmac_sha512_Final <= USED 0
@@ -151,16 +144,6 @@ pbkdf2_hmac_sha512_Update <= USED 0
 enqueue_overwrite <= USED 0
 queue_size <= USED 0
 ;FILE ripemd160.o
-;FILE ristretto-donna.o
-__asm___17_ristretto_donna_c_one____REV16 <= USED 0
-__asm___17_ristretto_donna_c_one____REVSH <= USED 0
-elligator_ristretto_flavor <= USED 0
-ge25519_move_conditional_pniels_array <= USED 0
-ge25519_scalarmult <= USED 0
-ge25519_set_neutral <= USED 0
-ristretto_ct_eq <= USED 0
-ristretto_decode <= USED 0
-ristretto_from_uniform_bytes <= USED 0
 ;FILE secp256.o
 __asm___9_secp256_c_5ce32c01____REV16 <= USED 0
 __asm___9_secp256_c_5ce32c01____REVSH <= USED 0
@@ -193,21 +176,10 @@ sm2_encrypt_process <= USED 0
 SM3_encode <= USED 0
 __asm___5_sm3_c_68c1c4ec____REV16 <= USED 0
 __asm___5_sm3_c_68c1c4ec____REVSH <= USED 0
-;FILE sr25519.o
-__asm___9_sr25519_c_acc1f605____REV16 <= USED 0
-__asm___9_sr25519_c_acc1f605____REVSH <= USED 0
-expand_uniform <= USED 0
-sr25519_derive_public_soft <= USED 0
-sr25519_keypair_ed25519_to_uniform <= USED 0
-sr25519_uniform_keypair_from_seed <= USED 0
-sr25519_verify <= USED 0
 ;FILE stack.o
 stack_size <= USED 0
 stack_top <= USED 0
 ;FILE startup.o
-;FILE substrate_sign.o
-__asm___16_substrate_sign_c_2bcd3533____REV16 <= USED 0
-__asm___16_substrate_sign_c_2bcd3533____REVSH <= USED 0
 ;FILE system_se.o
 SystemCoreClockUpdate <= USED 0
 __asm___11_system_se_c_5d646a67____REV16 <= USED 0
@@ -232,10 +204,13 @@ __asm___6_uart_c_2ecca21a____REVSH <= USED 0
 __asm___6_util_c_f9ead7b0____REV16 <= USED 0
 __asm___6_util_c_f9ead7b0____REVSH <= USED 0
 debug_key <= USED 0
+is_number <= USED 0
+myatoui64 <= USED 0
 sequence_all_zero <= USED 0
 sequence_compare_bit8 <= USED 0
 str_reverse <= USED 0
 swap_fast <= USED 0
+u64_to_le_buf <= USED 0
 ;FILE wdt.o
 __asm___5_wdt_c_a2d39080____REV16 <= USED 0
 __asm___5_wdt_c_a2d39080____REVSH <= USED 0

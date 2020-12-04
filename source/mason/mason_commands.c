@@ -41,7 +41,6 @@ in the file COPYING.  If not, see <http://www.gnu.org/licenses/>.
 #include "base58.h"
 #include "crypto_api.h"
 #include <mason_setting.h>
-#include "substrate_sign.h"
 
 #if (1 != VER_REL)
 #define MASON_TEST
@@ -1884,28 +1883,17 @@ static void mason_cmd0305_get_extpubkey(void *pContext)
 			curve_type = (crypto_curve_t)(*(uint8_t *)pstTLV->pV);
 		}
 
-		if (CRYPTO_CURVE_SR25519 == curve_type)
+		memcpy((uint8_t *)path_string, path, path_len);
+		path_string[path_len] = 0;
+		if (!mason_wallet_path_is_pub(path_string, path_len) || !mason_parse_wallet_path_from_string(path_string, path_len, &wallet_path))
 		{
-			if (!substrate_derive_extpubkey(path, path_len, &extended_public_key))
-			{
-				emRet = ERT_HDPathIllegal;
-				break;
-			}
+			emRet = ERT_HDPathIllegal;
+			break;
 		}
-		else
+		if (!mason_bip32_derive_keys(&wallet_path, curve_type, &derived_private_key, &derived_chaincode, &extended_public_key))
 		{
-			memcpy((uint8_t *)path_string, path, path_len);
-			path_string[path_len] = 0;
-			if (!mason_wallet_path_is_pub(path_string, path_len) || !mason_parse_wallet_path_from_string(path_string, path_len, &wallet_path))
-			{
-				emRet = ERT_HDPathIllegal;
-				break;
-			}
-			if (!mason_bip32_derive_keys(&wallet_path, curve_type, &derived_private_key, &derived_chaincode, &extended_public_key))
-			{
-				emRet = ERT_HDPathIllegal;
-				break;
-			}
+			emRet = ERT_HDPathIllegal;
+			break;
 		}
 
 		b58enc(base58_ext_key, &base58_ext_key_len, (uint8_t *)&extended_public_key, sizeof(extended_public_key));
@@ -2040,36 +2028,25 @@ static void mason_cmd0307_sign(void *pContext)
 			curve_type = (crypto_curve_t)(*(uint8_t *)pstTLV->pV);
 		}
 
-		if (CRYPTO_CURVE_SR25519 == curve_type)
+		memcpy((uint8_t *)path_string, path, path_len);
+		path_string[path_len] = 0;
+		if (!mason_parse_wallet_path_from_string(path_string, path_len, &wallet_path))
 		{
-			if (!substrate_sign(path, path_len, hash, hash_len, signature, &signature_len, &derived_public_key))
-			{
-				emRet = ERT_SignFail;
-				break;
-			}
+			emRet = ERT_HDPathIllegal;
+			break;
 		}
-		else
+
+		if (!mason_bip32_derive_keys(&wallet_path, curve_type, &derived_private_key, &derived_chaincode, &extended_public_key))
 		{
-			memcpy((uint8_t *)path_string, path, path_len);
-			path_string[path_len] = 0;
-			if (!mason_parse_wallet_path_from_string(path_string, path_len, &wallet_path))
-			{
-				emRet = ERT_HDPathIllegal;
-				break;
-			}
+			emRet = ERT_HDPathIllegal;
+			break;
+		}
 
-			if (!mason_bip32_derive_keys(&wallet_path, curve_type, &derived_private_key, &derived_chaincode, &extended_public_key))
-			{
-				emRet = ERT_HDPathIllegal;
-				break;
-			}
-
-			private_key_to_public_key(curve_type, &derived_private_key, &derived_public_key);
-			if (!ecdsa_sign(curve_type, hash, hash_len, derived_private_key.data, signature, &signature_len))
-			{
-				emRet = ERT_ECDSASignFail;
-				break;
-			}
+		private_key_to_public_key(curve_type, &derived_private_key, &derived_public_key);
+		if (!ecdsa_sign(curve_type, hash, hash_len, derived_private_key.data, signature, &signature_len))
+		{
+			emRet = ERT_ECDSASignFail;
+			break;
 		}
 
 		if (ERT_Verify_Success == verify_emRet)
@@ -2903,18 +2880,10 @@ static void mason_cmd0A02_crypto_verify_test(void *pContext)
 			curve_type = (crypto_curve_t)(*(uint8_t *)pstTLV->pV);
 		}
 
-		if (CRYPTO_CURVE_ED25519 == curve_type)
+		if (!ecdsa_verify(curve_type, hash, pub_key.data, signature))
 		{
-			emRet = ERT_ED25519VerifyFail;
+			emRet = ERT_ECDSAVerifyFail;
 			break;
-		}
-		else
-		{
-			if (!ecdsa_verify(curve_type, hash, pub_key.data, signature))
-			{
-				emRet = ERT_ECDSAVerifyFail;
-				break;
-			}
 		}
 		emRet = ERT_OK;
 	} while (0);

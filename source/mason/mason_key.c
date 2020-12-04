@@ -53,10 +53,6 @@ bool ckd_private_to_private(
     else
     {
         // normal child
-        if (curve == CRYPTO_CURVE_ED25519)
-        {
-            return false;
-        }
         private_key_to_compressed_public_key(curve, parent_private_key, &parent_compressed_public_key);
         memcpy(data, parent_compressed_public_key.data, COMPRESSED_PUBLIC_KEY_LEN);
     }
@@ -79,11 +75,6 @@ bool ckd_private_to_private(
         // generate child private key
         switch (curve)
         {
-        case CRYPTO_CURVE_ED25519:
-        {
-            memcpy(derived_private_key, i_left, PRIVATE_KEY_LEN);
-            break;
-        }
         case CRYPTO_CURVE_SECP256K1:
         {
             if (!secp256k1_generate_valid_key(i_left, parent_private_key->data, derived_private_key))
@@ -153,11 +144,6 @@ void private_key_to_public_key(
         secp256r1_private_key_to_public_key(private_key->data,
                                             public_key->data,
                                             public_key->data + PUBLIC_KEY_LEN / 2);
-    }
-    else if (curve == CRYPTO_CURVE_ED25519)
-    {
-        ed25519_private_key_to_public_key(private_key->data, public_key->data);
-        public_key->len = PUBLIC_KEY_LEN / 2;
     }
 }
 /**

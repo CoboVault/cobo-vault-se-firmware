@@ -27,6 +27,8 @@ in the file COPYING.  If not, see <http://www.gnu.org/licenses/>.
 #include <secp256.h>
 #include <mason_hdw.h>
 #include <slip39_encrypt.h>
+#include "eip2333.h"
+#include "util.h"
 
 /** Variable definitions */
 wallet_seed_t passphrase_seed = {0};
@@ -1072,5 +1074,107 @@ bool mason_bip32_derive_master_key_fingerprint(crypto_curve_t curve, uint8_t *fi
 
     memset(&master_private_key, 0, sizeof(private_key_t));
     memset(&master_chaincode, 0, sizeof(chaincode_t));
+    return true;
+}
+/**
+ * @functionname: mason_eip2333_derive_master_SK
+ * @description: 
+ * @para: 
+ * @return: 
+ */
+static bool mason_eip2333_derive_master_SK(private_key_t *private_key)
+{
+    wallet_seed_t seed = {0};
+
+    if ((E_HDWM_PASSPHRASE == gemHDWSwitch) && (passphrase_slip39_seed.length))
+    {
+        // PASSPHRASE slip39 seed
+        memcpy(&seed, &passphrase_slip39_seed, sizeof(wallet_seed_t));
+    }
+    else if ((E_HDWM_PASSPHRASE == gemHDWSwitch) && (SHA512_LEN == passphrase_seed.length))
+    {
+        // PASSPHRASE bip39 seed
+        memcpy(&seed, &passphrase_seed, sizeof(wallet_seed_t));
+    }
+    else if (mason_slip39_dec_seed_read(&seed))
+    {
+        // MNEMONIC slip39 seed
+    }
+    else if (mason_seed_read(&seed) && (SHA512_LEN == seed.length))
+    {
+        // MNEMONIC bip39 seed
+    }
+    else
+    {
+        return false;
+    }
+
+    if (seed.length < 32)
+    {
+        return false;
+    }
+
+    derive_master_SK(seed.data, seed.length, private_key->data);
+    private_key->len = PRIVATE_KEY_LEN;
+    memset(&seed, 0, sizeof(wallet_seed_t));
+    return true;
+}
+/**
+ * @functionname: mason_eip2333_derive_SK
+ * @description: 
+ * @para: 
+ * @return: 
+ */
+static bool mason_eip2333_derive_SK(wallet_path_t *wallet_path, private_key_t *private_key)
+{
+    private_key_t parent_key = {0};
+    private_key_t child_sk = {0};
+    if (!mason_eip2333_derive_master_SK(&parent_key))
+    {
+        return false;
+    }
+
+    memmove(&child_sk, &parent_key, sizeof(private_key_t));
+
+    for (uint8_t i = 0; i < wallet_path->num_of_segments; i++)
+    {
+        if (!derive_child_SK(parent_key.data, wallet_path->segments[i], child_sk.data))
+        {
+            return false;
+        }
+        child_sk.len = SHA256_LEN;
+        memmove(&parent_key, &child_sk, sizeof(private_key_t));
+    }
+    memmove(private_key, &child_sk, sizeof(private_key_t));
+
+    return true;
+}
+/**
+ * @functionname: mason_eth2_derive_deposit_SK
+ * @description: 
+ * @para: 
+ * @return: 
+ */
+bool mason_eth2_derive_deposit_SK(uint32_t account, private_key_t *withdrawal_key, private_key_t *sign_key)
+{
+    wallet_path_t path = {0};
+    char path_str[MAX_HDPATH_SIZE + 1] = "m/12381/3600/";
+    char account_str[12] = {0};
+    myuitoa(account, account_str);
+    strcat(path_str, account_str);
+    char *use = "/0";
+    strcat(path_str, use);
+
+    mason_parse_wallet_path_from_string(path_str, strlen(path_str), &path);
+
+    if (!mason_eip2333_derive_SK(&path, withdrawal_key))
+    {
+        return false;
+    }
+    if (!derive_child_SK(withdrawal_key->data, 0, sign_key->data))
+    {
+        return false;
+    }
+    sign_key->len = PRIVATE_KEY_LEN;
     return true;
 }

@@ -87,6 +87,7 @@ static void mason_cmd0308_get_masterkey_fingerprint(void *pContext);
 #ifdef MASON_TEST
 static void mason_cmd0401_generate_public_key_from_private_key(void *pContext);
 #endif
+static void mason_cmd0402_derive_deposit_key(void *pContext);
 static void mason_cmd0502_mnemonic_verify(void *pContext);
 static void mason_cmd0701_web_authentication(void *pContext);
 static void mason_cmd0802_tamper_test(void *pContext);
@@ -215,8 +216,8 @@ MASON_COMMANDS_EXT volatile stCmdHandlerType gstCmdHandlers[CMD_H_MAX][CMD_L_MAX
 #endif
 		 },
 		 {
-			 USER_ALL,
-			 mason_cmd_invalid,
+			 USER_WALLET,
+			 mason_cmd0402_derive_deposit_key,
 		 },
 		 {
 			 USER_ALL,
@@ -2158,6 +2159,72 @@ static void mason_cmd0401_generate_public_key_from_private_key(void *pContext)
 	MASON_CMD_RESP_OUTPUT()
 }
 #endif
+/**
+ * @functionname: mason_cmd0402_derive_deposit_key
+ * @description: 
+ * @para: 
+ * @return: 
+ */
+static void mason_cmd0402_derive_deposit_key(void *pContext)
+{
+	MASON_CMD_DECLARE_VARIABLE(ERT_OK)
+
+	private_key_t withdrawal_key = {0};
+	private_key_t sign_key = {0};
+	uint8_t switchtype = (uint8_t)gemHDWSwitch;
+	emRetType verify_emRet = ERT_Verify_Init;
+
+	mason_cmd_init_outputTLVArray(&stStack);
+
+	do
+	{
+		if (!stack_search_by_tag(pstS, &pstTLV, TLV_T_CMD))
+		{
+			emRet = ERT_CommFailParam;
+			break;
+		}
+		mason_cmd_append_ele_to_outputTLVArray(&stStack, pstTLV);
+
+		if (ERT_Verify_Success != (emRet = mason_cmd_verify_passwd(pstS, &pstTLV)))
+		{
+			break;
+		}
+		verify_emRet = emRet;
+
+		if (!stack_search_by_tag(pstS, &pstTLV, TLV_T_HDW_SWITCH) || (1 != pstTLV->L))
+		{
+			emRet = ERT_HDWalletSwitchNeed;
+			break;
+		}
+		if (switchtype != *(uint8_t *)pstTLV->pV)
+		{
+			emRet = ERT_HDWalletSwitchNotMatch;
+			break;
+		}
+
+		if (!stack_search_by_tag(pstS, &pstTLV, TLV_T_ACCOUNT) || (4 != pstTLV->L))
+		{
+			emRet = ERT_CommFailParam;
+			break;
+		}
+		uint32_t account = 0;
+		buf_to_u32(&account, (uint8_t *)pstTLV->pV);
+
+		if (!mason_eth2_derive_deposit_SK(account, &withdrawal_key, &sign_key))
+		{
+			emRet = ERT_CommFailParam;
+			break;
+		}
+		mason_cmd_append_to_outputTLVArray(&stStack, TLV_T_ETH2_WITHDRAWAL_KEY, withdrawal_key.len, withdrawal_key.data);
+		mason_cmd_append_to_outputTLVArray(&stStack, TLV_T_ETH2_SIGN_KEY, sign_key.len, sign_key.data);
+
+		if (ERT_Verify_Success == verify_emRet)
+		{
+			emRet = ERT_OK;
+		}
+	} while (0);
+	MASON_CMD_RESP_OUTPUT()
+}
 /**
  * @functionname: mason_cmd0502_mnemonic_verify
  * @description: 

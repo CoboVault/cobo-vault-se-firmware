@@ -6,8 +6,8 @@
 ; * @date:    
 ; *
 ; *****************************************************************************/
-Stack_Size      EQU     0x00001000
-Heap_Size       EQU     0x00001800
+Stack_Size      EQU     0x00002800
+Heap_Size       EQU     0x00000800
 ;__initial_sp    EQU    0x20003000	   ;config sp value
 
                 AREA    STACK, NOINIT, READWRITE, ALIGN=3

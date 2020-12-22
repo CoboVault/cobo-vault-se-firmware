@@ -84,6 +84,7 @@ extern "C"
 #define TLV_T_MASTER_KEY_FP				0x020B
 #define TLV_T_SECURITY_SWITCH			0x020F
 #define TLV_T_HDW_SWITCH			    0x0210
+#define TLV_T_ACCOUNT   			    0x0211
 
 #define TLV_T_DES_KEY					0x0301
 #define TLV_T_PRVKEY					0x0302
@@ -128,6 +129,8 @@ extern "C"
 #define TLV_T_SLIP39_MASTER_SEED		0x080B
 #define TLV_T_SLIP39_ID				    0x080C
 #define TLV_T_SLIP39_EXPONENT			0x080D
+#define TLV_T_ETH2_WITHDRAWAL_KEY		0x080E
+#define TLV_T_ETH2_SIGN_KEY             0x080F
 
 /** Compatibility with the cplusplus*/
 #ifdef __cplusplus

@@ -1,4 +1,4 @@
-;#<FEEDBACK># ARM Linker, 4.1 [Build 481]: Last Updated: Wed Dec 02 16:06:48 2020
+;#<FEEDBACK># ARM Linker, 4.1 [Build 481]: Last Updated: Mon Dec 28 17:56:58 2020
 ;VERSION 0.2
 ;FILE base58.o
 __ARM_common_ll_muluu <= USED 0
@@ -62,14 +62,16 @@ __asm___7_ecdsa_c_19676e1f____REVSH <= USED 0
 __asm___8_eflash_c_edc759be____REV16 <= USED 0
 __asm___8_eflash_c_edc759be____REVSH <= USED 0
 eflash_erase_pages <= USED 0
+;FILE eip2333.o
+__asm___9_eip2333_c_0ea7b757____REV16 <= USED 0
+__asm___9_eip2333_c_0ea7b757____REVSH <= USED 0
 ;FILE gpio.o
 __asm___6_gpio_c_1ac9b19b____REV16 <= USED 0
 __asm___6_gpio_c_1ac9b19b____REVSH <= USED 0
+;FILE hkdf.o
+__asm___6_hkdf_c_hkdf____REV16 <= USED 0
+__asm___6_hkdf_c_hkdf____REVSH <= USED 0
 ;FILE hmac.o
-hmac_sha256 <= USED 0
-hmac_sha256_Final <= USED 0
-hmac_sha256_Init <= USED 0
-hmac_sha256_Update <= USED 0
 hmac_sha512_Update <= USED 0
 hmac_sha512_prepare <= USED 0
 ;FILE hrng.o
@@ -208,8 +210,6 @@ is_number <= USED 0
 myatoui64 <= USED 0
 sequence_all_zero <= USED 0
 sequence_compare_bit8 <= USED 0
-str_reverse <= USED 0
-swap_fast <= USED 0
 u64_to_le_buf <= USED 0
 ;FILE wdt.o
 __asm___5_wdt_c_a2d39080____REV16 <= USED 0

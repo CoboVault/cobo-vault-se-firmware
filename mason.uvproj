@@ -540,6 +540,16 @@
               <FileType>1</FileType>
               <FilePath>.\source\crypto\slip39_encrypt.c</FilePath>
             </File>
+            <File>
+              <FileName>eip2333.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\source\crypto\eip2333.c</FilePath>
+            </File>
+            <File>
+              <FileName>hkdf.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\source\crypto\hkdf.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

@@ -65,6 +65,7 @@ extern "C"
 	void buf_to_u32(uint32_t *pu32, uint8_t *buf);
 	unsigned int myatoui(const char *str);
 	bool myatoui64(const char *str, uint64_t *ui64);
+	void myuitoa(uint32_t n, char s[]);
 	bool is_number(const uint8_t *pnum, uint16_t len);
 	uint16_t buf_return_u16(uint8_t *buf);
 	uint32_t buf_return_u32(uint8_t *buf);
@@ -74,7 +75,7 @@ extern "C"
 	int8_t sequence_compare_bit8(const uint8_t *pBuf1, const uint8_t *pBuf2, uint32_t bufLen);
 	bool sequence_all_zero(const uint8_t *pBuf, uint32_t bufLen);
 	void data_padding(uint8_t *pMsg, uint16_t *msgLen, emPaddingType emPadding);
-	void memzero(void* const pnt, const size_t len);
+	void memzero(void *const pnt, const size_t len);
 	uint8_t get_lrc(uint8_t *pMsg, uint16_t msgLen);
 	bool memcmp_ATA(const uint8_t *buf1, const uint8_t *buf2, uint16_t len);
 	void debug_key(char *name, uint8_t *key, uint16_t len);

@@ -96,6 +96,12 @@ extern "C"
 #define FLASH_ADDR_SLIP39_DEC_SEED          (FLASH_ADDR_SLIP39_MASTER_SEED + SLIP39_MASTER_SEED_SIZE)
 #define SLIP39_DEC_SEED_SIZE                72
 
+// 0x38A00 rsa private key n -- 1 page
+#define FLASH_ADDR_RSA_PRIKEY_N_512B          (FLASH_ADDR_SEED_FROM_ENTROPY + PAGE_SIZE)
+
+// 0x38C00 rsa private key d -- 1 page
+#define FLASH_ADDR_RSA_PRIKEY_D_512B          (FLASH_ADDR_RSA_PRIKEY_N_512B + PAGE_SIZE)
+
 // 0x39200 usr data area
 #define FLASH_ADDR_USRDATA_START            (FLASH_ADDR_PARAM_START + PAGE_SIZE*9)
 #define FLASH_ADDR_USRPWD                   (FLASH_ADDR_USRDATA_START)

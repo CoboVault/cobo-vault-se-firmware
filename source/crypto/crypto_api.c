@@ -25,6 +25,7 @@ in the file COPYING.  If not, see <http://www.gnu.org/licenses/>.
 #include "sm2.h"
 #include "util.h"
 #include "ed25519.h"
+#include "rsa_keygen.h"
 /** Function implementations */
 /**
  * @functionname: crypto_init
@@ -132,10 +133,7 @@ bool is_valid_private_key(crypto_curve_t curve, uint8_t *private_key)
  */
 bool is_canonical(uint8_t signature[64])
 {
-	return	!(signature[0] & 0x80)
-		 && !(signature[0] == 0 &&  !(signature[1] & 0x80)) 
-		 && !(signature[32] & 0x80) 
-		 && !(signature[32] == 0 && !(signature[33] & 0x80));
+	return !(signature[0] & 0x80) && !(signature[0] == 0 && !(signature[1] & 0x80)) && !(signature[32] & 0x80) && !(signature[32] == 0 && !(signature[33] & 0x80));
 }
 /**
  * @functionname: ecdsa_sign_once
@@ -345,3 +343,72 @@ void ed25519_private_key_to_public_key(uint8_t *private_key, uint8_t *public_key
 	ed25519_publickey(private_key, public_key);
 }
 
+//RSA cryptosystem
+
+/**
+ * @functionname: crypto_para_u8_to_u32
+ * @description: convert parameters from u8 data buffer to u32 structure
+ * @para: in - u8_para; out - u32_para; ndigits - len of u32_para 
+ * @return: 
+ */
+static void crypto_para_u8_to_u32(uint8_t *u8_para, uint32_t *u32_para, uint16_t ndigits)
+{
+	uint8_t *pt = (uint8_t *)u32_para;
+	for (uint16_t i = 0; i < ndigits * 4; i++)
+	{
+		pt[ndigits * 4 - i - 1] = u8_para[i];
+	}
+}
+/**
+ * @functionname: crypto_para_u32_to_u8
+ * @description: convert parameters from u8 data buffer to u32 structure
+ * @para: in - u32_para; out - u8_para; ndigits - len of u32_para 
+ * @return: 
+ */
+static void crypto_para_u32_to_u8(uint32_t *u32_para, uint8_t *u8_para, uint16_t ndigits)
+{
+	uint8_t *pt = (uint8_t *)u32_para;
+	for (uint16_t i = 0; i < ndigits * 4; i++)
+	{
+		u8_para[i] = pt[ndigits * 4 - i - 1];
+	}
+}
+/**
+ * @functionname: crypto_api_rsa_decrypt
+ * @description: 
+ * @para: 
+ * @return: 
+ */
+bool crypto_api_rsa_decrypt(uint8_t *private_key_n, uint16_t n_len, uint8_t *private_key_d, uint16_t d_len, uint8_t *encrypted_data, uint16_t encrypted_data_len, uint8_t *output, uint16_t *output_len)
+{
+	UINT8 ndigits_n;
+	UINT8 ndigits_d;
+	UINT8 res_length;
+	UINT32 rsa_N[NDIGITS] = {0};
+	UINT32 rsa_D[NDIGITS] = {0};
+	UINT32 rsa_RESULT[NDIGITS] = {0};
+
+	if ((n_len % 4) || (d_len % 4) || (encrypted_data_len % 4))
+	{
+		return false;
+	}
+	ndigits_n = n_len / 4;
+	ndigits_d = d_len / 4;
+	res_length = encrypted_data_len / 4;
+
+	crypto_para_u8_to_u32(private_key_n, rsa_N, ndigits_n);
+	crypto_para_u8_to_u32(private_key_d, rsa_D, ndigits_d);
+	crypto_para_u8_to_u32(encrypted_data, rsa_RESULT, res_length);
+
+	enable_module(BIT_PKI);
+
+	if (rsa_mul_me(rsa_RESULT, res_length, rsa_D, ndigits_d, rsa_N, ndigits_n, rsa_RESULT, &res_length, CNST_RSA_EXP))
+	{
+		return false;
+	}
+
+	crypto_para_u32_to_u8(rsa_RESULT, output, res_length);
+	*output_len = res_length * 4;
+
+	return true;
+}

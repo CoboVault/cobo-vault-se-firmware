@@ -82,7 +82,9 @@ extern "C"
 
     bool crypto_init(void);
     void ed25519_private_key_to_public_key(uint8_t *private_key, uint8_t *public_key);
-
+    bool crypto_api_rsa_decrypt(uint8_t *private_key_n, uint16_t n_len, uint8_t *private_key_d,
+                                uint16_t d_len, uint8_t *encrypted_data, uint16_t encrypted_data_len,
+                                uint8_t *output, uint16_t *output_len);
     CRYPTO_API_EXT void ripeMD160_api(uint8_t *pData, uint32_t len, uint8_t *pDigest);
     CRYPTO_API_EXT void sha256_api(uint8_t *pData, uint32_t len, uint8_t *pDigest);
     CRYPTO_API_EXT void sha512_api(uint8_t *pData, uint32_t len, uint8_t *pDigest);

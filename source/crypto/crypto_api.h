@@ -70,14 +70,6 @@ extern "C"
         uint16_t *signature_len);
 
     bool ecdsa_verify(crypto_curve_t curve, uint8_t *hash, uint8_t *public_key, uint8_t *signature);
-    void crypto_api_sm2_init(void);
-    bool crypto_api_sm2_decrypt(
-        uint8_t *private_key,
-        uint8_t *encrypted_data,
-        uint32_t encrypted_data_len,
-        uint8_t *output,
-        uint32_t *output_len);
-
     bool is_valid_private_key(crypto_curve_t curve, uint8_t *private_key);
 
     bool crypto_init(void);

@@ -22,7 +22,6 @@ in the file COPYING.  If not, see <http://www.gnu.org/licenses/>.
 #include "sha2.h"
 #include "RipeMD160.h"
 #include "hmac.h"
-#include "sm2.h"
 #include "util.h"
 #include "ed25519.h"
 #include "rsa_keygen.h"
@@ -37,7 +36,6 @@ bool crypto_init()
 {
 	secp256k1_init();
 	secp256r1_init();
-	crypto_api_sm2_init();
 	return true;
 }
 /**
@@ -232,106 +230,6 @@ bool ecdsa_verify(crypto_curve_t curve, uint8_t *hash, uint8_t *public_key, uint
 	}
 }
 
-const int SM2_CURVE_LEN_IN_BIT = 256;
-const int SM2_CURVE_LEN_IN_BYTE = SM2_CURVE_LEN_IN_BIT / 8;
-const int SM2_CURVE_LEN_IN_WORD = SM2_CURVE_LEN_IN_BYTE / 4;
-static UINT32 SM2_N[8] = {0xFFFFFFFE, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0x7203DF6B, 0x21C6052B, 0x53BBF409, 0x39D54123};
-static UINT32 SM2_a[8] = {0xFFFFFFFE, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0x00000000, 0xFFFFFFFF, 0xFFFFFFFC};
-static UINT32 SM2_b[8] = {0x28E9FA9E, 0x9D9F5E34, 0x4D5A9E4B, 0xCF6509A7, 0xF39789F5, 0x15AB8F92, 0xDDBCBD41, 0x4D940E93};
-static UINT32 SM2_P[8] = {0xFFFFFFFE, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0x00000000, 0xFFFFFFFF, 0xFFFFFFFF};
-static UINT32 SM2_BaseX[8] = {0x32C4AE2C, 0x1F198119, 0x5F990446, 0x6A39C994, 0x8FE30BBF, 0xF2660BE1, 0x715A4589, 0x334C74C7};
-static UINT32 SM2_BaseY[8] = {0xBC3736A2, 0xF4F6779C, 0x59BDCEE3, 0x6B692153, 0xD0A9877C, 0xC62A4740, 0x02DF32E5, 0x2139F0A0};
-
-static ECC_G_STR ecc_sm2_glb_str;
-// static MATH_G_STR math_sm2_glb_str;
-static SM2_CRYPT_CTX sm2_context;
-static SM3_CTX sm3_context;
-/**
- * @functionname: crypto_api_sm2_init
- * @description: 
- * @para: 
- * @return: 
- */
-void crypto_api_sm2_init()
-{
-	static bool has_inited = false;
-
-	if (!has_inited)
-	{
-		sm2_swap_array(SM2_N, SM2_CURVE_LEN_IN_WORD);
-		sm2_swap_array(SM2_a, SM2_CURVE_LEN_IN_WORD);
-		sm2_swap_array(SM2_b, SM2_CURVE_LEN_IN_WORD);
-		sm2_swap_array(SM2_P, SM2_CURVE_LEN_IN_WORD);
-		sm2_swap_array(SM2_BaseX, SM2_CURVE_LEN_IN_WORD);
-		sm2_swap_array(SM2_BaseY, SM2_CURVE_LEN_IN_WORD);
-
-		has_inited = true;
-	}
-
-	ECC_para_initial(
-		&ecc_sm2_glb_str,
-		SM2_CURVE_LEN_IN_WORD,
-		SM2_P,
-		SM2_a,
-		SM2_b,
-		SM2_N,
-		SM2_BaseX,
-		SM2_BaseY);
-}
-/**
- * @functionname: crypto_api_sm2_encrypt
- * @description: 
- * @para: 
- * @return: 
- */
-bool crypto_api_sm2_encrypt(uint8_t *public_key, uint8_t *data, uint16_t data_len)
-{
-	return true;
-}
-/**
- * @functionname: crypto_api_sm2_decrypt
- * @description: 
- * @para: 
- * @return: 
- */
-bool crypto_api_sm2_decrypt(uint8_t *private_key, uint8_t *encrypted_data, uint32_t encrypted_data_len, uint8_t *output, uint32_t *output_len)
-{
-	uint8_t *c1;
-	uint8_t *c2;
-	uint8_t *c3;
-
-	bool is_succeed = false;
-
-	if (encrypted_data_len <= 96)
-	{
-		return false;
-	}
-
-	crypto_api_sm2_init();
-
-	encrypted_data = encrypted_data + 1;
-	encrypted_data_len--;
-
-	c1 = encrypted_data;
-	c3 = c1 + 64;
-	c2 = c3 + 32;
-
-	*output_len = encrypted_data_len - 96;
-
-	is_succeed = (0 == sm2_decrypt(
-						   &ecc_sm2_glb_str,
-						   &sm2_context,
-						   &sm3_context,
-						   (uint8_t *)private_key,
-						   c1,
-						   c2,
-						   c3,
-						   *output_len,
-						   output,
-						   SM2_NORMAL));
-
-	return is_succeed;
-}
 /**
  * @functionname: ed25519_private_key_to_public_key
  * @description: 

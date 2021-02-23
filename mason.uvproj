@@ -466,14 +466,9 @@
               <FilePath>.\source\driver\pki_v1.lib</FilePath>
             </File>
             <File>
-              <FileName>rsa_v2.lib</FileName>
+              <FileName>rsa_v1.lib</FileName>
               <FileType>4</FileType>
-              <FilePath>.\source\driver\rsa_v2.lib</FilePath>
-            </File>
-            <File>
-              <FileName>sm2sm3_v2.lib</FileName>
-              <FileType>4</FileType>
-              <FilePath>.\source\driver\sm2sm3_v2.lib</FilePath>
+              <FilePath>.\source\driver\rsa_v1.lib</FilePath>
             </File>
           </Files>
         </Group>

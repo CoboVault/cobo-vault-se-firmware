@@ -2262,6 +2262,11 @@ static void mason_cmd0701_web_authentication(void *pContext)
 		}
 		encrypt_message = (uint8_t *)pstTLV->pV;
 		encrypt_message_len = pstTLV->L;
+		if (encrypt_message_len < 2)
+		{
+			emRet = ERT_CommFailParam;
+			break;
+		}
 
 		if (!stack_search_by_tag(pstS, &pstTLV, TLV_T_SIGNATURE) || (signature_len != pstTLV->L))
 		{
@@ -2286,7 +2291,7 @@ static void mason_cmd0701_web_authentication(void *pContext)
 			break;
 		}
 
-		if (!crypto_api_rsa_decrypt(web_auth_private_key_N, RSA_KEY_LEN, web_auth_private_key_D, RSA_KEY_LEN, encrypt_message, encrypt_message_len, output, &output_len))
+		if (!crypto_api_rsa_decrypt(web_auth_private_key_N, RSA_KEY_LEN, web_auth_private_key_D, RSA_KEY_LEN, encrypt_message + 1, encrypt_message_len - 1, output, &output_len))
 		{
 			emRet = ERT_CommFailParam;
 			break;

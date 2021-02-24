@@ -22,9 +22,9 @@ in the file COPYING.  If not, see <http://www.gnu.org/licenses/>.
 #include "sha2.h"
 #include "RipeMD160.h"
 #include "hmac.h"
-#include "sm2.h"
 #include "util.h"
 #include "ed25519.h"
+#include "rsa_keygen.h"
 /** Function implementations */
 /**
  * @functionname: crypto_init
@@ -36,7 +36,6 @@ bool crypto_init()
 {
 	secp256k1_init();
 	secp256r1_init();
-	crypto_api_sm2_init();
 	return true;
 }
 /**
@@ -132,10 +131,7 @@ bool is_valid_private_key(crypto_curve_t curve, uint8_t *private_key)
  */
 bool is_canonical(uint8_t signature[64])
 {
-	return	!(signature[0] & 0x80)
-		 && !(signature[0] == 0 &&  !(signature[1] & 0x80)) 
-		 && !(signature[32] & 0x80) 
-		 && !(signature[32] == 0 && !(signature[33] & 0x80));
+	return !(signature[0] & 0x80) && !(signature[0] == 0 && !(signature[1] & 0x80)) && !(signature[32] & 0x80) && !(signature[32] == 0 && !(signature[33] & 0x80));
 }
 /**
  * @functionname: ecdsa_sign_once
@@ -234,106 +230,6 @@ bool ecdsa_verify(crypto_curve_t curve, uint8_t *hash, uint8_t *public_key, uint
 	}
 }
 
-const int SM2_CURVE_LEN_IN_BIT = 256;
-const int SM2_CURVE_LEN_IN_BYTE = SM2_CURVE_LEN_IN_BIT / 8;
-const int SM2_CURVE_LEN_IN_WORD = SM2_CURVE_LEN_IN_BYTE / 4;
-static UINT32 SM2_N[8] = {0xFFFFFFFE, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0x7203DF6B, 0x21C6052B, 0x53BBF409, 0x39D54123};
-static UINT32 SM2_a[8] = {0xFFFFFFFE, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0x00000000, 0xFFFFFFFF, 0xFFFFFFFC};
-static UINT32 SM2_b[8] = {0x28E9FA9E, 0x9D9F5E34, 0x4D5A9E4B, 0xCF6509A7, 0xF39789F5, 0x15AB8F92, 0xDDBCBD41, 0x4D940E93};
-static UINT32 SM2_P[8] = {0xFFFFFFFE, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0x00000000, 0xFFFFFFFF, 0xFFFFFFFF};
-static UINT32 SM2_BaseX[8] = {0x32C4AE2C, 0x1F198119, 0x5F990446, 0x6A39C994, 0x8FE30BBF, 0xF2660BE1, 0x715A4589, 0x334C74C7};
-static UINT32 SM2_BaseY[8] = {0xBC3736A2, 0xF4F6779C, 0x59BDCEE3, 0x6B692153, 0xD0A9877C, 0xC62A4740, 0x02DF32E5, 0x2139F0A0};
-
-static ECC_G_STR ecc_sm2_glb_str;
-// static MATH_G_STR math_sm2_glb_str;
-static SM2_CRYPT_CTX sm2_context;
-static SM3_CTX sm3_context;
-/**
- * @functionname: crypto_api_sm2_init
- * @description: 
- * @para: 
- * @return: 
- */
-void crypto_api_sm2_init()
-{
-	static bool has_inited = false;
-
-	if (!has_inited)
-	{
-		sm2_swap_array(SM2_N, SM2_CURVE_LEN_IN_WORD);
-		sm2_swap_array(SM2_a, SM2_CURVE_LEN_IN_WORD);
-		sm2_swap_array(SM2_b, SM2_CURVE_LEN_IN_WORD);
-		sm2_swap_array(SM2_P, SM2_CURVE_LEN_IN_WORD);
-		sm2_swap_array(SM2_BaseX, SM2_CURVE_LEN_IN_WORD);
-		sm2_swap_array(SM2_BaseY, SM2_CURVE_LEN_IN_WORD);
-
-		has_inited = true;
-	}
-
-	ECC_para_initial(
-		&ecc_sm2_glb_str,
-		SM2_CURVE_LEN_IN_WORD,
-		SM2_P,
-		SM2_a,
-		SM2_b,
-		SM2_N,
-		SM2_BaseX,
-		SM2_BaseY);
-}
-/**
- * @functionname: crypto_api_sm2_encrypt
- * @description: 
- * @para: 
- * @return: 
- */
-bool crypto_api_sm2_encrypt(uint8_t *public_key, uint8_t *data, uint16_t data_len)
-{
-	return true;
-}
-/**
- * @functionname: crypto_api_sm2_decrypt
- * @description: 
- * @para: 
- * @return: 
- */
-bool crypto_api_sm2_decrypt(uint8_t *private_key, uint8_t *encrypted_data, uint32_t encrypted_data_len, uint8_t *output, uint32_t *output_len)
-{
-	uint8_t *c1;
-	uint8_t *c2;
-	uint8_t *c3;
-
-	bool is_succeed = false;
-
-	if (encrypted_data_len <= 96)
-	{
-		return false;
-	}
-
-	crypto_api_sm2_init();
-
-	encrypted_data = encrypted_data + 1;
-	encrypted_data_len--;
-
-	c1 = encrypted_data;
-	c3 = c1 + 64;
-	c2 = c3 + 32;
-
-	*output_len = encrypted_data_len - 96;
-
-	is_succeed = (0 == sm2_decrypt(
-						   &ecc_sm2_glb_str,
-						   &sm2_context,
-						   &sm3_context,
-						   (uint8_t *)private_key,
-						   c1,
-						   c2,
-						   c3,
-						   *output_len,
-						   output,
-						   SM2_NORMAL));
-
-	return is_succeed;
-}
 /**
  * @functionname: ed25519_private_key_to_public_key
  * @description: 
@@ -345,3 +241,72 @@ void ed25519_private_key_to_public_key(uint8_t *private_key, uint8_t *public_key
 	ed25519_publickey(private_key, public_key);
 }
 
+//RSA cryptosystem
+
+/**
+ * @functionname: crypto_para_u8_to_u32
+ * @description: convert parameters from u8 data buffer to u32 structure
+ * @para: in - u8_para; out - u32_para; ndigits - len of u32_para 
+ * @return: 
+ */
+static void crypto_para_u8_to_u32(uint8_t *u8_para, uint32_t *u32_para, uint16_t ndigits)
+{
+	uint8_t *pt = (uint8_t *)u32_para;
+	for (uint16_t i = 0; i < ndigits * 4; i++)
+	{
+		pt[ndigits * 4 - i - 1] = u8_para[i];
+	}
+}
+/**
+ * @functionname: crypto_para_u32_to_u8
+ * @description: convert parameters from u8 data buffer to u32 structure
+ * @para: in - u32_para; out - u8_para; ndigits - len of u32_para 
+ * @return: 
+ */
+static void crypto_para_u32_to_u8(uint32_t *u32_para, uint8_t *u8_para, uint16_t ndigits)
+{
+	uint8_t *pt = (uint8_t *)u32_para;
+	for (uint16_t i = 0; i < ndigits * 4; i++)
+	{
+		u8_para[i] = pt[ndigits * 4 - i - 1];
+	}
+}
+/**
+ * @functionname: crypto_api_rsa_decrypt
+ * @description: 
+ * @para: 
+ * @return: 
+ */
+bool crypto_api_rsa_decrypt(uint8_t *private_key_n, uint16_t n_len, uint8_t *private_key_d, uint16_t d_len, uint8_t *encrypted_data, uint16_t encrypted_data_len, uint8_t *output, uint16_t *output_len)
+{
+	UINT8 ndigits_n;
+	UINT8 ndigits_d;
+	UINT8 res_length;
+	UINT32 rsa_N[NDIGITS] = {0};
+	UINT32 rsa_D[NDIGITS] = {0};
+	UINT32 rsa_RESULT[NDIGITS] = {0};
+
+	if ((n_len % 4) || (d_len % 4) || (encrypted_data_len % 4))
+	{
+		return false;
+	}
+	ndigits_n = n_len / 4;
+	ndigits_d = d_len / 4;
+	res_length = encrypted_data_len / 4;
+
+	crypto_para_u8_to_u32(private_key_n, rsa_N, ndigits_n);
+	crypto_para_u8_to_u32(private_key_d, rsa_D, ndigits_d);
+	crypto_para_u8_to_u32(encrypted_data, rsa_RESULT, res_length);
+
+	enable_module(BIT_PKI);
+
+	if (rsa_mul_me(rsa_RESULT, res_length, rsa_D, ndigits_d, rsa_N, ndigits_n, rsa_RESULT, &res_length, CNST_RSA_EXP))
+	{
+		return false;
+	}
+
+	crypto_para_u32_to_u8(rsa_RESULT, output, res_length);
+	*output_len = res_length * 4;
+
+	return true;
+}

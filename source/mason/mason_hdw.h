@@ -53,6 +53,7 @@ extern "C"
 #define SEED_LEN SHA512_LEN
 #define DES3_KEY_LEN 24
 #define DES3_IV_LEN 8
+#define RSA_KEY_LEN 512
 
 /* macro below mapped to gstHDWStatus value*/
 #define HDW_STATUS_CHIP 0

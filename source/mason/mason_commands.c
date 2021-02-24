@@ -2233,8 +2233,9 @@ static void mason_cmd0701_web_authentication(void *pContext)
 	uint8_t *encrypt_message = NULL;
 	uint16_t encrypt_message_len = 0;
 	uint8_t output[64] = {0};
-	uint32_t output_len = 0;
-	uint8_t web_auth_private_key[PRIVATE_KEY_LEN] = {0};
+	uint16_t output_len = 0;
+	uint8_t web_auth_private_key_N[RSA_KEY_LEN] = {0};
+	uint8_t web_auth_private_key_D[RSA_KEY_LEN] = {0};
 	uint8_t web_auth_public_key[PUB_KEY_LEN] = {0};
 	uint8_t message_sha256_buf[SHA256_LEN];
 
@@ -2249,11 +2250,6 @@ static void mason_cmd0701_web_authentication(void *pContext)
 		}
 		mason_cmd_append_ele_to_outputTLVArray(&stStack, pstTLV);
 
-		if (ERT_OK != (emRet = mason_storage_read((uint8_t *)web_auth_private_key, PRIVATE_KEY_LEN, FLASH_ADDR_WEB_AUTH_PRI_KEY_32B)))
-		{
-			break;
-		}
-
 		if (ERT_OK != (emRet = mason_storage_read((uint8_t *)web_auth_public_key, PUB_KEY_LEN, FLASH_ADDR_WEB_AUTH_PUB_KEY_64B)))
 		{
 			break;
@@ -2266,6 +2262,11 @@ static void mason_cmd0701_web_authentication(void *pContext)
 		}
 		encrypt_message = (uint8_t *)pstTLV->pV;
 		encrypt_message_len = pstTLV->L;
+		if (encrypt_message_len < 2)
+		{
+			emRet = ERT_CommFailParam;
+			break;
+		}
 
 		if (!stack_search_by_tag(pstS, &pstTLV, TLV_T_SIGNATURE) || (signature_len != pstTLV->L))
 		{
@@ -2280,7 +2281,17 @@ static void mason_cmd0701_web_authentication(void *pContext)
 			break;
 		}
 
-		if (!crypto_api_sm2_decrypt(web_auth_private_key, encrypt_message, encrypt_message_len, output, &output_len))
+		if (ERT_OK != (emRet = mason_storage_read((uint8_t *)web_auth_private_key_N, RSA_KEY_LEN, FLASH_ADDR_RSA_PRIKEY_N_512B)))
+		{
+			break;
+		}
+
+		if (ERT_OK != (emRet = mason_storage_read((uint8_t *)web_auth_private_key_D, RSA_KEY_LEN, FLASH_ADDR_RSA_PRIKEY_D_512B)))
+		{
+			break;
+		}
+
+		if (!crypto_api_rsa_decrypt(web_auth_private_key_N, RSA_KEY_LEN, web_auth_private_key_D, RSA_KEY_LEN, encrypt_message + 1, encrypt_message_len - 1, output, &output_len))
 		{
 			emRet = ERT_CommFailParam;
 			break;
@@ -2289,7 +2300,8 @@ static void mason_cmd0701_web_authentication(void *pContext)
 		mason_cmd_append_to_outputTLVArray(&stStack, TLV_T_PLAIN_MSG, output_len, output);
 	} while (0);
 
-	memset(web_auth_private_key, 0, PRIVATE_KEY_LEN);
+	memset(web_auth_private_key_N, 0, RSA_KEY_LEN);
+	memset(web_auth_private_key_D, 0, RSA_KEY_LEN);
 	memset(web_auth_public_key, 0, PUB_KEY_LEN);
 	MASON_CMD_RESP_OUTPUT()
 }

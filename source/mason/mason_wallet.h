@@ -120,4 +120,5 @@ bool mason_bip32_derive_keys(
     extended_key_t *extended_key);
 
 bool mason_bip32_derive_master_key_fingerprint(crypto_curve_t curve, uint8_t *fingerprint, uint16_t fingerprint_len);
+bool mason_webauth_key_delete(void);
 #endif

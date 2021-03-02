@@ -292,6 +292,7 @@ void tamper_check(void)
 			mason_set_mode(HDW_STATUS_ATTACK);
 			mason_delete_wallet();
 			mason_setting_delete();
+			mason_webauth_key_delete();
 		}
 	}
 }

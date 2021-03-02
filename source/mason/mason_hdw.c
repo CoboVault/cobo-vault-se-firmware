@@ -31,7 +31,7 @@ MASON_HDW_EXT const volatile stHDWStatusType gstHDWStatus[] =
 		{E_HDWS_CHIP, "\xFF\xFF\xFF\xFF"},
 		{E_HDWS_FACTORY, "FATY"},
 		{E_HDWS_ATTACK, "ATAK"},
-		{E_HDWS_EMPTY, "COBO"},
+		{E_HDWS_EMPTY, "EMPT"},
 		{E_HDWS_WALLET, "WLET"},
 };
 MASON_HDW_EXT volatile uint8_t gDebugSwitchOn = 0;

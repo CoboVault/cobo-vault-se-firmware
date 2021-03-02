@@ -24,7 +24,7 @@ in the file COPYING.  If not, see <http://www.gnu.org/licenses/>.
 #include <crypto_api.h>
 
 /** Macro definitions*/
-#define SETTING_STORE_PREFIX "COBO"
+#define SETTING_STORE_PREFIX "USER"
 #define SETTING_STORE_PASS_SUFFIX "PASS"
 #define SETTING_STORE_CONT_SUFFIX "CONT"
 #define SETTING_STORE_FING_SUFFIX "FING"

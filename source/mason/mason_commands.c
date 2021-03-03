@@ -311,7 +311,7 @@ MASON_COMMANDS_EXT volatile stCmdHandlerType gstCmdHandlers[CMD_H_MAX][CMD_L_MAX
 		 }},
 		{//07 XX
 		 {
-			 USER_ALL,
+			 USER_CHIP | USER_FACTORY | USER_EMPTY | USER_WALLET,
 			 mason_cmd0701_web_authentication,
 		 },
 		 {

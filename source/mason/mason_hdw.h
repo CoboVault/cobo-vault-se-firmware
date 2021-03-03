@@ -62,12 +62,6 @@ extern "C"
 #define HDW_STATUS_EMPTY 3
 #define HDW_STATUS_WALLET 4
 #define HDW_STATUS_MAX 5
-#define HDW_STATUS_SYMBOL_CHIP (uint8_t *)("\xFF\xFF\xFF\xFF")
-#define HDW_STATUS_SYMBOL_FACTORY (uint8_t *)("FATY")
-#define HDW_STATUS_SYMBOL_ATTACK (uint8_t *)("ATAK")
-#define HDW_STATUS_SYMBOL_EMPTY (uint8_t *)("COBO")
-#define HDW_STATUS_SYMBOL_WALLET (uint8_t *)("WLET")
-#define HDW_STATUS_SYMBOL_
 
 	/** Variable definitions */
 	MASON_HDW_EXT volatile uint8_t gDebugSwitchOn;

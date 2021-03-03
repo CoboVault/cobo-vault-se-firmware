@@ -123,7 +123,7 @@ bool mason_storage_write_buffer_in_one_page(uint8_t *buffer, uint32_t len, uint3
 		return true;
 	}
 
-	if (addr_offset + len >= PAGE_SIZE)
+	if (addr_offset + len > PAGE_SIZE)
 	{
 		return false;
 	}

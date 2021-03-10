@@ -25,6 +25,7 @@ in the file COPYING.  If not, see <http://www.gnu.org/licenses/>.
 #include "sha2.h"
 #include "mason_hdw.h"
 #include "crypto_api.h"
+#include "version_def.h"
 
 /** Function implementations */
 /**
@@ -50,7 +51,7 @@ emRetType mason_iap_pack_verify_process(emFwPackTypeType emFwPackType, uint8_t *
 	{
 		uint8_t blk_sha256_buf[SHA256_LEN] = {0};
 		uint8_t *blkHash = NULL;
-		sha256_api(pBin, (binLen-8), blk_sha256_buf);
+		sha256_api(pBin, (binLen - 8), blk_sha256_buf);
 		blkHash = pBin + binLen - 8;
 		if (memcmp_ATA(blkHash, blk_sha256_buf, 8))
 		{
@@ -75,19 +76,12 @@ emRetType mason_iap_pack_verify_process(emFwPackTypeType emFwPackType, uint8_t *
 		if (ERT_OK == emRet)
 		{
 			uint8_t *Sign = pBin + 64;
-			uint8_t public_key[PUB_KEY_LEN] = {0};
-			if (ERT_OK == mason_storage_read((uint8_t *)public_key, PUB_KEY_LEN, FLASH_ADDR_WEB_AUTH_PUB_KEY_64B))
+
+			//hash again
+			sha256_api(PckHash, SHA256_LEN, bufSHA256);
+			if (!ecdsa_verify(CRYPTO_CURVE_SECP256K1, bufSHA256, update_pub_key, Sign))
 			{
-				//hash again
-				sha256_api(PckHash, SHA256_LEN, bufSHA256);
-				if (!ecdsa_verify(CRYPTO_CURVE_SECP256K1, bufSHA256, public_key, Sign))
-				{
-					emRet = ERT_IAP_fileDigest;
-				}
-			}
-			else
-			{
-				emRet = ERT_IAP_FAIL;
+				emRet = ERT_IAP_fileDigest;
 			}
 		}
 		break;

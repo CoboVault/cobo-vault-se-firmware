@@ -41,12 +41,12 @@ extern "C"
 /** Macro definitions*/
 #define VER_REL 1 // 0 -- develop mode , 1 -- release mode
 
-#define VER_Major			0
-#define VER_Minor			4
-#define VER_Release			2
-#define VER_Build			00000
+#define VER_Major 0
+#define VER_Minor 4
+#define VER_Release 2
+#define VER_Build 00000
 
-#if VER_Major>0x9 || VER_Minor>0x9 || VER_Release>0x9 || VER_Build>0x0FFFFF
+#if VER_Major > 0x9 || VER_Minor > 0x9 || VER_Release > 0x9 || VER_Build > 0x0FFFFF
 #if defined _WIN32 || _WIN64
 #pragma message("VERSION define error, please check!")
 #else
@@ -67,6 +67,8 @@ extern "C"
         snprintf(buf, len, "%d.%d.%d.%06d", VER_Major, VER_Minor, VER_Release, VER_Build); \
     } while (0)
 
+    extern uint8_t update_pub_key[64];
+    extern uint8_t web_pub_key[64];
 
 /** Compatibility with the cplusplus*/
 #ifdef __cplusplus

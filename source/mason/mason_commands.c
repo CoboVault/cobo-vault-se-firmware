@@ -133,7 +133,7 @@ MASON_COMMANDS_EXT volatile stCmdHandlerType gstCmdHandlers[CMD_H_MAX][CMD_L_MAX
 			 mason_cmd_invalid,
 		 },
 		 {
-			 USER_CHIP | USER_FACTORY,
+			 USER_CHIP | USER_FACTORY | USER_EMPTY | USER_WALLET,
 			 mason_cmd0107_factory_activate,
 		 },
 		 {
@@ -1365,15 +1365,25 @@ static void mason_cmd0107_factory_activate(void *pContext)
 		mason_cmd_append_ele_to_outputTLVArray(&stStack, pstTLV);
 
 		mason_get_mode(&status);
-		if (status.emHDWStatus != E_HDWS_FACTORY && status.emHDWStatus != E_HDWS_CHIP)
+
+		if (status.emHDWStatus == E_HDWS_FACTORY || status.emHDWStatus == E_HDWS_CHIP)
+		{
+			mason_set_mode(HDW_STATUS_EMPTY);
+			mason_delete_wallet();
+			mason_setting_delete();
+			emRet = ERT_OK;
+			break;
+		}
+		else if(status.emHDWStatus == HDW_STATUS_EMPTY || status.emHDWStatus == HDW_STATUS_WALLET)
+		{
+			emRet = ERT_OK;
+		}
+		else
 		{
 			emRet = ERT_INIT_FAIL;
 			break;
 		}
 
-		mason_set_mode(HDW_STATUS_EMPTY);
-		mason_delete_wallet();
-		mason_setting_delete();
 	} while (0);
 
 	MASON_CMD_RESP_OUTPUT()

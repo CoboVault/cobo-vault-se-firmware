@@ -1372,16 +1372,14 @@ static void mason_cmd0107_factory_activate(void *pContext)
 			mason_delete_wallet();
 			mason_setting_delete();
 			emRet = ERT_OK;
-			break;
 		}
-		else if (status.emHDWStatus == HDW_STATUS_EMPTY || status.emHDWStatus == HDW_STATUS_WALLET)
+		else if (status.emHDWStatus == E_HDWS_EMPTY || status.emHDWStatus == E_HDWS_WALLET)
 		{
 			emRet = ERT_OK;
 		}
 		else
 		{
 			emRet = ERT_INIT_FAIL;
-			break;
 		}
 
 	} while (0);

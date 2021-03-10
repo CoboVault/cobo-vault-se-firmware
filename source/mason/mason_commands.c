@@ -133,7 +133,7 @@ MASON_COMMANDS_EXT volatile stCmdHandlerType gstCmdHandlers[CMD_H_MAX][CMD_L_MAX
 			 mason_cmd_invalid,
 		 },
 		 {
-			 USER_CHIP | USER_FACTORY,
+			 USER_CHIP | USER_FACTORY | USER_EMPTY | USER_WALLET,
 			 mason_cmd0107_factory_activate,
 		 },
 		 {
@@ -1365,15 +1365,23 @@ static void mason_cmd0107_factory_activate(void *pContext)
 		mason_cmd_append_ele_to_outputTLVArray(&stStack, pstTLV);
 
 		mason_get_mode(&status);
-		if (status.emHDWStatus != E_HDWS_FACTORY && status.emHDWStatus != E_HDWS_CHIP)
+
+		if (status.emHDWStatus == E_HDWS_FACTORY || status.emHDWStatus == E_HDWS_CHIP)
+		{
+			mason_set_mode(HDW_STATUS_EMPTY);
+			mason_delete_wallet();
+			mason_setting_delete();
+			emRet = ERT_OK;
+		}
+		else if (status.emHDWStatus == E_HDWS_EMPTY || status.emHDWStatus == E_HDWS_WALLET)
+		{
+			emRet = ERT_OK;
+		}
+		else
 		{
 			emRet = ERT_INIT_FAIL;
-			break;
 		}
 
-		mason_set_mode(HDW_STATUS_EMPTY);
-		mason_delete_wallet();
-		mason_setting_delete();
 	} while (0);
 
 	MASON_CMD_RESP_OUTPUT()
@@ -2236,7 +2244,6 @@ static void mason_cmd0701_web_authentication(void *pContext)
 	uint16_t output_len = 0;
 	uint8_t web_auth_private_key_N[RSA_KEY_LEN] = {0};
 	uint8_t web_auth_private_key_D[RSA_KEY_LEN] = {0};
-	uint8_t web_auth_public_key[PUB_KEY_LEN] = {0};
 	uint8_t message_sha256_buf[SHA256_LEN];
 
 	mason_cmd_init_outputTLVArray(&stStack);
@@ -2249,11 +2256,6 @@ static void mason_cmd0701_web_authentication(void *pContext)
 			break;
 		}
 		mason_cmd_append_ele_to_outputTLVArray(&stStack, pstTLV);
-
-		if (ERT_OK != (emRet = mason_storage_read((uint8_t *)web_auth_public_key, PUB_KEY_LEN, FLASH_ADDR_WEB_AUTH_PUB_KEY_64B)))
-		{
-			break;
-		}
 
 		if (!stack_search_by_tag(pstS, &pstTLV, TLV_T_ENCRYPT_MSG))
 		{
@@ -2275,7 +2277,7 @@ static void mason_cmd0701_web_authentication(void *pContext)
 		}
 		memcpy(signature, (uint8_t *)pstTLV->pV, pstTLV->L);
 		sha256_api(encrypt_message, encrypt_message_len, message_sha256_buf);
-		if (!ecdsa_verify(CRYPTO_CURVE_SECP256K1, message_sha256_buf, web_auth_public_key, signature))
+		if (!ecdsa_verify(CRYPTO_CURVE_SECP256K1, message_sha256_buf, web_pub_key, signature))
 		{
 			emRet = ERT_ECDSAVerifyFail;
 			break;
@@ -2291,7 +2293,7 @@ static void mason_cmd0701_web_authentication(void *pContext)
 			break;
 		}
 
-		if (!crypto_api_rsa_decrypt(web_auth_private_key_N, RSA_KEY_LEN, web_auth_private_key_D, RSA_KEY_LEN, encrypt_message + 1, encrypt_message_len - 1, output, &output_len))
+		if (!crypto_api_rsa_decrypt(web_auth_private_key_N, RSA_KEY_LEN, web_auth_private_key_D, RSA_KEY_LEN, encrypt_message, encrypt_message_len, output, &output_len))
 		{
 			emRet = ERT_CommFailParam;
 			break;
@@ -2302,7 +2304,6 @@ static void mason_cmd0701_web_authentication(void *pContext)
 
 	memset(web_auth_private_key_N, 0, RSA_KEY_LEN);
 	memset(web_auth_private_key_D, 0, RSA_KEY_LEN);
-	memset(web_auth_public_key, 0, PUB_KEY_LEN);
 	MASON_CMD_RESP_OUTPUT()
 }
 /**

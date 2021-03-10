@@ -2301,7 +2301,7 @@ static void mason_cmd0701_web_authentication(void *pContext)
 			break;
 		}
 
-		if (!crypto_api_rsa_decrypt(web_auth_private_key_N, RSA_KEY_LEN, web_auth_private_key_D, RSA_KEY_LEN, encrypt_message + 1, encrypt_message_len - 1, output, &output_len))
+		if (!crypto_api_rsa_decrypt(web_auth_private_key_N, RSA_KEY_LEN, web_auth_private_key_D, RSA_KEY_LEN, encrypt_message, encrypt_message_len, output, &output_len))
 		{
 			emRet = ERT_CommFailParam;
 			break;
